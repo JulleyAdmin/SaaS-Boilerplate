@@ -21,9 +21,19 @@ export default function SSOManagementPage() {
     
     setCreating(true);
     try {
+      // Collect selected roles
+      const roleElements = form.querySelectorAll('input[name="roles"]:checked');
+      const selectedRoles = Array.from(roleElements).map((el: any) => el.value);
+      
+      const department = formData.get('department') as string;
+      
+      // Create enhanced description with hospital context
+      const baseDescription = formData.get('description') as string;
+      const enhancedDescription = `${baseDescription} | Department: ${department} | Roles: ${selectedRoles.join(', ')}`;
+      
       await createSSOConnection(organization.id, {
         name: formData.get('name') as string,
-        description: formData.get('description') as string,
+        description: enhancedDescription,
         redirectUrl: formData.get('redirectUrl') as string,
         metadata: formData.get('metadata') as string,
       });
@@ -115,10 +125,26 @@ export default function SSOManagementPage() {
         
         <div className="bg-green-50 border border-green-200 rounded p-4 mt-6">
           <h3 className="font-semibold text-green-900 mb-2">🚀 Phase 2 - Backend Integration Active</h3>
-          <p className="text-green-800 text-sm">
+          <p className="text-green-800 text-sm mb-3">
             SSO connections are now stored in the database via Jackson SAML service.
             Create and manage real SAML connections for hospital authentication.
           </p>
+          {connections.length > 0 && organization && (
+            <div className="space-y-2">
+              <button
+                onClick={() => window.open(`/api/auth/sso/test?tenant=${organization.id}`, '_blank')}
+                className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+              >
+                🔧 Test SSO Integration
+              </button>
+              <button
+                onClick={() => window.open(`/api/auth/sso/authorize?tenant=${organization.id}&product=hospitalos`, '_blank')}
+                className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 ml-2"
+              >
+                🔐 Test SSO Login
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -159,16 +185,22 @@ export default function SSOManagementPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tenant (Organization ID) *
+                    Hospital Department
                   </label>
-                  <input
-                    name="tenant"
-                    type="text"
-                    required
-                    defaultValue="st-marys-hospital"
+                  <select
+                    name="department"
                     className="w-full border rounded px-3 py-2"
-                    placeholder="e.g., st-marys-hospital"
-                  />
+                    defaultValue="general"
+                  >
+                    <option value="general">General Hospital Access</option>
+                    <option value="emergency">Emergency Department</option>
+                    <option value="icu">Intensive Care Unit</option>
+                    <option value="surgery">Surgery Department</option>
+                    <option value="laboratory">Laboratory</option>
+                    <option value="radiology">Radiology</option>
+                    <option value="pharmacy">Pharmacy</option>
+                    <option value="administration">Administration</option>
+                  </select>
                 </div>
                 
                 <div>
@@ -183,6 +215,30 @@ export default function SSOManagementPage() {
                     className="w-full border rounded px-3 py-2"
                     placeholder="https://..."
                   />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Allowed Staff Roles
+                  </label>
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <label className="flex items-center">
+                      <input type="checkbox" name="roles" value="doctor" defaultChecked className="mr-2" />
+                      Doctor
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" name="roles" value="nurse" defaultChecked className="mr-2" />
+                      Nurse
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" name="roles" value="technician" className="mr-2" />
+                      Technician
+                    </label>
+                    <label className="flex items-center">
+                      <input type="checkbox" name="roles" value="administrator" className="mr-2" />
+                      Administrator
+                    </label>
+                  </div>
                 </div>
                 
                 <div>

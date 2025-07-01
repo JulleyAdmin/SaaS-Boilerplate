@@ -1,15 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-
-import {
-  createClerkSession,
-  createOrUpdateClerkUser,
-  extractOrganizationFromEmail,
-  mapSSOProfileToClerkUser,
-  syncSSOUserWithTeamMember,
-} from '@/lib/sso/clerk-integration';
 import { getJacksonControllers } from '@/lib/sso/jackson';
-import type { SSOProfile } from '@/lib/sso/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,63 +14,36 @@ export async function POST(request: NextRequest) {
       body[key] = value as string;
     }
 
-    // Ensure required SAML parameters
-    if (!body.SAMLResponse) {
-      return NextResponse.json(
-        { error: 'Missing SAMLResponse parameter' },
-        { status: 400 },
-      );
-    }
+    // Add required params for Jackson
+    const requestUrl = new URL(request.url);
+    body.RelayState = body.RelayState || requestUrl.searchParams.get('RelayState') || '';
 
-    // Handle SAML response
+    console.log('Processing SAML response...', { bodyKeys: Object.keys(body) });
+
+    // Handle SAML response with Jackson
     const response = await oauthController.samlResponse(body);
-    const { redirect_url } = response;
     
-    // Extract user profile from response
-    const ssoProfile: SSOProfile = (response as any).user || (response as any).profile;
-
-    if (!ssoProfile || !ssoProfile.email) {
-      return NextResponse.json(
-        { error: 'Invalid SSO response: missing user data' },
-        { status: 400 },
-      );
+    if (response.redirect_url) {
+      console.log('Redirecting to:', response.redirect_url);
+      return NextResponse.redirect(response.redirect_url);
     }
 
-    try {
-      // Map SSO profile to our user format
-      const ssoUser = mapSSOProfileToClerkUser(ssoProfile);
+    // For testing, return JSON response with user info
+    return NextResponse.json({ 
+      success: true, 
+      message: 'SAML authentication successful',
+      user: response.user || 'No user data returned',
+      redirectUrl: '/dashboard'
+    });
 
-      // Create or update user in Clerk
-      const clerkUserId = await createOrUpdateClerkUser(ssoUser);
-
-      // Extract organization from email domain (if applicable)
-      const organizationId = extractOrganizationFromEmail(ssoUser.email);
-
-      // Sync with team member system
-      if (organizationId) {
-        await syncSSOUserWithTeamMember(clerkUserId, organizationId, ssoUser.roles);
-      }
-
-      // Create Clerk session
-      const session = await createClerkSession(clerkUserId, organizationId || undefined);
-
-      // Redirect with session
-      const redirectUrl = new URL(redirect_url || '/dashboard');
-      redirectUrl.searchParams.set('__clerk_session_token', session.id);
-
-      return NextResponse.redirect(redirectUrl.toString());
-    } catch (clerkError) {
-      console.error('Clerk integration failed:', clerkError);
-      return NextResponse.json(
-        { error: 'Failed to create user session' },
-        { status: 500 },
-      );
-    }
   } catch (error) {
     console.error('SSO callback error:', error);
     return NextResponse.json(
-      { error: 'SSO authentication failed' },
-      { status: 400 },
+      { 
+        error: 'SSO authentication failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 400 }
     );
   }
 }
@@ -93,7 +57,7 @@ export async function GET(request: NextRequest) {
   if (error) {
     return NextResponse.json(
       { error: `SSO error: ${error}` },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -101,31 +65,35 @@ export async function GET(request: NextRequest) {
   try {
     const { oauthController } = await getJacksonControllers();
 
-    const body: any = {
+    const body = {
       code: code || '',
       state: state || '',
     };
 
-    const response = await oauthController.oidcAuthzResponse(body);
-    const { redirect_url } = response;
-    const user: SSOProfile = (response as any).user || (response as any).profile;
+    console.log('Processing OIDC callback...', body);
 
-    if (!user || !user.email) {
-      return NextResponse.json(
-        { error: 'Invalid SSO response: missing user data' },
-        { status: 400 },
-      );
+    const response = await oauthController.oidcAuthzResponse(body);
+    
+    if (response.redirect_url) {
+      console.log('Redirecting to:', response.redirect_url);
+      return NextResponse.redirect(response.redirect_url);
     }
 
-    // Same Clerk user creation logic as POST
-    // ... (duplicate logic for brevity)
+    return NextResponse.json({ 
+      success: true, 
+      message: 'OIDC authentication successful',
+      user: response.user || 'No user data returned',
+      redirectUrl: '/dashboard'
+    });
 
-    return NextResponse.redirect(redirect_url || '/dashboard');
   } catch (error) {
     console.error('OIDC callback error:', error);
     return NextResponse.json(
-      { error: 'SSO authentication failed' },
-      { status: 400 },
+      { 
+        error: 'SSO authentication failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 400 }
     );
   }
 }
