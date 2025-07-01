@@ -65,6 +65,8 @@
     "**/*.tsx",
     ".storybook/*.ts",
     ".next/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
   ]
 }

@@ -1,0 +1,45 @@
+
+> saas-boilerplate@1.7.6 dev
+> run-p dev:*
+
+
+> saas-boilerplate@1.7.6 dev:spotlight
+> spotlight-sidecar
+
+
+> saas-boilerplate@1.7.6 dev:next
+> next dev
+
+🔎 [Spotlight] Sidecar is already running on port 8969
+ ⚠ Port 3000 is in use, trying 3001 instead.
+ ⚠ Port 3001 is in use, trying 3002 instead.
+  ▲ Next.js 14.2.25
+  - Local:        http://localhost:3002
+  - Environments: .env.local, .env
+  - Experiments (use with caution):
+    · instrumentationHook
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 995ms (970 modules)
+ ✓ Ready in 3.4s
+ ✓ Compiled /src/middleware in 277ms (606 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (119kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ○ Compiling /[locale]/sign-in/[[...sign-in]] ...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled /[locale]/sign-in/[[...sign-in]] in 6.1s (3726 modules)
+ GET /sign-in 307 in 8039ms
+ ○ Compiling /[locale]/dashboard ...
+ ✓ Compiled /[locale]/dashboard in 3.9s (4092 modules)
+ GET /dashboard 200 in 4878ms
+ ○ Compiling /[locale]/dashboard/sso-management ...
+ ✓ Compiled /[locale]/dashboard/sso-management in 560ms (4080 modules)
+ GET /dashboard/sso-management 200 in 1160ms
+ ✓ Compiled in 1119ms (3923 modules)
+ GET /dashboard/sso-management?_rsc=1v716 200 in 220ms
+ GET /dashboard/sso-management 200 in 347ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1669ms (3927 modules)
+ GET /api/auth/sso/callback 404 in 1827ms

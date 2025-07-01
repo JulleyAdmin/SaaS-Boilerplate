@@ -1,63 +1,19 @@
-import { useTranslations } from 'next-intl';
-
-import { MessageState } from '@/features/dashboard/MessageState';
-import { TitleBar } from '@/features/dashboard/TitleBar';
-import { SponsorLogos } from '@/features/sponsors/SponsorLogos';
-
-const DashboardIndexPage = () => {
-  const t = useTranslations('DashboardIndex');
-
+export default function DashboardPage() {
   return (
-    <>
-      <TitleBar
-        title={t('title_bar')}
-        description={t('title_bar_description')}
-      />
-
-      <MessageState
-        icon={(
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M0 0h24v24H0z" stroke="none" />
-            <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3M12 12l8-4.5M12 12v9M12 12L4 7.5" />
-          </svg>
-        )}
-        title={t('message_state_title')}
-        description={t.rich('message_state_description', {
-          code: chunks => (
-            <code className="bg-secondary text-secondary-foreground">
-              {chunks}
-            </code>
-          ),
-        })}
-        button={(
-          <>
-            <div className="mt-2 text-xs font-light text-muted-foreground">
-              {t.rich('message_state_alternative', {
-                url: () => (
-                  <a
-                    className="text-blue-500 hover:text-blue-600"
-                    href="https://nextjs-boilerplate.com/pro-saas-starter-kit"
-                  >
-                    Next.js Boilerplate SaaS
-                  </a>
-                ),
-              })}
-            </div>
-
-            <div className="mt-7">
-              <SponsorLogos />
-            </div>
-          </>
-        )}
-      />
-    </>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">HospitalOS Dashboard</h1>
+      <p className="mb-6">Welcome to the hospital management system.</p>
+      
+      <div className="bg-white border rounded-lg p-6">
+        <h2 className="text-xl font-semibold mb-2">SSO Management</h2>
+        <p className="mb-4">Configure single sign-on for your hospital.</p>
+        <a 
+          href="/dashboard/sso-management"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Manage SSO
+        </a>
+      </div>
+    </div>
   );
-};
-
-export default DashboardIndexPage;
+}

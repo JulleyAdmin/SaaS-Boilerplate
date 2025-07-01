@@ -49,3 +49,7 @@ local
 
 # vercel
 .vercel
+
+# Claude Code
+.claude/settings.json
+CLAUDE.local.md

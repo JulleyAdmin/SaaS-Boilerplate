@@ -1,0 +1,22 @@
+{
+  "name": "St. Mary's General Hospital",
+  "slug": "st-marys-hospital",
+  "domain": "stmarys.hospital.com",
+  "departments": [
+    "Emergency",
+    "ICU", 
+    "Surgery",
+    "Laboratory",
+    "Radiology",
+    "Pharmacy",
+    "Administration",
+    "Nursing"
+  ],
+  "sso_connection": {
+    "name": "St. Mary's Hospital SAML",
+    "description": "Primary SAML connection for hospital staff",
+    "tenant": "st-marys-hospital",
+    "product": "hospitalos",
+    "redirectUrl": "http://localhost:3000/api/auth/sso/callback"
+  }
+}

@@ -1,28 +1,57 @@
 'use client';
 
 import { useState } from 'react';
+import { useOrganization } from '@clerk/nextjs';
+import { useSSOConnections, createSSOConnection, deleteSSOConnection } from '@/hooks/useSSOConnections';
 
 export default function SSOManagementPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [connections, setConnections] = useState<any[]>([]);
+  const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  
+  const { organization } = useOrganization();
+  const { connections, isLoading, isError, mutate } = useSSOConnections();
 
-  const handleCreateConnection = (e: React.FormEvent) => {
+  const handleCreateConnection = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!organization) return;
+    
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     
-    const newConnection = {
-      id: Date.now(),
-      name: formData.get('name'),
-      description: formData.get('description'),
-      tenant: formData.get('tenant'),
-      redirectUrl: formData.get('redirectUrl'),
-      createdAt: new Date().toISOString()
-    };
+    setCreating(true);
+    try {
+      await createSSOConnection(organization.id, {
+        name: formData.get('name') as string,
+        description: formData.get('description') as string,
+        redirectUrl: formData.get('redirectUrl') as string,
+        metadata: formData.get('metadata') as string,
+      });
+      
+      setShowCreateDialog(false);
+      form.reset();
+      mutate(); // Refresh the connections list
+    } catch (error) {
+      console.error('Failed to create connection:', error);
+      alert('Failed to create SSO connection. Please try again.');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleDeleteConnection = async (connectionId: string) => {
+    if (!organization || !confirm('Are you sure you want to delete this SSO connection?')) return;
     
-    setConnections([...connections, newConnection]);
-    setShowCreateDialog(false);
-    form.reset();
+    setDeleting(connectionId);
+    try {
+      await deleteSSOConnection(organization.id, connectionId);
+      mutate(); // Refresh the connections list
+    } catch (error) {
+      console.error('Failed to delete connection:', error);
+      alert('Failed to delete SSO connection. Please try again.');
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
@@ -33,33 +62,50 @@ export default function SSOManagementPage() {
       <div className="bg-white border rounded-lg p-6">
         <button 
           onClick={() => setShowCreateDialog(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4"
+          disabled={creating}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4 disabled:opacity-50"
         >
-          + Create SSO Connection
+          {creating ? 'Creating...' : '+ Create SSO Connection'}
         </button>
         
-        {connections.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>Loading SSO connections...</p>
+          </div>
+        ) : isError ? (
+          <div className="text-center py-8 text-red-500">
+            <p className="mb-2">Failed to load SSO connections.</p>
+            <button 
+              onClick={() => mutate()}
+              className="text-blue-600 hover:text-blue-700 text-sm"
+            >
+              Try again
+            </button>
+          </div>
+        ) : connections.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <p className="mb-2">No SSO connections configured yet.</p>
             <p className="text-sm">Create your first SAML connection.</p>
           </div>
         ) : (
           <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Configured Connections</h3>
+            <h3 className="font-semibold text-gray-900">Configured Connections ({connections.length})</h3>
             {connections.map(conn => (
-              <div key={conn.id} className="border rounded p-4">
+              <div key={conn.clientID} className="border rounded p-4">
                 <h4 className="font-semibold">{conn.name}</h4>
                 <p className="text-sm text-gray-600">{conn.description}</p>
                 <p className="text-xs text-gray-500 mt-2">
-                  Tenant: {conn.tenant} | Created: {new Date(conn.createdAt).toLocaleDateString()}
+                  Tenant: {conn.tenant} | Product: {conn.product}
+                  {conn.defaultRedirectUrl && ` | Redirect: ${conn.defaultRedirectUrl}`}
                 </p>
                 <div className="mt-2 space-x-2">
                   <button className="text-blue-600 hover:text-blue-700 text-sm">Edit</button>
                   <button 
-                    onClick={() => setConnections(connections.filter(c => c.id !== conn.id))}
-                    className="text-red-600 hover:text-red-700 text-sm"
+                    onClick={() => handleDeleteConnection(conn.clientID)}
+                    disabled={deleting === conn.clientID}
+                    className="text-red-600 hover:text-red-700 text-sm disabled:opacity-50"
                   >
-                    Delete
+                    {deleting === conn.clientID ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
@@ -67,11 +113,11 @@ export default function SSOManagementPage() {
           </div>
         )}
         
-        <div className="bg-blue-50 border border-blue-200 rounded p-4 mt-6">
-          <h3 className="font-semibold text-blue-900 mb-2">🧪 Phase 1 Testing</h3>
-          <p className="text-blue-800 text-sm">
-            Click "Create SSO Connection" to test the SSO configuration interface.
-            This simulates the SAML connection creation process for hospital authentication.
+        <div className="bg-green-50 border border-green-200 rounded p-4 mt-6">
+          <h3 className="font-semibold text-green-900 mb-2">🚀 Phase 2 - Backend Integration Active</h3>
+          <p className="text-green-800 text-sm">
+            SSO connections are now stored in the database via Jackson SAML service.
+            Create and manage real SAML connections for hospital authentication.
           </p>
         </div>
       </div>
@@ -163,9 +209,10 @@ export default function SSOManagementPage() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  disabled={creating}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
                 >
-                  Create Connection
+                  {creating ? 'Creating...' : 'Create Connection'}
                 </button>
               </div>
             </form>
