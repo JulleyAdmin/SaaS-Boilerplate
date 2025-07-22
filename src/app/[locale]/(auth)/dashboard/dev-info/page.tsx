@@ -1,0 +1,127 @@
+'use client';
+
+import { useAuth, useOrganization, useUser } from '@clerk/nextjs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+
+export default function DevInfoPage() {
+  const { userId, orgId, sessionId } = useAuth();
+  const { user } = useUser();
+  const { organization } = useOrganization();
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${label} copied to clipboard`);
+    } catch (error) {
+      toast.error('Failed to copy');
+    }
+  };
+
+  return (
+    <div className="container mx-auto py-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Developer Information</h1>
+          <p className="text-gray-600 mt-2">
+            IDs and information needed for development and testing
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Organization Information</CardTitle>
+            <CardDescription>
+              Use the Organization ID for seeding test data
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">Organization Name</p>
+                <p className="font-mono font-medium">{organization?.name || 'No organization'}</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div>
+                <p className="text-sm text-gray-600">Organization ID</p>
+                <p className="font-mono font-medium text-lg">{orgId || 'Not in an organization'}</p>
+              </div>
+              {orgId && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => copyToClipboard(orgId, 'Organization ID')}
+                >
+                  Copy
+                </Button>
+              )}
+            </div>
+            {orgId && (
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm font-medium text-blue-900 mb-2">To seed test data:</p>
+                <code className="text-xs bg-white p-2 rounded block">
+                  ./scripts/seed-db.sh {orgId}
+                </code>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>User Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600">User ID</p>
+                <p className="font-mono text-sm">{userId || 'Not authenticated'}</p>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600">Session ID</p>
+                <p className="font-mono text-sm truncate">{sessionId || 'No session'}</p>
+              </div>
+            </div>
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Email</p>
+              <p className="font-mono">{user?.primaryEmailAddress?.emailAddress || 'No email'}</p>
+            </div>
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">MFA Status</p>
+              <div className="flex gap-2 mt-1">
+                <span className={`text-sm px-2 py-1 rounded ${user?.totpEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                  TOTP: {user?.totpEnabled ? 'Enabled' : 'Disabled'}
+                </span>
+                <span className={`text-sm px-2 py-1 rounded ${user?.backupCodeEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                  Backup Codes: {user?.backupCodeEnabled ? 'Yes' : 'No'}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-3">
+            <a href="/dashboard/api-keys">
+              <Button variant="outline" className="w-full">View API Keys</Button>
+            </a>
+            <a href="/dashboard/security/mfa">
+              <Button variant="outline" className="w-full">MFA Settings</Button>
+            </a>
+            <a href="/dashboard/organization-profile">
+              <Button variant="outline" className="w-full">Organization Settings</Button>
+            </a>
+            <a href="/dashboard/test-features">
+              <Button variant="outline" className="w-full">Test Features</Button>
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

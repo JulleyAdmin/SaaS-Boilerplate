@@ -5,11 +5,11 @@
  */
 
 const colors = {
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-  reset: '\x1b[0m'
+  green: '\x1B[32m',
+  yellow: '\x1B[33m',
+  blue: '\x1B[34m',
+  cyan: '\x1B[36m',
+  reset: '\x1B[0m',
 };
 
 const log = (message, color = 'reset') => {
@@ -22,20 +22,20 @@ function generateSecureTestPassword() {
   const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
   const numberChars = '0123456789';
   const specialChars = '!@#$%^&*';
-  
+
   // Ensure at least one character from each category
   let password = '';
   password += uppercaseChars[Math.floor(Math.random() * uppercaseChars.length)];
   password += lowercaseChars[Math.floor(Math.random() * lowercaseChars.length)];
   password += numberChars[Math.floor(Math.random() * numberChars.length)];
   password += specialChars[Math.floor(Math.random() * specialChars.length)];
-  
+
   // Fill remaining characters
   const allChars = uppercaseChars + lowercaseChars + numberChars + specialChars;
   for (let i = password.length; i < 12; i++) {
     password += allChars[Math.floor(Math.random() * allChars.length)];
   }
-  
+
   // Shuffle the password
   return password.split('').sort(() => Math.random() - 0.5).join('');
 }
@@ -79,8 +79,8 @@ const testCredentials = {
   urls: {
     app: 'http://localhost:3001',
     signin: 'http://localhost:3001/sign-in',
-    sso_admin: 'http://localhost:3001/dashboard/organization-profile/sso'
-  }
+    sso_admin: 'http://localhost:3001/dashboard/organization-profile/sso',
+  },
 };
 
 log(JSON.stringify(testCredentials, null, 2), 'green');

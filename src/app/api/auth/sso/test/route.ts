@@ -1,14 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 import { getJacksonControllers } from '@/lib/sso/jackson';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const tenant = searchParams.get('tenant') || 'st-marys-hospital';
-    
+
     // Test Jackson is working
     const { apiController } = await getJacksonControllers();
-    
+
     const connections = await apiController.getConnections({
       tenant,
       product: 'hospitalos',
@@ -30,15 +32,14 @@ export async function GET(request: NextRequest) {
       testUrl: `${baseUrl}/api/auth/sso/metadata?tenant=${tenant}`,
       callbackUrl: `${baseUrl}/api/auth/sso/callback`,
     });
-
   } catch (error) {
     console.error('SSO test error:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'SSO test failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

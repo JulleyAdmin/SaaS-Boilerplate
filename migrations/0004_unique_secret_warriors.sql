@@ -1,0 +1,1 @@
+ALTER TABLE "hospital_staff" ALTER COLUMN "failed_login_attempts" DROP DEFAULT;

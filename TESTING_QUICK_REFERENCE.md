@@ -16,7 +16,7 @@
 - Login with admin@stmarys.hospital.com / u3Me65zO&8@b
 - ✅ Should reach dashboard
 
-### 2. **SSO Management Access** (2 minutes)  
+### 2. **SSO Management Access** (2 minutes)
 - Navigate to organization profile
 - Find SSO/Security settings
 - Access SSO connection management
@@ -69,7 +69,7 @@
 # App Status
 curl http://localhost:3001/api/health
 
-# SSO Service Status  
+# SSO Service Status
 docker ps | grep jackson
 
 # View Logs
@@ -127,13 +127,13 @@ docker logs jackson-hospitalos
 
 ## 📊 **Report Template**
 
-**Date**: _______________  
-**Tester**: _______________  
-**Duration**: _____ minutes  
+**Date**: _______________
+**Tester**: _______________
+**Duration**: _____ minutes
 
 **Results**:
 - Login: ✅ ❌ ⚠️
-- SSO Access: ✅ ❌ ⚠️  
+- SSO Access: ✅ ❌ ⚠️
 - Connection Creation: ✅ ❌ ⚠️
 - Responsive Design: ✅ ❌ ⚠️
 - Form Validation: ✅ ❌ ⚠️

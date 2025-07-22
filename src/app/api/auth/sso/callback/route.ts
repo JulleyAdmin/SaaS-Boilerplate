@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+
 import { getJacksonControllers } from '@/lib/sso/jackson';
 
 export async function POST(request: NextRequest) {
@@ -22,28 +23,27 @@ export async function POST(request: NextRequest) {
 
     // Handle SAML response with Jackson
     const response = await oauthController.samlResponse(body);
-    
+
     if (response.redirect_url) {
       console.log('Redirecting to:', response.redirect_url);
       return NextResponse.redirect(response.redirect_url);
     }
 
     // For testing, return JSON response with user info
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'SAML authentication successful',
-      user: response.user || 'No user data returned',
-      redirectUrl: '/dashboard'
+      user: (response as any).user || 'No user data returned',
+      redirectUrl: '/dashboard',
     });
-
   } catch (error) {
     console.error('SSO callback error:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'SSO authentication failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
   if (error) {
     return NextResponse.json(
       { error: `SSO error: ${error}` },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -73,27 +73,26 @@ export async function GET(request: NextRequest) {
     console.log('Processing OIDC callback...', body);
 
     const response = await oauthController.oidcAuthzResponse(body);
-    
+
     if (response.redirect_url) {
       console.log('Redirecting to:', response.redirect_url);
       return NextResponse.redirect(response.redirect_url);
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'OIDC authentication successful',
-      user: response.user || 'No user data returned',
-      redirectUrl: '/dashboard'
+      user: (response as any).user || 'No user data returned',
+      redirectUrl: '/dashboard',
     });
-
   } catch (error) {
     console.error('OIDC callback error:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'SSO authentication failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

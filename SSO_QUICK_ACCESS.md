@@ -93,10 +93,10 @@ Please check and let me know:
 
 ## 🎉 **Success Indicators**
 
-✅ **SSO Management card visible on dashboard**  
-✅ **"Manage SSO Connections" button works**  
-✅ **SSO interface loads properly**  
-✅ **Can access SSO configuration tools**  
+✅ **SSO Management card visible on dashboard**
+✅ **"Manage SSO Connections" button works**
+✅ **SSO interface loads properly**
+✅ **Can access SSO configuration tools**
 
 **Try refreshing your dashboard now and look for the SSO Management card!** 🚀
 

@@ -1,9 +1,9 @@
 # 🧪 Live UI Testing Session - Phase 1
 
-**Status**: READY TO TEST  
-**Server**: http://localhost:3001  
-**Test User**: admin@stmarys.hospital.com / u3Me65zO&8@b  
-**Organization**: St. Mary's General Hospital  
+**Status**: READY TO TEST
+**Server**: http://localhost:3001
+**Test User**: admin@stmarys.hospital.com / u3Me65zO&8@b
+**Organization**: St. Mary's General Hospital
 
 ---
 

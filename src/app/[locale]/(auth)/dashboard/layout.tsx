@@ -30,14 +30,33 @@ export default function DashboardLayout(props: { children: React.ReactNode }) {
               },
               // PRO: Link to the /dashboard/todos page
               {
+                href: '/dashboard/team',
+                label: t('team'),
+              },
+              {
+                href: '/dashboard/api-keys',
+                label: t('api_keys'),
+              },
+              {
+                href: '/dashboard/webhooks',
+                label: t('webhooks'),
+              },
+              {
+                href: '/dashboard/security',
+                label: t('security'),
+              },
+              {
                 href: '/dashboard/organization-profile/organization-members',
                 label: t('members'),
+              },
+              {
+                href: '/dashboard/billing',
+                label: t('billing'),
               },
               {
                 href: '/dashboard/organization-profile',
                 label: t('settings'),
               },
-              // PRO: Link to the /dashboard/billing page
             ]}
           />
         </div>

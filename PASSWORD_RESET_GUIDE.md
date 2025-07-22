@@ -54,13 +54,13 @@ Organization: St. Mary's General Hospital
 
 ## 🔒 **Password Security Features Met**
 
-✅ **12+ characters** (12 chars)  
-✅ **Uppercase letters** (M, O)  
-✅ **Lowercase letters** (u, e, z, b)  
-✅ **Numbers** (3, 6, 5, 8)  
-✅ **Special characters** (&, @)  
-✅ **Not in breach databases**  
-✅ **Randomly generated**  
+✅ **12+ characters** (12 chars)
+✅ **Uppercase letters** (M, O)
+✅ **Lowercase letters** (u, e, z, b)
+✅ **Numbers** (3, 6, 5, 8)
+✅ **Special characters** (&, @)
+✅ **Not in breach databases**
+✅ **Randomly generated**
 
 ---
 

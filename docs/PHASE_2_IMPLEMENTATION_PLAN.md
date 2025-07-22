@@ -68,11 +68,11 @@ Admin UI → API Routes → Jackson SSO → Database
 #### **1.1 SSO Connection CRUD APIs**
 ```typescript
 // API Routes to implement
-POST   /api/organizations/[orgId]/sso/connections     // Create
-GET    /api/organizations/[orgId]/sso/connections     // List
-GET    /api/organizations/[orgId]/sso/connections/[id] // Read
-PUT    /api/organizations/[orgId]/sso/connections/[id] // Update
-DELETE /api/organizations/[orgId]/sso/connections/[id] // Delete
+POST / api / organizations / [orgId] / sso / connections; // Create
+GET / api / organizations / [orgId] / sso / connections; // List
+GET / api / organizations / [orgId] / sso / connections / [id]; // Read
+PUT / api / organizations / [orgId] / sso / connections / [id]; // Update
+DELETE / api / organizations / [orgId] / sso / connections / [id]; // Delete
 ```
 
 #### **1.2 Jackson SSO Service Integration**
@@ -134,13 +134,13 @@ GET  /api/auth/sso/metadata?tenant=hospital-id
 #### **4.1 Department-Specific SSO**
 ```typescript
 // Department configurations
-interface DepartmentSSO {
+type DepartmentSSO = {
   departmentId: string;
   ssoConnectionId: string;
   allowedRoles: string[];
   emergencyAccess: boolean;
   shiftBasedAuth: boolean;
-}
+};
 ```
 
 #### **4.2 Medical Role Mapping**
@@ -183,12 +183,12 @@ interface DepartmentSSO {
 
 #### **Emergency Department**
 ```typescript
-interface EmergencyProtocol {
-  rapidAuth: boolean;          // Fast authentication
-  bypassTimeout: number;       // Emergency access duration
+type EmergencyProtocol = {
+  rapidAuth: boolean; // Fast authentication
+  bypassTimeout: number; // Emergency access duration
   alertNotifications: boolean; // Notify admin of emergency access
   auditLevel: 'high' | 'medium';
-}
+};
 ```
 
 #### **Department-Based Access**

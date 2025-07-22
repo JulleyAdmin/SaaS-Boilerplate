@@ -156,6 +156,6 @@ Create these test connections:
 4. **Submit** and verify it appears
 5. **Continue** with other test scenarios
 
-**The SSO UI is fully functional for Phase 1 testing!** 
+**The SSO UI is fully functional for Phase 1 testing!**
 
 **Test it at**: http://localhost:3002/dashboard/sso-management 🏥✨

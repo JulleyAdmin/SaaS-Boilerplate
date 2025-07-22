@@ -1,0 +1,324 @@
+{
+  "testEnvironment": {
+    "applicationUrl": "http://localhost:3003",
+    "ssoManagementPath": "/dashboard/sso-management",
+    "loginCredentials": {
+      "email": "admin@stmarys.hospital.com",
+      "password": "u3Me65zO&8@b"
+    }
+  },
+  "testHospital": {
+    "id": "org_test_hospital_123",
+    "name": "St. Mary's General Hospital",
+    "slug": "st-marys-test-hospital",
+    "type": "General Hospital",
+    "bedCount": 200,
+    "location": "Test City, TS"
+  },
+  "departments": [
+    {
+      "value": "general",
+      "name": "General Hospital Access",
+      "description": "General hospital staff access",
+      "priority": "normal",
+      "staffCount": 50,
+      "accessLevel": "standard"
+    },
+    {
+      "value": "emergency",
+      "name": "Emergency Department",
+      "description": "Emergency medical response and trauma care",
+      "priority": "critical",
+      "staffCount": 25,
+      "accessLevel": "rapid",
+      "specialRequirements": ["24/7 access", "rapid response", "trauma protocols"],
+      "timeTargets": {
+        "setupTime": 30,
+        "responseTime": 1
+      }
+    },
+    {
+      "value": "icu",
+      "name": "Intensive Care Unit",
+      "description": "Critical care and life support",
+      "priority": "critical",
+      "staffCount": 20,
+      "accessLevel": "continuous",
+      "specialRequirements": ["24/7 monitoring", "life support systems", "critical care protocols"],
+      "timeTargets": {
+        "setupTime": 60,
+        "responseTime": 2
+      }
+    },
+    {
+      "value": "surgery",
+      "name": "Surgery Department",
+      "description": "Surgical procedures and operating rooms",
+      "priority": "high",
+      "staffCount": 30,
+      "accessLevel": "procedure-based",
+      "specialRequirements": ["sterile environment", "procedure authorization", "surgical team coordination"],
+      "timeTargets": {
+        "setupTime": 120,
+        "responseTime": 5
+      }
+    },
+    {
+      "value": "laboratory",
+      "name": "Laboratory",
+      "description": "Lab testing and diagnostic services",
+      "priority": "high",
+      "staffCount": 15,
+      "accessLevel": "equipment-specific",
+      "specialRequirements": ["equipment calibration", "test result accuracy", "quality control"],
+      "timeTargets": {
+        "setupTime": 90,
+        "responseTime": 3
+      }
+    },
+    {
+      "value": "radiology",
+      "name": "Radiology",
+      "description": "Medical imaging and diagnostic radiology",
+      "priority": "high",
+      "staffCount": 12,
+      "accessLevel": "imaging-systems",
+      "specialRequirements": ["PACS integration", "imaging protocols", "radiation safety"],
+      "timeTargets": {
+        "setupTime": 120,
+        "responseTime": 4
+      }
+    },
+    {
+      "value": "pharmacy",
+      "name": "Pharmacy",
+      "description": "Medication management and controlled substances",
+      "priority": "high",
+      "staffCount": 8,
+      "accessLevel": "controlled-substances",
+      "specialRequirements": ["DEA compliance", "controlled substances", "medication safety"],
+      "timeTargets": {
+        "setupTime": 180,
+        "responseTime": 5
+      }
+    },
+    {
+      "value": "administration",
+      "name": "Administration",
+      "description": "Hospital management and administrative oversight",
+      "priority": "normal",
+      "staffCount": 15,
+      "accessLevel": "management",
+      "specialRequirements": ["HIPAA compliance", "administrative oversight", "system management"],
+      "timeTargets": {
+        "setupTime": 300,
+        "responseTime": 10
+      }
+    }
+  ],
+  "roles": [
+    {
+      "value": "doctor",
+      "name": "Doctor",
+      "description": "Medical practitioners and physicians",
+      "defaultSelected": true,
+      "privileges": ["patient_care", "medical_decisions", "prescriptions", "procedures"],
+      "departments": ["emergency", "icu", "surgery", "general"],
+      "certifications": ["MD", "DO", "Medical License"],
+      "accessLevel": "full_medical"
+    },
+    {
+      "value": "nurse",
+      "name": "Nurse",
+      "description": "Nursing staff and patient care",
+      "defaultSelected": true,
+      "privileges": ["patient_care", "medication_administration", "monitoring", "care_coordination"],
+      "departments": ["emergency", "icu", "surgery", "general"],
+      "certifications": ["RN", "LPN", "Nursing License"],
+      "accessLevel": "patient_care"
+    },
+    {
+      "value": "technician",
+      "name": "Technician",
+      "description": "Technical specialists and support staff",
+      "defaultSelected": false,
+      "privileges": ["equipment_operation", "testing", "technical_support", "maintenance"],
+      "departments": ["laboratory", "radiology", "surgery", "pharmacy"],
+      "certifications": ["Technical Certification", "Equipment Training"],
+      "accessLevel": "technical_systems"
+    },
+    {
+      "value": "administrator",
+      "name": "Administrator",
+      "description": "Administrative and management staff",
+      "defaultSelected": false,
+      "privileges": ["system_administration", "user_management", "compliance", "oversight"],
+      "departments": ["administration", "pharmacy"],
+      "certifications": ["Healthcare Administration", "Management Certification"],
+      "accessLevel": "administrative"
+    }
+  ],
+  "testConnections": [
+    {
+      "name": "Emergency Department SAML",
+      "description": "Emergency rapid response for medical staff",
+      "department": "emergency",
+      "roles": ["doctor", "nurse", "technician"],
+      "priority": "critical",
+      "expectedDescription": "Emergency rapid response for medical staff | Department: emergency | Roles: doctor, nurse, technician",
+      "performanceTarget": 30
+    },
+    {
+      "name": "ICU 24/7 Critical Care SAML",
+      "description": "ICU continuous monitoring and critical care",
+      "department": "icu",
+      "roles": ["doctor", "nurse"],
+      "priority": "critical",
+      "expectedDescription": "ICU continuous monitoring and critical care | Department: icu | Roles: doctor, nurse",
+      "performanceTarget": 60
+    },
+    {
+      "name": "Surgery Department SAML",
+      "description": "Surgical procedures and operating room access",
+      "department": "surgery",
+      "roles": ["doctor", "technician"],
+      "priority": "high",
+      "expectedDescription": "Surgical procedures and operating room access | Department: surgery | Roles: doctor, technician",
+      "performanceTarget": 120
+    },
+    {
+      "name": "Laboratory Testing SAML",
+      "description": "Lab equipment and diagnostic testing",
+      "department": "laboratory",
+      "roles": ["technician", "doctor"],
+      "priority": "high",
+      "expectedDescription": "Lab equipment and diagnostic testing | Department: laboratory | Roles: technician, doctor",
+      "performanceTarget": 90
+    },
+    {
+      "name": "Radiology Imaging SAML",
+      "description": "Medical imaging and PACS system access",
+      "department": "radiology",
+      "roles": ["technician", "doctor"],
+      "priority": "high",
+      "expectedDescription": "Medical imaging and PACS system access | Department: radiology | Roles: technician, doctor",
+      "performanceTarget": 120
+    },
+    {
+      "name": "Pharmacy Controlled Substances SAML",
+      "description": "Medication management and controlled substances",
+      "department": "pharmacy",
+      "roles": ["administrator", "technician"],
+      "priority": "high",
+      "expectedDescription": "Medication management and controlled substances | Department: pharmacy | Roles: administrator, technician",
+      "performanceTarget": 180
+    },
+    {
+      "name": "Hospital Administration SAML",
+      "description": "Hospital management and administrative oversight",
+      "department": "administration",
+      "roles": ["administrator"],
+      "priority": "normal",
+      "expectedDescription": "Hospital management and administrative oversight | Department: administration | Roles: administrator",
+      "performanceTarget": 300
+    }
+  ],
+  "testScenarios": {
+    "emergencyProtocols": [
+      {
+        "name": "Code Blue Response",
+        "description": "Cardiac arrest emergency response team",
+        "department": "emergency",
+        "roles": ["doctor", "nurse"],
+        "timeLimit": 30,
+        "priority": "critical"
+      },
+      {
+        "name": "Trauma Alert Level 1",
+        "description": "Major trauma incoming patient",
+        "department": "emergency",
+        "roles": ["doctor", "nurse", "technician"],
+        "timeLimit": 45,
+        "priority": "critical"
+      },
+      {
+        "name": "Mass Casualty Incident",
+        "description": "Multiple patient emergency response",
+        "department": "emergency",
+        "roles": ["doctor", "nurse", "technician", "administrator"],
+        "timeLimit": 60,
+        "priority": "disaster"
+      }
+    ],
+    "departmentWorkflows": [
+      {
+        "name": "ICU Patient Admission",
+        "description": "Critical care patient admission workflow",
+        "department": "icu",
+        "roles": ["doctor", "nurse"],
+        "steps": ["patient_assessment", "monitoring_setup", "care_plan", "family_communication"]
+      },
+      {
+        "name": "Surgical Procedure Setup",
+        "description": "Operating room preparation and procedure",
+        "department": "surgery",
+        "roles": ["doctor", "technician"],
+        "steps": ["patient_prep", "equipment_check", "sterile_field", "procedure_start"]
+      },
+      {
+        "name": "Lab Results Processing",
+        "description": "Laboratory test processing and reporting",
+        "department": "laboratory",
+        "roles": ["technician", "doctor"],
+        "steps": ["sample_processing", "testing", "quality_control", "result_reporting"]
+      }
+    ]
+  },
+  "performanceBenchmarks": {
+    "pageLoad": {
+      "target": 3000,
+      "acceptable": 5000,
+      "unit": "milliseconds"
+    },
+    "dialogOpen": {
+      "target": 1000,
+      "acceptable": 2000,
+      "unit": "milliseconds"
+    },
+    "formSubmission": {
+      "target": 10000,
+      "acceptable": 15000,
+      "unit": "milliseconds"
+    },
+    "emergencySetup": {
+      "target": 30000,
+      "acceptable": 45000,
+      "unit": "milliseconds"
+    }
+  },
+  "testValidation": {
+    "requiredElements": [
+      "sso-management-title",
+      "phase-2-banner",
+      "create-connection-button",
+      "connection-list",
+      "test-integration-button",
+      "test-login-button"
+    ],
+    "formFields": [
+      "connection-name",
+      "description",
+      "department-dropdown",
+      "role-checkboxes",
+      "redirect-url",
+      "saml-metadata"
+    ],
+    "expectedDefaults": {
+      "name": "St. Mary's Hospital SAML",
+      "description": "Primary SAML connection for hospital staff",
+      "redirectUrl": "http://localhost:3003/api/auth/sso/callback",
+      "metadata": "https://mocksaml.com/api/saml/metadata",
+      "selectedRoles": ["doctor", "nurse"]
+    }
+  }
+}

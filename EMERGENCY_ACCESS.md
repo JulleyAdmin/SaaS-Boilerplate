@@ -2,8 +2,8 @@
 
 ## ✅ **SERVER IS NOW RUNNING**
 
-**New URL**: http://localhost:3002  
-**Status**: ✅ Working  
+**New URL**: http://localhost:3002
+**Status**: ✅ Working
 **Port Change**: Due to port conflicts, server moved to 3002
 
 ---
@@ -103,7 +103,7 @@ http://localhost:3002/dashboard/sso-management
 
 ### **URLs to Use**
 - **Login**: http://localhost:3002/sign-in
-- **Dashboard**: http://localhost:3002/dashboard  
+- **Dashboard**: http://localhost:3002/dashboard
 - **SSO Management**: http://localhost:3002/dashboard/sso-management
 
 ### **Test Credentials**

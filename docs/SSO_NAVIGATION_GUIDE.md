@@ -11,7 +11,7 @@ The SSO management interface is integrated with Clerk's Organization Profile com
 ### **Method 1: Through Organization Profile (Primary)**
 
 1. **Login** to http://localhost:3001
-   - Email: admin@stmarys.hospital.com  
+   - Email: admin@stmarys.hospital.com
    - Password: u3Me65zO&8@b
 
 2. **Navigate to Dashboard**
@@ -26,7 +26,7 @@ The SSO management interface is integrated with Clerk's Organization Profile com
 4. **Find SSO/Security Tab**
    - Within Organization Profile, look for:
      - "Security" tab
-     - "SSO" tab  
+     - "SSO" tab
      - "Authentication" tab
      - "Connections" tab
 
@@ -89,7 +89,7 @@ Try accessing our SSO page directly:
 
 **URL**: http://localhost:3001/dashboard/organization-profile/sso
 
-**Expected**: 
+**Expected**:
 - Page with SSO connection management interface
 - "Create SSO Connection" button
 - List of existing connections (initially empty)
@@ -119,7 +119,7 @@ When you find the SSO management interface, you should see:
 
 ### **Create Connection Form**
 - Name field
-- Description field  
+- Description field
 - Metadata URL field
 - Tenant/Organization field
 - Redirect URL field

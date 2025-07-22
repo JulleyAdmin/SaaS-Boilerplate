@@ -57,43 +57,43 @@ curl http://localhost:5225/api/v1/health
 ```javascript
 // Test Hospital Organization
 const testOrganization = {
-  name: "St. Mary's General Hospital",
-  slug: "st-marys-hospital",
-  domain: "stmarys.hospital.com",
-  departments: ["Emergency", "ICU", "Surgery", "Laboratory"]
+  name: 'St. Mary\'s General Hospital',
+  slug: 'st-marys-hospital',
+  domain: 'stmarys.hospital.com',
+  departments: ['Emergency', 'ICU', 'Surgery', 'Laboratory']
 };
 
 // Test Users
 const testUsers = {
   itAdmin: {
-    email: "admin@stmarys.hospital.com",
-    firstName: "John",
-    lastName: "Smith",
-    role: "OWNER",
-    department: "IT Administration"
+    email: 'admin@stmarys.hospital.com',
+    firstName: 'John',
+    lastName: 'Smith',
+    role: 'OWNER',
+    department: 'IT Administration'
   },
   deptHead: {
-    email: "head.emergency@stmarys.hospital.com", 
-    firstName: "Dr. Sarah",
-    lastName: "Johnson",
-    role: "ADMIN",
-    department: "Emergency"
+    email: 'head.emergency@stmarys.hospital.com',
+    firstName: 'Dr. Sarah',
+    lastName: 'Johnson',
+    role: 'ADMIN',
+    department: 'Emergency'
   },
   medicalStaff: {
-    email: "nurse.williams@stmarys.hospital.com",
-    firstName: "Lisa",
-    lastName: "Williams", 
-    role: "MEMBER",
-    department: "Emergency"
+    email: 'nurse.williams@stmarys.hospital.com',
+    firstName: 'Lisa',
+    lastName: 'Williams',
+    role: 'MEMBER',
+    department: 'Emergency'
   }
 };
 
 // Mock SAML Provider (for testing)
 const mockSamlProvider = {
-  entityId: "https://stmarys-idp.hospital.com",
-  ssoUrl: "https://stmarys-idp.hospital.com/sso",
-  x509Certificate: "-----BEGIN CERTIFICATE-----\n[Mock Certificate]\n-----END CERTIFICATE-----",
-  metadataUrl: "https://stmarys-idp.hospital.com/metadata"
+  entityId: 'https://stmarys-idp.hospital.com',
+  ssoUrl: 'https://stmarys-idp.hospital.com/sso',
+  x509Certificate: '-----BEGIN CERTIFICATE-----\n[Mock Certificate]\n-----END CERTIFICATE-----',
+  metadataUrl: 'https://stmarys-idp.hospital.com/metadata'
 };
 ```
 
@@ -335,7 +335,7 @@ const mockSamlProvider = {
 ## Test Execution Log
 
 **Test Date**: ___________
-**Tester**: ___________  
+**Tester**: ___________
 **Environment**: ___________
 **Browser/Device**: ___________
 

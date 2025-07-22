@@ -89,6 +89,10 @@
   "DashboardLayout": {
     "home": "Home",
     "todos": "Todos",
+    "team": "Team",
+    "api_keys": "API Keys",
+    "webhooks": "Webhooks",
+    "security": "Security",
     "members": "Members",
     "billing": "Billing",
     "settings": "Settings"
@@ -96,6 +100,15 @@
   "Dashboard": {
     "meta_title": "SaaS Template Dashboard",
     "meta_description": "A free and open-source landing page template for your SaaS business, built with Next.js, TypeScript, Shadcn UI, and Tailwind CSS."
+  },
+  "team_management": {
+    "meta_title": "Team Management"
+  },
+  "webhook_management": {
+    "meta_title": "Webhook Management"
+  },
+  "security_management": {
+    "meta_title": "Security Settings"
   },
   "DashboardIndex": {
     "title_bar": "Dashboard",

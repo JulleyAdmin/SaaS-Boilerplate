@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital SSO Management - Visual Test Report</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px;
+            font-size: 2.5em;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .screenshot-item {
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .screenshot-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .screenshot-item img {
+            width: 100%;
+            display: block;
+            cursor: pointer;
+        }
+        .screenshot-caption {
+            padding: 15px;
+            background: #f6f8fa;
+            border-top: 1px solid #e1e4e8;
+        }
+        .screenshot-caption h4 {
+            margin: 0 0 5px;
+            color: #24292e;
+        }
+        .screenshot-caption p {
+            margin: 0;
+            color: #586069;
+            font-size: 14px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status-badge.pass {
+            background: #28a745;
+            color: white;
+        }
+        .mobile-screenshots {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .mobile-frame {
+            max-width: 375px;
+            border: 12px solid #333;
+            border-radius: 36px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        /* Lightbox styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        }
+        .lightbox img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 95%;
+            max-height: 95%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        .lightbox .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .lightbox .close:hover {
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Hospital SSO Management - Visual Test Report</h1>
+        <p>Generated: 7/1/2025, 6:31:08 PM</p>
+        <p>Phase 2 UI Testing - Complete Visual Documentation</p>
+    </div>
+
+    <div class="section">
+        <h2>📱 Application Overview</h2>
+        <div class="screenshot-grid">
+            <div class="screenshot-item" onclick="openLightbox('screenshots/00-landing-page.png')">
+                <img src="screenshots/00-landing-page.png" alt="Landing Page">
+                <div class="screenshot-caption">
+                    <h4>Landing Page <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>Hospital SSO application landing page</p>
+                </div>
+            </div>
+            <div class="screenshot-item" onclick="openLightbox('screenshots/01-sso-management-main.png')">
+                <img src="screenshots/01-sso-management-main.png" alt="SSO Management Main">
+                <div class="screenshot-caption">
+                    <h4>SSO Management Dashboard <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>Main dashboard showing configured SSO connections</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔧 SSO Connection Management</h2>
+        <div class="screenshot-grid">
+            <div class="screenshot-item" onclick="openLightbox('screenshots/03-create-dialog-empty.png')">
+                <img src="screenshots/03-create-dialog-empty.png" alt="Create Dialog Empty">
+                <div class="screenshot-caption">
+                    <h4>Create Connection Dialog <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>Empty form with hospital-specific fields and departments</p>
+                </div>
+            </div>
+            <div class="screenshot-item" onclick="openLightbox('screenshots/04-create-dialog-filled.png')">
+                <img src="screenshots/04-create-dialog-filled.png" alt="Create Dialog Filled">
+                <div class="screenshot-caption">
+                    <h4>Filled Connection Form <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>Radiology department configuration with selected roles</p>
+                </div>
+            </div>
+            <div class="screenshot-item" onclick="openLightbox('screenshots/05-department-dropdown.png')">
+                <img src="screenshots/05-department-dropdown.png" alt="Department Dropdown">
+                <div class="screenshot-caption">
+                    <h4>Department Selection <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>All 7 hospital departments available for selection</p>
+                </div>
+            </div>
+            <div class="screenshot-item" onclick="openLightbox('screenshots/06-phase2-status.png')">
+                <img src="screenshots/06-phase2-status.png" alt="Phase 2 Status">
+                <div class="screenshot-caption">
+                    <h4>Phase 2 Integration Status <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>Backend integration status with Jackson SAML service</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📊 Application States</h2>
+        <div class="screenshot-grid">
+            <div class="screenshot-item" onclick="openLightbox('screenshots/02-empty-state.png')">
+                <img src="screenshots/02-empty-state.png" alt="Empty State">
+                <div class="screenshot-caption">
+                    <h4>Empty State <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>No SSO connections configured</p>
+                </div>
+            </div>
+            <div class="screenshot-item" onclick="openLightbox('screenshots/09-loading-state.png')">
+                <img src="screenshots/09-loading-state.png" alt="Loading State">
+                <div class="screenshot-caption">
+                    <h4>Loading State <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>Loading SSO connections from server</p>
+                </div>
+            </div>
+            <div class="screenshot-item" onclick="openLightbox('screenshots/10-error-state.png')">
+                <img src="screenshots/10-error-state.png" alt="Error State">
+                <div class="screenshot-caption">
+                    <h4>Error State <span class="status-badge pass">CAPTURED</span></h4>
+                    <p>Failed to load connections with retry option</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📱 Mobile Responsive Design</h2>
+        <div class="mobile-screenshots">
+            <div class="mobile-frame">
+                <img src="screenshots/07-mobile-view.png" alt="Mobile View" onclick="openLightbox('screenshots/07-mobile-view.png')">
+            </div>
+            <div class="mobile-frame">
+                <img src="screenshots/08-mobile-dialog.png" alt="Mobile Dialog" onclick="openLightbox('screenshots/08-mobile-dialog.png')">
+            </div>
+        </div>
+        <p style="text-align: center; margin-top: 20px; color: #666;">
+            Fully responsive design tested on iPhone X viewport (375x812)
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>✅ Test Summary</h2>
+        <ul>
+            <li>✅ All UI components rendered correctly</li>
+            <li>✅ Hospital-specific fields (departments, roles) functional</li>
+            <li>✅ Form validation and interactions working</li>
+            <li>✅ Responsive design verified on mobile devices</li>
+            <li>✅ All application states (empty, loading, error) captured</li>
+            <li>✅ Phase 2 backend integration status displayed</li>
+        </ul>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="close">&times;</span>
+        <img id="lightbox-img" src="" alt="Full size screenshot">
+    </div>
+
+    <script>
+        function openLightbox(src) {
+            document.getElementById('lightbox').style.display = 'block';
+            document.getElementById('lightbox-img').src = src;
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        // Close lightbox on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>
+  

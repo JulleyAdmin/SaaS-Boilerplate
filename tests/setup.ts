@@ -3,6 +3,8 @@
  * Sets up testing environment for Phase 1 validation
  */
 
+import '@testing-library/jest-dom';
+
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
@@ -68,25 +70,30 @@ beforeAll(() => {
   // Set test environment variables
   process.env.NODE_ENV = 'test';
   process.env.DATABASE_URL = 'postgresql://localhost:5432/hospitalos_test';
-  process.env.NEXTAUTH_URL = 'http://localhost:3000';
+  process.env.NEXTAUTH_URL = 'http://localhost:3003';
   process.env.SSO_ISSUER = 'https://test.hospitalos.app';
+  process.env.SKIP_ENV_VALIDATION = 'true';
+
+  // Jackson SAML Configuration
+  process.env.JACKSON_CLIENT_SECRET_VERIFIER = 'test_secret_verifier_12345';
+  process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3003';
 
   // Required Clerk environment variables
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_123';
-  process.env.CLERK_SECRET_KEY = 'sk_test_123';
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_Y2xlcmsuaG9zcGl0YWxvcy50ZXN0JA';
+  process.env.CLERK_SECRET_KEY = 'sk_test_example_secret_key';
   process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL = '/sign-in';
   process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL = '/sign-up';
   process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = '/dashboard';
   process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL = '/dashboard';
 
   // Required Stripe environment variables
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = 'pk_test_stripe_123';
-  process.env.STRIPE_SECRET_KEY = 'sk_test_stripe_123';
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = 'pk_test_51234567890abcdef';
+  process.env.STRIPE_SECRET_KEY = 'sk_test_51234567890abcdef';
   process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_123';
 
   // Other required variables
-  process.env.NEXTAUTH_SECRET = 'test_secret_123';
-  process.env.NEXT_PUBLIC_SITE_URL = 'http://localhost:3000';
+  process.env.NEXTAUTH_SECRET = 'test_nextauth_secret_key_12345';
+  process.env.NEXT_PUBLIC_SITE_URL = 'http://localhost:3003';
 });
 
 // Reset handlers after each test

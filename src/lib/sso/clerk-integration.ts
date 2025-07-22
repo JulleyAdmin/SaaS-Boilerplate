@@ -4,8 +4,9 @@ import type { SSOProfile, SSOUser } from './types';
 
 export async function createOrUpdateClerkUser(ssoUser: SSOUser): Promise<string> {
   try {
+    const clerk = await clerkClient();
     // Try to find existing user by email
-    const existingUsers = await clerkClient.users.getUserList({
+    const existingUsers = await clerk.users.getUserList({
       emailAddress: [ssoUser.email],
     });
 
@@ -13,7 +14,7 @@ export async function createOrUpdateClerkUser(ssoUser: SSOUser): Promise<string>
       const clerkUser = existingUsers.data[0];
 
       // Update user metadata with SSO information
-      await clerkClient.users.updateUserMetadata(clerkUser.id, {
+      await clerk.users.updateUserMetadata(clerkUser.id, {
         publicMetadata: {
           ssoProvider: 'saml',
           ssoUserId: ssoUser.id,
@@ -27,7 +28,7 @@ export async function createOrUpdateClerkUser(ssoUser: SSOUser): Promise<string>
       return clerkUser.id;
     } else {
       // Create new user
-      const clerkUser = await clerkClient.users.createUser({
+      const clerkUser = await clerk.users.createUser({
         emailAddress: [ssoUser.email],
         firstName: ssoUser.firstName || '',
         lastName: ssoUser.lastName || '',
@@ -54,7 +55,8 @@ export async function createOrUpdateClerkUser(ssoUser: SSOUser): Promise<string>
 
 export async function createClerkSession(userId: string, organizationId?: string) {
   try {
-    const session = await clerkClient.sessions.createSession({
+    const clerk = await clerkClient();
+    const session = await clerk.sessions.createSession({
       userId,
       actor: organizationId ? { sub: organizationId } : undefined,
     });
@@ -73,14 +75,15 @@ export async function addUserToOrganization(
 ) {
   try {
     // Check if user is already a member
-    const memberships = await clerkClient.organizations.getOrganizationMembershipList({
+    const clerk = await clerkClient();
+    const memberships = await clerk.organizations.getOrganizationMembershipList({
       organizationId,
       userId,
     });
 
     if (memberships.data.length === 0) {
       // Add user to organization
-      await clerkClient.organizations.createOrganizationMembership({
+      await clerk.organizations.createOrganizationMembership({
         organizationId,
         userId,
         role,

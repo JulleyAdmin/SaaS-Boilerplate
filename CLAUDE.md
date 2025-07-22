@@ -21,19 +21,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run test -- src/components/Button.test.tsx` - Run specific test file
 - `npm run test:e2e` - Run Playwright E2E tests (run `npx playwright install` first)
 - `npm run test:e2e -- --headed` - Run E2E tests with browser UI
+- `npm run test-storybook:ci` - Run Storybook visual tests in CI
 
-### Phase 1 - COMPLETED ✅
-- **Status**: 100% Complete - SSO Management UI fully functional
-- **UI Access**: http://localhost:3002/dashboard/sso-management
-- **Features**: Create/Delete SSO connections, Form validation, Hospital context
+### Hospital-Specific Testing Scripts
 - `node scripts/validate-phase1.js` - Check Phase 1 implementation status
-- `npm run test -- tests/database/` - Run database migration tests
-- `npm run test -- tests/api/` - Run SSO API tests
-- `npm run test -- tests/components/` - Run SSO UI component tests
-
-### Phase 2 - IN PROGRESS 🚧
-- **Goal**: Backend Integration & Advanced Features
-- **Focus**: Jackson SSO service integration, Edit functionality, Department management
+- `./scripts/run-comprehensive-tests.sh` - Run all test suites
+- `./scripts/setup-test-env.sh` - Setup test environment
+- `node scripts/test-sso-ui.js` - Test SSO UI functionality
 
 ### Code Quality
 - `npm run lint` - Check code with ESLint
@@ -43,6 +37,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Storybook
 - `npm run storybook` - Start Storybook dev server (port 6006)
+- `npm run storybook:build` - Build static Storybook
+- `npm run serve-storybook` - Serve built Storybook
 - `npm run build-stats` - Analyze bundle sizes
 
 ## Architecture Overview
@@ -51,7 +47,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Framework**: Next.js 14 with App Router, React 18, TypeScript
 - **Styling**: Tailwind CSS with Shadcn UI components
 - **Database**: Drizzle ORM (PostgreSQL/SQLite/MySQL)
-- **Auth**: Clerk (passwordless, MFA, social auth, multi-tenancy)
+- **Auth**: Clerk (passwordless, MFA, social auth, multi-tenancy) + Jackson SAML SSO
 - **Payments**: Stripe subscriptions
 - **I18n**: next-intl with Crowdin
 - **Testing**: Vitest (unit), Playwright (E2E)
@@ -61,12 +57,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 src/
 ├── app/                    # Next.js App Router pages with i18n
-│   └── [locale]/          # Internationalized routes
+│   ├── [locale]/          # Internationalized routes
+│   ├── api/               # API endpoints
+│   └── dashboard/         # Dashboard routes
 ├── components/            # Reusable UI components
 ├── features/             # Feature-specific components
 │   ├── auth/            # Authentication flows
 │   ├── billing/         # Stripe subscription management
-│   ├── dashboard/       # User/org dashboards
+│   ├── sso/             # SSO management components
 │   └── landing/         # Landing page components
 ├── templates/           # Page templates
 ├── models/              # Database models
@@ -79,154 +77,80 @@ src/
     └── AppConfig.ts   # App configuration (pricing, locales)
 ```
 
-### Key Patterns
+### Hospital-Specific Features
 
-#### Database Schema Modifications
-When modifying database schema:
+#### SSO Management
+- **UI Access**: http://localhost:3002/dashboard/sso-management
+- **Features**: Create/Delete SAML connections, Department-based access, Role mapping
+- **Roles**: Doctor, Nurse, Technician, Administrator
+- **Department Management**: Organization-based departments
+
+#### Phase Status
+- **Phase 1 (82% Complete)**: SSO Foundation & UI
+- **Phase 2 (In Progress)**: Backend Integration & Advanced Features
+
+## Key Patterns
+
+### Database Schema Modifications
 1. Edit `/src/models/Schema.ts`
 2. Run `npm run db:generate` to create migration
-3. Run `npm run db:migrate` to apply changes
+3. Migrations auto-apply on next DB interaction
 
-#### Environment Variables
+### Environment Variables
 - Development: `.env.local` (gitignored)
-- Production: Set in deployment platform
 - Type-safe access via `src/libs/Env.ts`
+- Required: DATABASE_URL, CLERK_SECRET_KEY, NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+- Hospital: HOSPITAL_NAME, HOSPITAL_TYPE, HIPAA_COMPLIANCE_MODE
+- SSO: JACKSON_API_KEY, JACKSON_URL
 
-#### Multi-tenancy
-- Users belong to organizations via `organizationUsers` table
+### Multi-tenancy
+- Organizations as primary tenant model
+- Users belong to organizations via `teamMember` table
 - Check organization access with Clerk's `auth().orgId`
 - Organization-scoped queries filter by `organizationId`
 
-#### Internationalization
-- Locales defined in `src/utils/AppConfig.ts`
-- Translations in `src/locales/[locale].json`
-- Use `useTranslations()` hook from next-intl
-
-#### Form Handling
+### Form Handling
 - Use React Hook Form with Zod validation
-- See examples in `src/features/auth/` and `src/features/billing/`
+- Examples in `src/features/auth/` and `src/features/sso/`
 
-#### API Routes
-- Located in `src/app/api/`
-- Stripe webhook: `/api/stripe/webhook`
-- Use Clerk's `auth()` for authentication
-
-#### Testing Strategy
-- Unit tests: Component logic and utilities
-- E2E tests: Critical user flows (auth, billing)
-- Visual regression: Percy integration in CI
-
-### Security Considerations
-- All database queries are parameterized (Drizzle ORM)
-- Environment variables validated at runtime
-- Clerk handles auth security (JWT, session management)
-- Stripe webhook signature verification implemented
-- CSRF protection via Next.js built-in features
-
-### Performance Optimizations
-- Static pages pre-rendered at build time
-- Dynamic imports for code splitting
-- Image optimization with next/image
-- Database connection pooling
-- Edge runtime compatible where possible
+### Testing Strategy
+- Unit tests: Component logic with Vitest
+- Integration tests: API endpoints, SSO flows
+- E2E tests: Critical user flows (auth, hospital workflows)
+- Coverage threshold: 80% for all metrics
 
 ## Best Practices
 
 ### Code Style
-- Use ES modules (import/export) syntax, not CommonJS (require)
-- Destructure imports when possible (eg. import { foo } from 'bar')
-- Follow existing component patterns in `src/features/` and `src/components/`
-- Use TypeScript strict mode - all types must be properly defined
-- Never add comments unless explicitly requested
+- Use ES modules (import/export) syntax
+- Destructure imports when possible
+- Follow existing component patterns
+- Use TypeScript strict mode
 
 ### Workflow Guidelines
-- Run typecheck and lint commands after making code changes
-- Prefer running single tests over full test suite for performance
-- Use React Hook Form with Zod validation for forms
-- Always check organization access with Clerk's `auth().orgId` for multi-tenant features
-- Test critical user flows (auth, billing) with E2E tests
-
-### Development Process
-- Research and plan before coding (use "think" for extended thinking)
-- Write tests first when functionality is easily verifiable
-- Iterate with visual feedback using screenshots for UI work
-- Use git worktrees for parallel development tasks
-- Commit frequently with descriptive messages
+- Run typecheck and lint after code changes
+- Test critical flows with E2E tests
+- Use React Hook Form with Zod for forms
+- Check organization access for multi-tenant features
 
 ### Security & Performance
-- All database queries must use Drizzle ORM parameterization
-- Validate environment variables at runtime via `src/libs/Env.ts`
-- Use dynamic imports for code splitting
-- Optimize images with next/image component
-- Never commit secrets or keys to repository
+- Parameterized queries via Drizzle ORM
+- Runtime env validation via `src/libs/Env.ts`
+- Dynamic imports for code splitting
+- Image optimization with next/image
 
-## Template Integration Project
+## Template Integration
 
-### Available Slash Commands
-- `/project:analyze-schemas [files]` - Compare and analyze database schemas
-- `/project:setup-sso [type]` - Implement SSO/SAML integration
-- `/project:setup-api-keys [template]` - Build API key management system
-- `/project:setup-webhooks [integration]` - Create webhook infrastructure
-- `/project:enhance-team-management [focus]` - Advanced team features
-- `/project:setup-audit-logging [compliance]` - Audit system with compliance
-- `/project:adapt-for-hospitals [requirements]` - Hospital-specific adaptations
-
-### Template Integration Guidelines
-- **Copy-Adapt Pattern**: Copy proven implementations, then adapt to our patterns
-- **Incremental Phases**: Complete each phase fully before proceeding
-- **Security First**: Implement security measures from the start
-- **Hospital Focus**: Always consider healthcare compliance (HIPAA, etc.)
-- **Test Each Step**: Verify functionality before moving forward
+### Available Commands
+- `/project:analyze-schemas` - Compare database schemas
+- `/project:setup-sso` - Implement SSO/SAML
+- `/project:setup-api-keys` - Build API key management
+- `/project:setup-webhooks` - Create webhook infrastructure
+- `/project:enhance-team-management` - Advanced team features
+- `/project:setup-audit-logging` - Audit system with compliance
+- `/project:adapt-for-hospitals` - Hospital-specific adaptations
 
 ### Reference Templates
-- **BoxyHQ**: `/template-references/boxyhq/` - SSO, API keys, webhooks, audit
-- **Nextacular**: `/template-references/nextacular/` - Team management, workspaces
-- **Supabase**: `/template-references/supabase-template/` - Auth patterns, UI components
-
-### Integration Documentation
-- **Execution Guide**: `docs/CLAUDE_CODE_TEMPLATE_INTEGRATION.md`
-- **Workflow Guide**: `docs/DEVELOPER_WORKFLOW_GUIDE.md`
-- **Original Plan**: `docs/template-integration-detailed-plan.md`
-
-## Phase 1 Status: 82% Complete ✅
-
-### ✅ Completed
-- Database schema with hospital roles and SSO support
-- Comprehensive test suite (600+ test cases)
-- SSO integration infrastructure (Jackson SAML/OIDC)
-- API endpoints for authentication and management
-- UI components for SSO connection management
-- Hospital-specific workflow testing scenarios
-- Multi-tenant architecture with security
-
-### 🔧 Remaining (18%)
-- Environment configuration (.env.local setup)
-- TypeScript compilation fixes
-- ESLint formatting cleanup
-- Live integration testing
-
-### 📋 Quick Phase 1 Validation
-```bash
-# Check implementation status
-node scripts/validate-phase1.js
-
-# Set up environment
-cp .env.example .env.local
-# Edit with your configuration
-
-# Run targeted tests
-npm run test -- tests/database/
-npm run test -- tests/api/
-npm run test -- tests/components/
-```
-
-### 📖 Phase 1 Documentation
-- **Summary**: `docs/PHASE_1_SUMMARY.md`
-- **Execution Guide**: `docs/PHASE_1_EXECUTION_GUIDE.md`
-- **Test Plan**: `docs/PHASE_1_TEST_PLAN.md`
-
-# important-instruction-reminders
-Do what has been asked; nothing more, nothing less.
-NEVER create files unless they're absolutely necessary for achieving your goal.
-ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+- **BoxyHQ**: `/template-references/boxyhq/` - SSO, API keys, webhooks
+- **Nextacular**: `/template-references/nextacular/` - Team management
+- **Supabase**: `/template-references/supabase-template/` - Auth patterns

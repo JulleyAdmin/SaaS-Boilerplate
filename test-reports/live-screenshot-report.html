@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Screenshot Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; background: #3b82f6; color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+        .card { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card img { width: 100%; display: block; cursor: pointer; }
+        .card-title { padding: 10px; background: #f9fafb; font-weight: 600; }
+        .mobile { max-width: 375px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Live Screenshot Report</h1>
+        <p>Captured: 7/1/2025, 6:48:28 PM</p>
+    </div>
+    
+    <div class="grid">
+        
+        <div class="card ">
+            <img src="screenshots/live-01-current-page.png" onclick="window.open(this.src, '_blank')" alt="Screenshot 1">
+            <div class="card-title">01 current page</div>
+        </div>
+        
+        <div class="card ">
+            <img src="screenshots/live-04-main-page.png" onclick="window.open(this.src, '_blank')" alt="Screenshot 2">
+            <div class="card-title">04 main page</div>
+        </div>
+        
+        <div class="card mobile">
+            <img src="screenshots/live-05-mobile-view.png" onclick="window.open(this.src, '_blank')" alt="Screenshot 3">
+            <div class="card-title">05 mobile view</div>
+        </div>
+        
+    </div>
+    
+    <p style="text-align: center; margin-top: 30px;">
+        Click any screenshot to view full size
+    </p>
+</body>
+</html>
+  

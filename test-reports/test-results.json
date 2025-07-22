@@ -1,0 +1,26 @@
+{
+  "ui": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "duration": 0
+  },
+  "unit": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "duration": 0
+  },
+  "integration": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "duration": 0
+  },
+  "timestamp": "2025-07-01T12:51:13.514Z",
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  }
+}

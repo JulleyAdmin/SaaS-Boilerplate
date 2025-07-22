@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Working App Screenshots</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f8fafc; }
+        .header { text-align: center; background: #10b981; color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 2.5em; }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-4px); }
+        .card img { width: 100%; display: block; cursor: pointer; }
+        .card-title { padding: 15px; background: #f8fafc; font-weight: 600; border-top: 1px solid #e5e7eb; }
+        .mobile { max-width: 375px; margin: 0 auto; }
+        .status { text-align: center; margin-top: 30px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status.success { border-left: 4px solid #10b981; }
+    </style>
+    <script>
+        function openImage(src) {
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(`
+                <html>
+                    <head><title>Screenshot</title></head>
+                    <body style="margin:0; background:#000; display:flex; justify-content:center; align-items:center; min-height:100vh;">
+                        <img src="${src}" style="max-width:100%; max-height:100%; object-fit:contain;">
+                    </body>
+                </html>
+            `);
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Hospital SSO Application Screenshots</h1>
+        <p>Working application captured from http://localhost:3001</p>
+        <p>Generated: 7/1/2025, 6:59:15 PM</p>
+    </div>
+    
+    <div class="grid">
+        
+        <div class="card ">
+            <img src="screenshots/final-01-homepage.png" onclick="openImage(this.src)" alt="Screenshot 1">
+            <div class="card-title">01 HOMEPAGE</div>
+        </div>
+        
+        <div class="card ">
+            <img src="screenshots/final-02-current.png" onclick="openImage(this.src)" alt="Screenshot 2">
+            <div class="card-title">02 CURRENT</div>
+        </div>
+        
+        <div class="card mobile">
+            <img src="screenshots/final-03-mobile.png" onclick="openImage(this.src)" alt="Screenshot 3">
+            <div class="card-title">03 MOBILE</div>
+        </div>
+        
+        <div class="card ">
+            <img src="screenshots/final-04-desktop.png" onclick="openImage(this.src)" alt="Screenshot 4">
+            <div class="card-title">04 DESKTOP</div>
+        </div>
+        
+    </div>
+    
+    <div class="status success">
+        <h2>✅ Screenshot Capture Complete</h2>
+        <p>Successfully captured 4 screenshots from the running Hospital SSO application.</p>
+        <p><strong>Application Status:</strong> Running on http://localhost:3001</p>
+        <p><strong>Features Tested:</strong> Homepage, Navigation, Mobile Responsiveness</p>
+    </div>
+</body>
+</html>
+  
