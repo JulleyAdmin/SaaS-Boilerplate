@@ -4,9 +4,9 @@ import { BILLING_INTERVAL, type PricingPlan } from '@/types/Subscription';
 
 const localePrefix: LocalePrefix = 'as-needed';
 
-// FIXME: Update this configuration file based on your project information
+// Hospital Management System Configuration
 export const AppConfig = {
-  name: 'SaaS Template',
+  name: 'HospitalOS',
   locales: [
     {
       id: 'en',

@@ -1,4 +1,4 @@
-export interface PlanFeatures {
+export type PlanFeatures = {
   departments: number | 'unlimited';
   users: number | 'unlimited';
   storage: number | 'unlimited'; // in GB
@@ -14,9 +14,9 @@ export interface PlanFeatures {
   customBranding?: boolean;
   advancedReporting?: boolean;
   apiRateLimit?: number; // requests per hour
-}
+};
 
-export interface HospitalPlan {
+export type HospitalPlan = {
   name: string;
   stripePriceId?: string;
   price: number | 'custom';
@@ -25,7 +25,7 @@ export interface HospitalPlan {
   features: PlanFeatures;
   description?: string;
   popular?: boolean;
-}
+};
 
 export const HOSPITAL_PLANS: Record<string, HospitalPlan> = {
   CLINIC: {
@@ -46,7 +46,7 @@ export const HOSPITAL_PLANS: Record<string, HospitalPlan> = {
       support: 'email',
       mfa: true,
       apiRateLimit: 1000,
-    }
+    },
   },
   HOSPITAL: {
     name: 'Hospital',
@@ -70,7 +70,7 @@ export const HOSPITAL_PLANS: Record<string, HospitalPlan> = {
       customBranding: true,
       advancedReporting: true,
       apiRateLimit: 5000,
-    }
+    },
   },
   ENTERPRISE: {
     name: 'Enterprise',
@@ -92,8 +92,8 @@ export const HOSPITAL_PLANS: Record<string, HospitalPlan> = {
       mfa: true,
       customBranding: true,
       advancedReporting: true,
-    }
-  }
+    },
+  },
 };
 
 // Metered billing configuration
@@ -107,7 +107,7 @@ export const USAGE_METRICS = {
       CLINIC: 10000,
       HOSPITAL: 50000,
       ENTERPRISE: 'unlimited',
-    }
+    },
   },
   STORAGE: {
     name: 'Storage',
@@ -118,7 +118,7 @@ export const USAGE_METRICS = {
       CLINIC: 25,
       HOSPITAL: 250,
       ENTERPRISE: 'unlimited',
-    }
+    },
   },
   DATA_TRANSFER: {
     name: 'Data Transfer',
@@ -129,14 +129,14 @@ export const USAGE_METRICS = {
       CLINIC: 100,
       HOSPITAL: 1000,
       ENTERPRISE: 'unlimited',
-    }
-  }
+    },
+  },
 };
 
 // Helper functions
 export function getPlanByPriceId(priceId: string): HospitalPlan | undefined {
   return Object.values(HOSPITAL_PLANS).find(
-    plan => plan.stripePriceId === priceId
+    plan => plan.stripePriceId === priceId,
   );
 }
 
@@ -146,19 +146,21 @@ export function getPlanLimits(planName: string): PlanFeatures {
 }
 
 export function isFeatureAvailable(
-  planName: string, 
-  feature: keyof PlanFeatures
+  planName: string,
+  feature: keyof PlanFeatures,
 ): boolean {
   const plan = HOSPITAL_PLANS[planName];
-  if (!plan) return false;
-  
+  if (!plan) {
+    return false;
+  }
+
   const value = plan.features[feature];
   return value !== undefined && value !== false && value !== 0;
 }
 
 export function getUsageLimit(
   planName: string,
-  metric: keyof typeof USAGE_METRICS
+  metric: keyof typeof USAGE_METRICS,
 ): number | 'unlimited' {
   const quota = USAGE_METRICS[metric].freeQuota[planName as keyof typeof USAGE_METRICS[typeof metric]['freeQuota']];
   return (quota as number | 'unlimited') || 0;
@@ -200,5 +202,5 @@ export const COMPLIANCE_FEATURES = {
     soc2Compliant: true,
     customCompliance: true,
     dedicatedInfrastructure: true,
-  }
+  },
 };

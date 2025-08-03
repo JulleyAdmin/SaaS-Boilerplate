@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import animations */
+@import './animations.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -33,6 +36,30 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* Healthcare color palette */
+    --healthcare-primary: 207 89% 54%;
+    --healthcare-primary-light: 207 89% 64%;
+    --healthcare-primary-dark: 207 89% 44%;
+
+    /* Status colors */
+    --status-active: 142 71% 45%;
+    --status-pending: 38 92% 50%;
+    --status-critical: 0 84% 60%;
+    --status-completed: 173 58% 39%;
+
+    /* Department colors */
+    --dept-emergency: 0 84% 60%;
+    --dept-cardiology: 348 83% 47%;
+    --dept-neurology: 250 87% 65%;
+    --dept-pediatrics: 199 89% 48%;
+    --dept-orthopedics: 25 95% 53%;
+
+    /* Alert levels */
+    --alert-low: 142 71% 45%;
+    --alert-medium: 38 92% 50%;
+    --alert-high: 25 95% 53%;
+    --alert-critical: 0 84% 60%;
   }
 
   .dark {
@@ -63,11 +90,290 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    /* Adjusted healthcare colors for dark mode */
+    --healthcare-primary: 207 89% 64%;
+    --healthcare-primary-light: 207 89% 74%;
+    --healthcare-primary-dark: 207 89% 54%;
+
+    --status-active: 142 71% 55%;
+    --status-pending: 38 92% 60%;
+    --status-critical: 0 84% 70%;
+    --status-completed: 173 58% 49%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+  }
+}
+
+/* Healthcare Theme Extensions */
+@layer utilities {
+  /* High Contrast Mode */
+  .high-contrast {
+    --primary: 222.2 47.4% 5%;
+    --secondary: 210 40% 90%;
+    --muted: 210 40% 85%;
+    --accent: 210 40% 85%;
+  }
+
+  .high-contrast .dark {
+    --primary: 210 40% 100%;
+    --secondary: 217.2 32.6% 25%;
+    --muted: 217.2 32.6% 30%;
+    --accent: 217.2 32.6% 30%;
+  }
+
+  /* Large Text Mode */
+  .large-text {
+    font-size: 1.125rem;
+  }
+
+  .large-text h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  .large-text h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  .large-text h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  .large-text [class*='text-sm'] {
+    @apply text-base;
+  }
+
+  .large-text [class*='text-xs'] {
+    @apply text-sm;
+  }
+
+  /* Reduced Motion */
+  .reduce-motion * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  /* Healthcare-specific utility classes */
+  .status-indicator {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .priority-border-critical {
+    @apply border-2 border-red-500 shadow-red-100;
+  }
+
+  .priority-border-high {
+    @apply border-2 border-orange-500 shadow-orange-100;
+  }
+
+  .priority-border-medium {
+    @apply border-2 border-yellow-500 shadow-yellow-100;
+  }
+
+  .priority-border-low {
+    @apply border-2 border-green-500 shadow-green-100;
+  }
+
+  /* Healthcare-specific gradients */
+  .healthcare-gradient {
+    background: linear-gradient(135deg, hsl(var(--healthcare-primary)) 0%, hsl(var(--healthcare-primary-dark)) 100%);
+  }
+
+  .emergency-gradient {
+    background: linear-gradient(135deg, hsl(var(--dept-emergency)) 0%, hsl(var(--dept-emergency) / 0.8) 100%);
+  }
+
+  /* Status indicators */
+  .status-active {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100;
+  }
+
+  .status-pending {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100;
+  }
+
+  .status-critical {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100;
+  }
+
+  .status-completed {
+    @apply bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-100;
+  }
+
+  /* Priority badges */
+  .priority-low {
+    @apply border-green-500 bg-green-50 text-green-700 dark:border-green-400 dark:bg-green-950 dark:text-green-300;
+  }
+
+  .priority-medium {
+    @apply border-amber-500 bg-amber-50 text-amber-700 dark:border-amber-400 dark:bg-amber-950 dark:text-amber-300;
+  }
+
+  .priority-high {
+    @apply border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-400 dark:bg-orange-950 dark:text-orange-300;
+  }
+
+  .priority-critical {
+    @apply border-red-500 bg-red-50 text-red-700 dark:border-red-400 dark:bg-red-950 dark:text-red-300;
+  }
+
+  /* Department badges */
+  .dept-emergency {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100;
+  }
+
+  .dept-cardiology {
+    @apply bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100;
+  }
+
+  .dept-neurology {
+    @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100;
+  }
+
+  .dept-pediatrics {
+    @apply bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-100;
+  }
+
+  .dept-orthopedics {
+    @apply bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100;
+  }
+
+  /* Healthcare card styles */
+  .healthcare-card {
+    @apply rounded-lg border bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md;
+  }
+
+  .healthcare-card-hover {
+    @apply healthcare-card hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  /* Medical record styles */
+  .medical-record {
+    @apply rounded-md border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950;
+  }
+
+  .prescription-card {
+    @apply rounded-md border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950;
+  }
+
+  .lab-result {
+    @apply rounded-md border border-purple-200 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950;
+  }
+
+  /* Animation classes for medical UI */
+  .pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .heartbeat {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0% {
+      transform: scale(1);
+    }
+    14% {
+      transform: scale(1.1);
+    }
+    28% {
+      transform: scale(1);
+    }
+    42% {
+      transform: scale(1.1);
+    }
+    70% {
+      transform: scale(1);
+    }
+  }
+
+  /* Loading states for medical data */
+  .medical-skeleton {
+    @apply animate-pulse rounded bg-gray-200 dark:bg-gray-800;
+  }
+
+  /* Special medical alerts */
+  .medical-alert {
+    @apply flex items-center gap-2 rounded-md border-2 border-red-500 bg-red-50 p-3 text-red-900 dark:border-red-400 dark:bg-red-950 dark:text-red-100;
+  }
+
+  .medical-warning {
+    @apply flex items-center gap-2 rounded-md border-2 border-amber-500 bg-amber-50 p-3 text-amber-900 dark:border-amber-400 dark:bg-amber-950 dark:text-amber-100;
+  }
+
+  .medical-info {
+    @apply flex items-center gap-2 rounded-md border-2 border-blue-500 bg-blue-50 p-3 text-blue-900 dark:border-blue-400 dark:bg-blue-950 dark:text-blue-100;
+  }
+
+  .medical-success {
+    @apply flex items-center gap-2 rounded-md border-2 border-green-500 bg-green-50 p-3 text-green-900 dark:border-green-400 dark:bg-green-950 dark:text-green-100;
+  }
+
+  /* Accessibility enhancements */
+  .high-contrast .healthcare-card {
+    @apply border-2 border-black dark:border-white;
+  }
+
+  .high-contrast .status-active {
+    @apply bg-green-900 text-white;
+  }
+
+  .high-contrast .status-pending {
+    @apply bg-amber-900 text-white;
+  }
+
+  .high-contrast .status-critical {
+    @apply bg-red-900 text-white;
+  }
+
+  /* Modern animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(10deg);
+    }
+  }
+
+  @keyframes float-delayed {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-15px) rotate(-10deg);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float-delayed 8s ease-in-out infinite;
+    animation-delay: 1s;
   }
 }
