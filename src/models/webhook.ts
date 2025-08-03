@@ -1,33 +1,12 @@
-import { eq, and, desc, gte, lte, inArray } from 'drizzle-orm';
-import { randomBytes, createHmac } from 'crypto';
+import { createHmac, randomBytes } from 'node:crypto';
+
+import { and, desc, eq, lte } from 'drizzle-orm';
 
 import { db } from '@/libs/DB';
-import { webhookEndpoint, webhookDelivery, webhookEvent } from '@/models/Schema';
+import { webhookDelivery, webhookEndpoint, webhookEvent } from '@/models/Schema';
 
-export type WebhookEndpoint = typeof webhookEndpoint.$inferSelect;
-export type WebhookDelivery = typeof webhookDelivery.$inferSelect;
-export type WebhookEvent = typeof webhookEvent.$inferSelect;
-
-export type WebhookEventType = 
-  | 'member.created'
-  | 'member.removed'
-  | 'member.updated'
-  | 'invitation.created'
-  | 'invitation.accepted'
-  | 'invitation.removed'
-  | 'apikey.created'
-  | 'apikey.deleted'
-  | 'team.created'
-  | 'team.updated'
-  | 'user.updated'
-  | 'organization.updated'
-  | 'sso.connection.created'
-  | 'sso.connection.updated'
-  | 'sso.connection.deleted'
-  | 'audit.log.created'
-  | 'security.event.created';
-
-export type WebhookStatus = 'active' | 'inactive' | 'failed' | 'paused';
+// Re-export types from the types file for backward compatibility with server-side code
+export type { WebhookDelivery, WebhookEndpoint, WebhookEvent, WebhookEventType, WebhookStatus } from '@/types/webhook';
 
 // Generate a secure webhook secret
 export const generateWebhookSecret = (): string => {
@@ -43,7 +22,7 @@ export const createWebhookSignature = (payload: string, secret: string): string 
 export const verifyWebhookSignature = (
   payload: string,
   signature: string,
-  secret: string
+  secret: string,
 ): boolean => {
   const expectedSignature = createWebhookSignature(payload, secret);
   return signature === expectedSignature;
@@ -84,7 +63,7 @@ export const createWebhookEndpoint = async (params: {
 
 // Get webhook endpoints for an organization
 export const getWebhookEndpoints = async (
-  organizationId: string
+  organizationId: string,
 ): Promise<WebhookEndpoint[]> => {
   return db
     .select()
@@ -96,7 +75,7 @@ export const getWebhookEndpoints = async (
 // Get webhook endpoint by ID
 export const getWebhookEndpoint = async (
   organizationId: string,
-  endpointId: string
+  endpointId: string,
 ): Promise<WebhookEndpoint | null> => {
   const [endpoint] = await db
     .select()
@@ -104,8 +83,8 @@ export const getWebhookEndpoint = async (
     .where(
       and(
         eq(webhookEndpoint.id, endpointId),
-        eq(webhookEndpoint.organizationId, organizationId)
-      )
+        eq(webhookEndpoint.organizationId, organizationId),
+      ),
     )
     .limit(1);
 
@@ -125,7 +104,7 @@ export const updateWebhookEndpoint = async (
     headers: Record<string, string>;
     timeout: number;
     retryCount: number;
-  }>
+  }>,
 ): Promise<WebhookEndpoint | null> => {
   const [updated] = await db
     .update(webhookEndpoint)
@@ -133,8 +112,8 @@ export const updateWebhookEndpoint = async (
     .where(
       and(
         eq(webhookEndpoint.id, endpointId),
-        eq(webhookEndpoint.organizationId, organizationId)
-      )
+        eq(webhookEndpoint.organizationId, organizationId),
+      ),
     )
     .returning();
 
@@ -144,15 +123,15 @@ export const updateWebhookEndpoint = async (
 // Delete webhook endpoint
 export const deleteWebhookEndpoint = async (
   organizationId: string,
-  endpointId: string
+  endpointId: string,
 ): Promise<boolean> => {
   const result = await db
     .delete(webhookEndpoint)
     .where(
       and(
         eq(webhookEndpoint.id, endpointId),
-        eq(webhookEndpoint.organizationId, organizationId)
-      )
+        eq(webhookEndpoint.organizationId, organizationId),
+      ),
     );
 
   return result.count > 0;
@@ -182,7 +161,7 @@ export const createWebhookEvent = async (params: {
 
 // Get unprocessed webhook events
 export const getUnprocessedWebhookEvents = async (
-  limit = 100
+  limit = 100,
 ): Promise<WebhookEvent[]> => {
   return db
     .select()
@@ -238,7 +217,7 @@ export const updateWebhookDelivery = async (
     errorMessage?: string;
     nextRetryAt?: Date;
     deliveredAt?: Date;
-  }
+  },
 ): Promise<void> => {
   await db
     .update(webhookDelivery)
@@ -249,7 +228,7 @@ export const updateWebhookDelivery = async (
 // Get webhook deliveries for an endpoint
 export const getWebhookDeliveries = async (
   webhookEndpointId: string,
-  limit = 50
+  limit = 50,
 ): Promise<WebhookDelivery[]> => {
   return db
     .select()
@@ -262,15 +241,15 @@ export const getWebhookDeliveries = async (
 // Get failed deliveries that need retry
 export const getFailedDeliveriesForRetry = async (): Promise<WebhookDelivery[]> => {
   const now = new Date();
-  
+
   return db
     .select()
     .from(webhookDelivery)
     .where(
       and(
         eq(webhookDelivery.status, 'failed'),
-        lte(webhookDelivery.nextRetryAt, now)
-      )
+        lte(webhookDelivery.nextRetryAt, now),
+      ),
     )
     .orderBy(webhookDelivery.nextRetryAt);
 };
@@ -278,7 +257,7 @@ export const getFailedDeliveriesForRetry = async (): Promise<WebhookDelivery[]> 
 // Get webhook endpoints that should receive an event
 export const getWebhookEndpointsForEvent = async (
   organizationId: string,
-  eventType: WebhookEventType
+  eventType: WebhookEventType,
 ): Promise<WebhookEndpoint[]> => {
   const endpoints = await db
     .select()
@@ -286,20 +265,20 @@ export const getWebhookEndpointsForEvent = async (
     .where(
       and(
         eq(webhookEndpoint.organizationId, organizationId),
-        eq(webhookEndpoint.status, 'active')
-      )
+        eq(webhookEndpoint.status, 'active'),
+      ),
     );
 
   // Filter endpoints that subscribe to this event type
-  return endpoints.filter(endpoint => 
-    endpoint.eventTypes.includes(eventType)
+  return endpoints.filter(endpoint =>
+    endpoint.eventTypes.includes(eventType),
   );
 };
 
 // Update endpoint delivery stats
 export const updateEndpointDeliveryStats = async (
   endpointId: string,
-  success: boolean
+  success: boolean,
 ): Promise<void> => {
   const endpoint = await db
     .select()
@@ -307,7 +286,9 @@ export const updateEndpointDeliveryStats = async (
     .where(eq(webhookEndpoint.id, endpointId))
     .limit(1);
 
-  if (endpoint.length === 0) return;
+  if (endpoint.length === 0) {
+    return;
+  }
 
   const updates: any = {
     lastDeliveryAt: new Date(),
@@ -318,7 +299,7 @@ export const updateEndpointDeliveryStats = async (
     updates.failureCount = 0;
   } else {
     updates.failureCount = (endpoint[0].failureCount || 0) + 1;
-    
+
     // Auto-pause endpoint after too many failures
     if (updates.failureCount >= 10) {
       updates.status = 'failed';

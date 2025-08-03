@@ -1,6 +1,7 @@
-import { randomBytes } from 'crypto';
-import { and, desc, eq, gt, isNull, or } from 'drizzle-orm';
+import { randomBytes } from 'node:crypto';
+
 import { addDays } from 'date-fns';
+import { and, desc, eq, gt } from 'drizzle-orm';
 
 import { db } from '@/libs/DB';
 import { invitation } from '@/models/Schema';
@@ -55,7 +56,7 @@ export const createInvitation = async (params: {
 // Fetch all invitations for an organization
 export const fetchInvitations = async (
   organizationId: string,
-  includePending = true
+  includePending = true,
 ): Promise<Invitation[]> => {
   let query = db
     .select()
@@ -68,7 +69,7 @@ export const fetchInvitations = async (
   }
 
   const results = await query.orderBy(desc(invitation.createdAt));
-  
+
   return results.map(inv => ({
     ...inv,
     status: getInvitationStatus(inv),
@@ -77,7 +78,7 @@ export const fetchInvitations = async (
 
 // Get invitation by token
 export const getInvitationByToken = async (
-  token: string
+  token: string,
 ): Promise<Invitation | null> => {
   const [inv] = await db
     .select()
@@ -91,7 +92,7 @@ export const getInvitationByToken = async (
 // Validate invitation
 export const validateInvitation = async (
   token: string,
-  email?: string
+  email?: string,
 ): Promise<{ valid: boolean; invitation?: Invitation; error?: string }> => {
   const inv = await getInvitationByToken(token);
 
@@ -113,9 +114,9 @@ export const validateInvitation = async (
   if (!inv.email && inv.allowedDomains.length > 0 && email) {
     const emailDomain = email.split('@')[1];
     if (!inv.allowedDomains.includes(emailDomain)) {
-      return { 
-        valid: false, 
-        error: `Email domain @${emailDomain} is not allowed for this invitation` 
+      return {
+        valid: false,
+        error: `Email domain @${emailDomain} is not allowed for this invitation`,
       };
     }
   }
@@ -130,7 +131,7 @@ export const deleteInvitation = async (id: string): Promise<void> => {
 
 // Delete expired invitations (cleanup)
 export const deleteExpiredInvitations = async (
-  organizationId?: string
+  organizationId?: string,
 ): Promise<number> => {
   let query = db
     .delete(invitation)
@@ -141,7 +142,7 @@ export const deleteExpiredInvitations = async (
   }
 
   const result = await query;
-  
+
   // Return count of deleted rows
   return result.count || 0;
 };
@@ -149,7 +150,7 @@ export const deleteExpiredInvitations = async (
 // Check if email already has pending invitation
 export const hasPendingInvitation = async (
   organizationId: string,
-  email: string
+  email: string,
 ): Promise<boolean> => {
   const [existing] = await db
     .select()
@@ -158,8 +159,8 @@ export const hasPendingInvitation = async (
       and(
         eq(invitation.organizationId, organizationId),
         eq(invitation.email, email),
-        gt(invitation.expires, new Date())
-      )
+        gt(invitation.expires, new Date()),
+      ),
     )
     .limit(1);
 
@@ -168,7 +169,7 @@ export const hasPendingInvitation = async (
 
 // Resend invitation (creates new token)
 export const resendInvitation = async (
-  invitationId: string
+  invitationId: string,
 ): Promise<Invitation | null> => {
   const [existing] = await db
     .select()
@@ -193,7 +194,7 @@ export const resendInvitation = async (
 // Accept invitation
 export const acceptInvitation = async (
   token: string,
-  userId: string
+  userId: string,
 ): Promise<{ organizationId: string; role: TeamRole }> => {
   const inv = await getInvitationByToken(token);
 
@@ -208,7 +209,7 @@ export const acceptInvitation = async (
   // TODO: Add user to organization with the specified role
   // This would typically involve creating an organizationUser record
   // For now, we'll just return the organization info
-  
+
   // Mark invitation as used by deleting it
   await deleteInvitation(inv.id);
 

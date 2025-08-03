@@ -1,7 +1,8 @@
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'node:crypto';
+
 import { and, desc, eq } from 'drizzle-orm';
 
-import { db, type Database } from '@/libs/DB';
+import { db } from '@/libs/DB';
 import { apiKey } from '@/models/Schema';
 
 export type ApiKey = typeof apiKey.$inferSelect;
@@ -74,7 +75,7 @@ export const deleteApiKey = async (organizationId: string, id: string): Promise<
   const result = await db
     .delete(apiKey)
     .where(and(eq(apiKey.organizationId, organizationId), eq(apiKey.id, id)));
-  
+
   return true;
 };
 

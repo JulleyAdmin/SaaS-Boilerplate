@@ -1,24 +1,25 @@
-import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
+
 import { db } from '@/libs/DB';
-import { teamMember, invitation, organizationSchema } from '@/models/Schema';
-import type { roleEnum } from '@/models/Schema';
+import type { invitation, roleEnum } from '@/models/Schema';
+import { teamMember } from '@/models/Schema';
 
 export type TeamMember = typeof teamMember.$inferSelect;
 export type Invitation = typeof invitation.$inferSelect;
 export type TeamRole = typeof roleEnum.enumValues[number];
 
-export interface TeamMemberWithUser extends TeamMember {
+export type TeamMemberWithUser = {
   user?: {
     id: string;
     email: string;
     name: string;
     imageUrl?: string;
   };
-}
+} & TeamMember;
 
 // Fetch all team members for an organization
 export const fetchTeamMembers = async (
-  organizationId: string
+  organizationId: string,
 ): Promise<TeamMemberWithUser[]> => {
   const members = await db
     .select()
@@ -52,7 +53,7 @@ export const addTeamMember = async (params: {
 // Update team member role
 export const updateTeamMemberRole = async (
   memberId: string,
-  role: TeamRole
+  role: TeamRole,
 ): Promise<TeamMember | null> => {
   const [updated] = await db
     .update(teamMember)
@@ -71,7 +72,7 @@ export const removeTeamMember = async (memberId: string): Promise<void> => {
 // Check if user is a team member
 export const isTeamMember = async (
   organizationId: string,
-  userId: string
+  userId: string,
 ): Promise<boolean> => {
   const [member] = await db
     .select()
@@ -79,8 +80,8 @@ export const isTeamMember = async (
     .where(
       and(
         eq(teamMember.organizationId, organizationId),
-        eq(teamMember.userId, userId)
-      )
+        eq(teamMember.userId, userId),
+      ),
     )
     .limit(1);
 
@@ -90,7 +91,7 @@ export const isTeamMember = async (
 // Get user's role in organization
 export const getUserRole = async (
   organizationId: string,
-  userId: string
+  userId: string,
 ): Promise<TeamRole | null> => {
   const [member] = await db
     .select()
@@ -98,8 +99,8 @@ export const getUserRole = async (
     .where(
       and(
         eq(teamMember.organizationId, organizationId),
-        eq(teamMember.userId, userId)
-      )
+        eq(teamMember.userId, userId),
+      ),
     )
     .limit(1);
 
@@ -108,7 +109,7 @@ export const getUserRole = async (
 
 // Count team members by role
 export const countTeamMembersByRole = async (
-  organizationId: string
+  organizationId: string,
 ): Promise<Record<TeamRole, number>> => {
   const result = await db
     .select({
@@ -139,54 +140,46 @@ export const canManageTeamMembers = (userRole: TeamRole | null): boolean => {
 export const canUpdateMemberRole = (
   userRole: TeamRole | null,
   targetRole: TeamRole,
-  newRole: TeamRole
+  newRole: TeamRole,
 ): boolean => {
   // Only owners can change roles
-  if (userRole !== 'OWNER') return false;
-  
+  if (userRole !== 'OWNER') {
+    return false;
+  }
+
   // Can't change owner role
-  if (targetRole === 'OWNER') return false;
-  
+  if (targetRole === 'OWNER') {
+    return false;
+  }
+
   // Can't promote to owner (transfer ownership is separate)
-  if (newRole === 'OWNER') return false;
-  
+  if (newRole === 'OWNER') {
+    return false;
+  }
+
   return true;
 };
 
 export const canRemoveMember = (
   userRole: TeamRole | null,
-  targetRole: TeamRole
+  targetRole: TeamRole,
 ): boolean => {
   // Owners can remove anyone except other owners
-  if (userRole === 'OWNER' && targetRole !== 'OWNER') return true;
-  
+  if (userRole === 'OWNER' && targetRole !== 'OWNER') {
+    return true;
+  }
+
   // Admins can only remove members
-  if (userRole === 'ADMIN' && targetRole === 'MEMBER') return true;
-  
+  if (userRole === 'ADMIN' && targetRole === 'MEMBER') {
+    return true;
+  }
+
   return false;
 };
 
 export const canManageWebhooks = (userRole: TeamRole | null): boolean => {
   // Only owners and admins can manage webhooks
   return userRole === 'OWNER' || userRole === 'ADMIN';
-};
-
-export const getUserRole = async (
-  organizationId: string,
-  userId: string
-): Promise<TeamRole | null> => {
-  const [member] = await db
-    .select()
-    .from(teamMember)
-    .where(
-      and(
-        eq(teamMember.organizationId, organizationId),
-        eq(teamMember.userId, userId)
-      )
-    )
-    .limit(1);
-
-  return member?.role || null;
 };
 
 export const canManageApiKeys = (userRole: TeamRole | null): boolean => {
