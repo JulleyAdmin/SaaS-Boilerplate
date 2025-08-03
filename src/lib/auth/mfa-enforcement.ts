@@ -1,12 +1,12 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-export interface MFAEnforcementOptions {
+export type MFAEnforcementOptions = {
   requireMFA?: boolean;
   requireTOTP?: boolean;
   redirectUrl?: string;
   allowedRoles?: string[];
-}
+};
 
 export async function enforceMFA(options: MFAEnforcementOptions = {}) {
   const {

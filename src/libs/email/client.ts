@@ -1,12 +1,13 @@
-import { Resend } from 'resend';
-import { Env } from '@/libs/Env';
-import { createAuditLog } from '@/libs/audit';
 import type { ReactElement } from 'react';
+import { Resend } from 'resend';
+
+import { createAuditLog } from '@/libs/audit';
+import { Env } from '@/libs/Env';
 
 // Initialize Resend client
 const resend = new Resend(Env.RESEND_API_KEY);
 
-export interface EmailOptions {
+export type EmailOptions = {
   to: string | string[];
   subject: string;
   template: ReactElement;
@@ -20,15 +21,15 @@ export interface EmailOptions {
     content: Buffer | string;
     contentType?: string;
   }>;
-}
+};
 
-export interface HospitalEmailContext {
+export type HospitalEmailContext = {
   hospitalName: string;
   hospitalType?: 'clinic' | 'hospital' | 'health_system';
   complianceLevel: 'basic' | 'hipaa' | 'hipaa_plus';
   supportEmail?: string;
   logoUrl?: string;
-}
+};
 
 // HIPAA-compliant email service
 export const sendEmail = async (options: EmailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> => {
@@ -126,7 +127,7 @@ export const sendHospitalNotification = async (
   options: Omit<EmailOptions, 'template'> & {
     template: ReactElement;
     hospitalContext: HospitalEmailContext;
-  }
+  },
 ) => {
   return sendEmail({
     ...options,
@@ -150,7 +151,7 @@ export const sendSystemNotification = async (
   options: Omit<EmailOptions, 'template'> & {
     template: ReactElement;
     notificationType: 'billing' | 'security' | 'system' | 'onboarding';
-  }
+  },
 ) => {
   return sendEmail({
     ...options,
@@ -173,7 +174,7 @@ export const sendBulkHospitalEmail = async (
     hospitalContext: HospitalEmailContext;
     batchSize?: number;
     delayBetweenBatches?: number;
-  }
+  },
 ): Promise<{ success: number; failed: number; results: Array<{ email: string; success: boolean; error?: string }> }> => {
   const batchSize = options.batchSize || 50; // Respect rate limits
   const delay = options.delayBetweenBatches || 1000; // 1 second between batches
@@ -184,13 +185,13 @@ export const sendBulkHospitalEmail = async (
   // Process in batches to respect rate limits
   for (let i = 0; i < recipients.length; i += batchSize) {
     const batch = recipients.slice(i, i + batchSize);
-    
+
     const batchPromises = batch.map(async (email) => {
       const result = await sendHospitalNotification({
         ...options,
         to: email,
       });
-      
+
       if (result.success) {
         success++;
         return { email, success: true };
@@ -235,18 +236,18 @@ export const EMAIL_TEMPLATES = {
   SUBSCRIPTION_CANCELLED: 'subscription-cancelled',
   PAYMENT_FAILED: 'payment-failed',
   INVOICE_AVAILABLE: 'invoice-available',
-  
+
   // Hospital operations
   PATIENT_NOTIFICATION: 'patient-notification',
   STAFF_INVITATION: 'staff-invitation',
   DEPARTMENT_ALERT: 'department-alert',
   SYSTEM_MAINTENANCE: 'system-maintenance',
-  
+
   // Security
   PASSWORD_RESET: 'password-reset',
   SECURITY_ALERT: 'security-alert',
   LOGIN_NOTIFICATION: 'login-notification',
-  
+
   // Onboarding
   HOSPITAL_WELCOME: 'hospital-welcome',
   USER_INVITATION: 'user-invitation',

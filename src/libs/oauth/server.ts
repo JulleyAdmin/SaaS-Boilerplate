@@ -1,20 +1,20 @@
 // OAuth Server implementation
-import { 
-  generateAuthorizationCode, 
-  validateAuthorizationCode, 
-  generateAccessToken,
-  refreshAccessToken,
-  introspectToken,
-  type AccessTokenData,
-  type AuthorizationCodeData 
-} from './tokens';
-import { 
-  getOAuthClient, 
+import {
+  getOAuthClient,
   validateClientCredentials,
-  validateClientPermission 
+  validateClientPermission,
 } from './clients';
+import {
+  type AccessTokenData,
+  type AuthorizationCodeData,
+  generateAccessToken,
+  generateAuthorizationCode,
+  introspectToken,
+  refreshAccessToken,
+  validateAuthorizationCode,
+} from './tokens';
 
-export interface AuthorizeParams {
+export type AuthorizeParams = {
   response_type: string;
   client_id: string;
   redirect_uri: string;
@@ -26,9 +26,9 @@ export interface AuthorizeParams {
   department_id?: string;
   hospital_role?: string;
   data_access_scope?: string;
-}
+};
 
-export interface TokenParams {
+export type TokenParams = {
   grant_type: string;
   client_id: string;
   client_secret?: string;
@@ -38,9 +38,9 @@ export interface TokenParams {
   scope?: string;
   // PKCE
   code_verifier?: string;
-}
+};
 
-export interface TokenResponse {
+export type TokenResponse = {
   access_token: string;
   token_type: string;
   expires_in: number;
@@ -50,33 +50,32 @@ export interface TokenResponse {
   hospital_role?: string;
   department_id?: string;
   phi_access?: boolean;
-}
+};
 
-export interface ErrorResponse {
+export type ErrorResponse = {
   error: string;
   error_description?: string;
   error_uri?: string;
-}
+};
 
 /**
  * OAuth 2.0 Authorization Server
  */
 export class HospitalOAuthServer {
-  
   /**
    * Handle authorization request
    */
   async authorize(
     params: AuthorizeParams,
     userId: string,
-    organizationId: string
+    organizationId: string,
   ): Promise<{ redirectUri: string } | ErrorResponse> {
     try {
       // Validate required parameters
       if (!params.response_type || !params.client_id || !params.redirect_uri) {
         return {
           error: 'invalid_request',
-          error_description: 'Missing required parameters'
+          error_description: 'Missing required parameters',
         };
       }
 
@@ -84,7 +83,7 @@ export class HospitalOAuthServer {
       if (params.response_type !== 'code') {
         return {
           error: 'unsupported_response_type',
-          error_description: 'Only authorization_code flow is supported'
+          error_description: 'Only authorization_code flow is supported',
         };
       }
 
@@ -93,7 +92,7 @@ export class HospitalOAuthServer {
       if (!client) {
         return {
           error: 'invalid_client',
-          error_description: 'Client not found or inactive'
+          error_description: 'Client not found or inactive',
         };
       }
 
@@ -101,20 +100,22 @@ export class HospitalOAuthServer {
       if (!client.redirectUris.includes(params.redirect_uri)) {
         return {
           error: 'invalid_redirect_uri',
-          error_description: 'Redirect URI not registered for this client'
+          error_description: 'Redirect URI not registered for this client',
         };
       }
 
       // Parse and validate scopes
       const requestedScopes = params.scope ? params.scope.split(' ') : ['read'];
       const allowedScopes = client.scopes.filter(scope => requestedScopes.includes(scope));
-      
+
       if (allowedScopes.length === 0) {
         const errorParams = new URLSearchParams({
           error: 'invalid_scope',
-          error_description: 'No valid scopes requested'
+          error_description: 'No valid scopes requested',
         });
-        if (params.state) errorParams.set('state', params.state);
+        if (params.state) {
+          errorParams.set('state', params.state);
+        }
         return { redirectUri: `${params.redirect_uri}?${errorParams}` };
       }
 
@@ -127,9 +128,11 @@ export class HospitalOAuthServer {
         if (!validRoles.includes(params.hospital_role)) {
           const errorParams = new URLSearchParams({
             error: 'invalid_request',
-            error_description: 'Invalid hospital role specified'
+            error_description: 'Invalid hospital role specified',
           });
-          if (params.state) errorParams.set('state', params.state);
+          if (params.state) {
+            errorParams.set('state', params.state);
+          }
           return { redirectUri: `${params.redirect_uri}?${errorParams}` };
         }
         hospitalRole = params.hospital_role;
@@ -141,9 +144,11 @@ export class HospitalOAuthServer {
         } catch {
           const errorParams = new URLSearchParams({
             error: 'invalid_request',
-            error_description: 'Invalid data access scope format'
+            error_description: 'Invalid data access scope format',
           });
-          if (params.state) errorParams.set('state', params.state);
+          if (params.state) {
+            errorParams.set('state', params.state);
+          }
           return { redirectUri: `${params.redirect_uri}?${errorParams}` };
         }
       }
@@ -159,26 +164,27 @@ export class HospitalOAuthServer {
         codeChallengeMethod: params.code_challenge_method,
         departmentId: params.department_id,
         hospitalRole,
-        dataAccessScope
+        dataAccessScope,
       };
 
       const authCode = await generateAuthorizationCode(authCodeData);
 
       // Build redirect URI with authorization code
       const redirectParams = new URLSearchParams({
-        code: authCode
+        code: authCode,
       });
-      if (params.state) redirectParams.set('state', params.state);
+      if (params.state) {
+        redirectParams.set('state', params.state);
+      }
 
       return {
-        redirectUri: `${params.redirect_uri}?${redirectParams}`
+        redirectUri: `${params.redirect_uri}?${redirectParams}`,
       };
-
     } catch (error) {
       console.error('Authorization error:', error);
       return {
         error: 'server_error',
-        error_description: 'Internal server error'
+        error_description: 'Internal server error',
       };
     }
   }
@@ -188,14 +194,14 @@ export class HospitalOAuthServer {
    */
   async token(
     params: TokenParams,
-    organizationId: string
+    organizationId: string,
   ): Promise<TokenResponse | ErrorResponse> {
     try {
       // Validate required parameters
       if (!params.grant_type || !params.client_id) {
         return {
           error: 'invalid_request',
-          error_description: 'Missing required parameters'
+          error_description: 'Missing required parameters',
         };
       }
 
@@ -210,15 +216,14 @@ export class HospitalOAuthServer {
         default:
           return {
             error: 'unsupported_grant_type',
-            error_description: 'Grant type not supported'
+            error_description: 'Grant type not supported',
           };
       }
-
     } catch (error) {
       console.error('Token error:', error);
       return {
         error: 'server_error',
-        error_description: 'Internal server error'
+        error_description: 'Internal server error',
       };
     }
   }
@@ -228,12 +233,12 @@ export class HospitalOAuthServer {
    */
   private async handleAuthorizationCodeGrant(
     params: TokenParams,
-    organizationId: string
+    organizationId: string,
   ): Promise<TokenResponse | ErrorResponse> {
     if (!params.code || !params.redirect_uri) {
       return {
         error: 'invalid_request',
-        error_description: 'Missing authorization code or redirect URI'
+        error_description: 'Missing authorization code or redirect URI',
       };
     }
 
@@ -247,7 +252,7 @@ export class HospitalOAuthServer {
       if (client?.clientType !== 'public') {
         return {
           error: 'invalid_client',
-          error_description: 'Client authentication required'
+          error_description: 'Client authentication required',
         };
       }
     }
@@ -255,7 +260,7 @@ export class HospitalOAuthServer {
     if (!client) {
       return {
         error: 'invalid_client',
-        error_description: 'Client authentication failed'
+        error_description: 'Client authentication failed',
       };
     }
 
@@ -263,13 +268,13 @@ export class HospitalOAuthServer {
     const codeData = await validateAuthorizationCode(
       params.code,
       params.client_id,
-      params.redirect_uri
+      params.redirect_uri,
     );
 
     if (!codeData) {
       return {
         error: 'invalid_grant',
-        error_description: 'Authorization code is invalid or expired'
+        error_description: 'Authorization code is invalid or expired',
       };
     }
 
@@ -278,7 +283,7 @@ export class HospitalOAuthServer {
       if (!params.code_verifier || !codeData) {
         return {
           error: 'invalid_request',
-          error_description: 'PKCE code verifier required for public clients'
+          error_description: 'PKCE code verifier required for public clients',
         };
       }
       // PKCE validation logic would go here
@@ -293,7 +298,7 @@ export class HospitalOAuthServer {
       departmentId: codeData.departmentId,
       hospitalRole: codeData.hospitalRole,
       dataAccessScope: codeData.dataAccessScope,
-      expiresIn: client.tokenLifetime
+      expiresIn: client.tokenLifetime,
     };
 
     const tokens = await generateAccessToken(tokenData);
@@ -302,7 +307,7 @@ export class HospitalOAuthServer {
       access_token: tokens.accessToken,
       token_type: tokens.tokenType,
       expires_in: tokens.expiresIn,
-      scope: codeData.scopes.join(' ')
+      scope: codeData.scopes.join(' '),
     };
 
     if (tokens.refreshToken) {
@@ -328,26 +333,26 @@ export class HospitalOAuthServer {
    */
   private async handleRefreshTokenGrant(
     params: TokenParams,
-    organizationId: string
+    organizationId: string,
   ): Promise<TokenResponse | ErrorResponse> {
     if (!params.refresh_token) {
       return {
         error: 'invalid_request',
-        error_description: 'Missing refresh token'
+        error_description: 'Missing refresh token',
       };
     }
 
     // Validate client
     const client = await validateClientCredentials(
-      params.client_id, 
-      params.client_secret || '', 
-      organizationId
+      params.client_id,
+      params.client_secret || '',
+      organizationId,
     );
 
     if (!client) {
       return {
         error: 'invalid_client',
-        error_description: 'Client authentication failed'
+        error_description: 'Client authentication failed',
       };
     }
 
@@ -357,7 +362,7 @@ export class HospitalOAuthServer {
     if (!tokens) {
       return {
         error: 'invalid_grant',
-        error_description: 'Refresh token is invalid or expired'
+        error_description: 'Refresh token is invalid or expired',
       };
     }
 
@@ -365,7 +370,7 @@ export class HospitalOAuthServer {
       access_token: tokens.accessToken,
       token_type: tokens.tokenType,
       expires_in: tokens.expiresIn,
-      refresh_token: tokens.refreshToken
+      refresh_token: tokens.refreshToken,
     };
   }
 
@@ -374,12 +379,12 @@ export class HospitalOAuthServer {
    */
   private async handleClientCredentialsGrant(
     params: TokenParams,
-    organizationId: string
+    organizationId: string,
   ): Promise<TokenResponse | ErrorResponse> {
     if (!params.client_secret) {
       return {
         error: 'invalid_request',
-        error_description: 'Client secret required for client credentials grant'
+        error_description: 'Client secret required for client credentials grant',
       };
     }
 
@@ -387,13 +392,13 @@ export class HospitalOAuthServer {
     const client = await validateClientCredentials(
       params.client_id,
       params.client_secret,
-      organizationId
+      organizationId,
     );
 
     if (!client) {
       return {
         error: 'invalid_client',
-        error_description: 'Client authentication failed'
+        error_description: 'Client authentication failed',
       };
     }
 
@@ -401,7 +406,7 @@ export class HospitalOAuthServer {
     if (!client.allowedGrantTypes.includes('client_credentials')) {
       return {
         error: 'unauthorized_client',
-        error_description: 'Client not authorized for client credentials grant'
+        error_description: 'Client not authorized for client credentials grant',
       };
     }
 
@@ -412,7 +417,7 @@ export class HospitalOAuthServer {
     if (allowedScopes.length === 0) {
       return {
         error: 'invalid_scope',
-        error_description: 'No valid scopes requested'
+        error_description: 'No valid scopes requested',
       };
     }
 
@@ -421,7 +426,7 @@ export class HospitalOAuthServer {
       clientId: params.client_id,
       organizationId,
       scopes: allowedScopes,
-      expiresIn: client.tokenLifetime
+      expiresIn: client.tokenLifetime,
     };
 
     const tokens = await generateAccessToken(tokenData);
@@ -430,7 +435,7 @@ export class HospitalOAuthServer {
       access_token: tokens.accessToken,
       token_type: tokens.tokenType,
       expires_in: tokens.expiresIn,
-      scope: allowedScopes.join(' ')
+      scope: allowedScopes.join(' '),
     };
   }
 
@@ -441,7 +446,7 @@ export class HospitalOAuthServer {
     token: string,
     clientId: string,
     clientSecret: string,
-    organizationId: string
+    organizationId: string,
   ): Promise<any | ErrorResponse> {
     try {
       // Validate client
@@ -449,20 +454,19 @@ export class HospitalOAuthServer {
       if (!client) {
         return {
           error: 'invalid_client',
-          error_description: 'Client authentication failed'
+          error_description: 'Client authentication failed',
         };
       }
 
       // Introspect token
       const tokenInfo = await introspectToken(token);
-      
-      return tokenInfo || { active: false };
 
+      return tokenInfo || { active: false };
     } catch (error) {
       console.error('Introspection error:', error);
       return {
         error: 'server_error',
-        error_description: 'Internal server error'
+        error_description: 'Internal server error',
       };
     }
   }
@@ -476,16 +480,16 @@ export class HospitalOAuthServer {
     requiredResource: string,
     requiredAction: string,
     organizationId: string,
-    departmentId?: string
+    departmentId?: string,
   ): Promise<{
-    valid: boolean;
-    clientId?: string;
-    userId?: string;
-    scopes?: string[];
-    hospitalRole?: string;
-    departmentId?: string;
-    phiAccess?: boolean;
-  }> {
+      valid: boolean;
+      clientId?: string;
+      userId?: string;
+      scopes?: string[];
+      hospitalRole?: string;
+      departmentId?: string;
+      phiAccess?: boolean;
+    }> {
     try {
       // Extract bearer token
       if (!authHeader.startsWith('Bearer ')) {
@@ -493,7 +497,7 @@ export class HospitalOAuthServer {
       }
 
       const token = authHeader.substring(7);
-      
+
       // Validate token
       const tokenInfo = await introspectToken(token);
       if (!tokenInfo || !tokenInfo.active) {
@@ -514,7 +518,7 @@ export class HospitalOAuthServer {
           requiredResource,
           requiredAction,
           organizationId,
-          departmentId
+          departmentId,
         );
 
         if (!hasPermission) {
@@ -529,9 +533,8 @@ export class HospitalOAuthServer {
         scopes: tokenInfo.scope?.split(' ') || [],
         hospitalRole: tokenInfo.hospital_role,
         departmentId: tokenInfo.department_id,
-        phiAccess: tokenInfo.phi_access || false
+        phiAccess: tokenInfo.phi_access || false,
       };
-
     } catch (error) {
       console.error('Token validation error:', error);
       return { valid: false };

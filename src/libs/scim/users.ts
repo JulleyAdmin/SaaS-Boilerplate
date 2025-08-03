@@ -1,19 +1,20 @@
-import { db } from '@/libs/DB';
-import { scimUser, scimEnterpriseUser, scimConfiguration } from '@/models/Schema';
-import { eq, and } from 'drizzle-orm';
-import { createAuditLog } from '@/libs/audit';
 import { auth } from '@clerk/nextjs/server';
-import { hospitalRoleEnum } from '@/models/Schema';
+import { and, eq } from 'drizzle-orm';
+
+import { createAuditLog } from '@/libs/audit';
+import { db } from '@/libs/DB';
+import type { hospitalRoleEnum } from '@/models/Schema';
+import { scimConfiguration, scimEnterpriseUser, scimUser } from '@/models/Schema';
 
 type HospitalRole = typeof hospitalRoleEnum.enumValues[number];
 
 // SCIM User resource interface following RFC 7643
-export interface ScimUser {
-  schemas: string[];
-  id: string;
-  externalId?: string;
-  userName: string;
-  name?: {
+export type ScimUser = {
+  'schemas': string[];
+  'id': string;
+  'externalId'?: string;
+  'userName': string;
+  'name'?: {
     formatted?: string;
     familyName?: string;
     givenName?: string;
@@ -21,14 +22,14 @@ export interface ScimUser {
     honorificPrefix?: string;
     honorificSuffix?: string;
   };
-  displayName?: string;
-  emails: Array<{
+  'displayName'?: string;
+  'emails': Array<{
     value: string;
     type?: string;
     primary?: boolean;
   }>;
-  active: boolean;
-  meta: {
+  'active': boolean;
+  'meta': {
     resourceType: string;
     created: string;
     lastModified: string;
@@ -59,31 +60,31 @@ export interface ScimUser {
       displayName?: string;
     };
   };
-}
+};
 
-export interface ScimUserPatch {
+export type ScimUserPatch = {
   schemas: string[];
   Operations: Array<{
     op: 'add' | 'remove' | 'replace';
     path?: string;
     value?: any;
   }>;
-}
+};
 
-export interface ScimListResponse<T> {
+export type ScimListResponse<T> = {
   schemas: string[];
   totalResults: number;
   startIndex: number;
   itemsPerPage: number;
   Resources: T[];
-}
+};
 
-export interface ScimError {
+export type ScimError = {
   schemas: string[];
   status: string;
   detail?: string;
   scimType?: string;
-}
+};
 
 // SCIM schema constants
 export const SCIM_SCHEMAS = {
@@ -92,7 +93,7 @@ export const SCIM_SCHEMAS = {
   ENTERPRISE_USER_EXTENSION: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
   LIST_RESPONSE: 'urn:ietf:params:scim:api:messages:2.0:ListResponse',
   PATCH_OP: 'urn:ietf:params:scim:api:messages:2.0:PatchOp',
-  ERROR: 'urn:ietf:params:scim:api:messages:2.0:Error'
+  ERROR: 'urn:ietf:params:scim:api:messages:2.0:Error',
 };
 
 /**
@@ -100,26 +101,28 @@ export const SCIM_SCHEMAS = {
  */
 export function mapExternalToHospitalRole(externalRole?: string): HospitalRole {
   const roleMap: Record<string, HospitalRole> = {
-    'physician': 'doctor',
-    'doctor': 'doctor',
-    'md': 'doctor',
-    'nurse': 'nurse',
-    'rn': 'nurse',
-    'lpn': 'nurse',
-    'tech': 'technician',
-    'technician': 'technician',
-    'radiology_tech': 'technician',
-    'lab_tech': 'technician',
-    'admin': 'administrator',
-    'administrator': 'administrator',
-    'manager': 'administrator',
-    'director': 'administrator',
-    'viewer': 'viewer',
-    'readonly': 'viewer'
+    physician: 'doctor',
+    doctor: 'doctor',
+    md: 'doctor',
+    nurse: 'nurse',
+    rn: 'nurse',
+    lpn: 'nurse',
+    tech: 'technician',
+    technician: 'technician',
+    radiology_tech: 'technician',
+    lab_tech: 'technician',
+    admin: 'administrator',
+    administrator: 'administrator',
+    manager: 'administrator',
+    director: 'administrator',
+    viewer: 'viewer',
+    readonly: 'viewer',
   };
 
-  if (!externalRole) return 'viewer';
-  
+  if (!externalRole) {
+    return 'viewer';
+  }
+
   const lowercaseRole = externalRole.toLowerCase();
   return roleMap[lowercaseRole] || 'viewer';
 }
@@ -130,14 +133,14 @@ export function mapExternalToHospitalRole(externalRole?: string): HospitalRole {
 export async function validateMedicalLicense(
   licenseNumber: string,
   licenseType: string = 'medical',
-  organizationId: string
+  organizationId: string,
 ): Promise<boolean> {
   // In a real implementation, this would:
   // 1. Check against state medical board APIs
   // 2. Validate license format per state requirements
   // 3. Check expiration dates
   // 4. Verify against hospital credentialing database
-  
+
   // For now, basic format validation
   if (!licenseNumber || licenseNumber.length < 6) {
     return false;
@@ -155,8 +158,8 @@ export async function validateMedicalLicense(
     metadata: {
       licenseType,
       validationResult: 'passed',
-      validationMethod: 'format_check'
-    }
+      validationMethod: 'format_check',
+    },
   });
 
   return true;
@@ -180,10 +183,10 @@ export async function getScimConfiguration(organizationId: string) {
  */
 export async function createScimUser(
   userData: Partial<ScimUser>,
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimUser> {
   const { userId } = await auth();
-  
+
   if (!userData.userName || !userData.emails?.[0]?.value) {
     throw new Error('userName and email are required');
   }
@@ -201,7 +204,7 @@ export async function createScimUser(
     const isValid = await validateMedicalLicense(
       hospitalExt.licenseNumber,
       hospitalExt.licenseType || 'medical',
-      organizationId
+      organizationId,
     );
     if (!isValid) {
       throw new Error('Invalid medical license number');
@@ -217,7 +220,7 @@ export async function createScimUser(
     created: now,
     lastModified: now,
     location: `/scim/v2/Users/${userData.id || 'temp'}`,
-    version: '1'
+    version: '1',
   };
 
   // Create user record
@@ -243,7 +246,7 @@ export async function createScimUser(
     customAttributes: {},
     lastSyncedAt: new Date(),
     syncErrors: [],
-    provisioningStatus: 'provisioned'
+    provisioningStatus: 'provisioned',
   }).returning();
 
   if (!newUser[0]) {
@@ -263,7 +266,7 @@ export async function createScimUser(
       organization: enterpriseExt.organization,
       division: enterpriseExt.division,
       department: enterpriseExt.department,
-      manager: enterpriseExt.manager?.value
+      manager: enterpriseExt.manager?.value,
     });
   }
 
@@ -283,8 +286,8 @@ export async function createScimUser(
       email: createdUser.email,
       hospitalRole,
       department: hospitalExt?.department,
-      licenseNumber: hospitalExt?.licenseNumber ? '***REDACTED***' : undefined
-    }
+      licenseNumber: hospitalExt?.licenseNumber ? '***REDACTED***' : undefined,
+    },
   });
 
   return formatScimUser(createdUser);
@@ -295,18 +298,20 @@ export async function createScimUser(
  */
 export async function getScimUser(
   userId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimUser | null> {
   const user = await db
     .select()
     .from(scimUser)
     .where(and(
       eq(scimUser.id, userId),
-      eq(scimUser.organizationId, organizationId)
+      eq(scimUser.organizationId, organizationId),
     ))
     .limit(1);
 
-  if (!user[0]) return null;
+  if (!user[0]) {
+    return null;
+  }
 
   return formatScimUser(user[0]);
 }
@@ -317,10 +322,10 @@ export async function getScimUser(
 export async function updateScimUser(
   userId: string,
   userData: Partial<ScimUser>,
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimUser> {
   const { userId: actorId } = await auth();
-  
+
   const existingUser = await getScimUser(userId, organizationId);
   if (!existingUser) {
     throw new Error('User not found');
@@ -334,22 +339,22 @@ export async function updateScimUser(
     const isValid = await validateMedicalLicense(
       hospitalExt.licenseNumber,
       hospitalExt.licenseType || 'medical',
-      organizationId
+      organizationId,
     );
     if (!isValid) {
       throw new Error('Invalid medical license number');
     }
   }
 
-  const hospitalRole = hospitalExt?.hospitalRole ? 
-    mapExternalToHospitalRole(hospitalExt.hospitalRole as string) : 
-    undefined;
+  const hospitalRole = hospitalExt?.hospitalRole
+    ? mapExternalToHospitalRole(hospitalExt.hospitalRole as string)
+    : undefined;
 
   const now = new Date();
   const meta = {
     ...existingUser.meta,
     lastModified: now.toISOString(),
-    version: String(parseInt(existingUser.meta.version || '1') + 1)
+    version: String(Number.parseInt(existingUser.meta.version || '1') + 1),
   };
 
   // Update user
@@ -372,11 +377,11 @@ export async function updateScimUser(
       supervisorId: hospitalExt?.supervisorId,
       meta,
       lastSyncedAt: now,
-      updatedAt: now
+      updatedAt: now,
     })
     .where(and(
       eq(scimUser.id, userId),
-      eq(scimUser.organizationId, organizationId)
+      eq(scimUser.organizationId, organizationId),
     ))
     .returning();
 
@@ -402,9 +407,9 @@ export async function updateScimUser(
         email: userData.emails?.[0]?.value,
         active: userData.active,
         hospitalRole,
-        department: hospitalExt?.department
-      }
-    }
+        department: hospitalExt?.department,
+      },
+    },
   });
 
   return formatScimUser(updatedUser);
@@ -415,7 +420,7 @@ export async function updateScimUser(
  */
 export async function deleteScimUser(
   userId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<void> {
   const { userId: actorId } = await auth();
 
@@ -431,11 +436,11 @@ export async function deleteScimUser(
       active: false,
       status: 'deleted',
       lastSyncedAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     })
     .where(and(
       eq(scimUser.id, userId),
-      eq(scimUser.organizationId, organizationId)
+      eq(scimUser.organizationId, organizationId),
     ));
 
   // Create audit log
@@ -450,8 +455,8 @@ export async function deleteScimUser(
     resourceName: existingUser.displayName || existingUser.userName,
     metadata: {
       deletionType: 'soft_delete',
-      previousActive: existingUser.active
-    }
+      previousActive: existingUser.active,
+    },
   });
 }
 
@@ -466,15 +471,15 @@ export async function listScimUsers(
     filter?: string;
     sortBy?: string;
     sortOrder?: 'ascending' | 'descending';
-  } = {}
+  } = {},
 ): Promise<ScimListResponse<ScimUser>> {
   const {
     startIndex = 1,
-    count = 50
+    count = 50,
   } = options;
 
   // Basic query
-  let query = db
+  const query = db
     .select()
     .from(scimUser)
     .where(eq(scimUser.organizationId, organizationId));
@@ -490,7 +495,7 @@ export async function listScimUsers(
     totalResults,
     startIndex,
     itemsPerPage: count,
-    Resources: users.map(formatScimUser)
+    Resources: users.map(formatScimUser),
   };
 }
 
@@ -506,22 +511,22 @@ export function formatScimUser(user: any): ScimUser {
     name: {
       familyName: user.familyName,
       givenName: user.givenName,
-      formatted: user.displayName
+      formatted: user.displayName,
     },
     displayName: user.displayName,
     emails: [
       {
         value: user.email,
         type: 'work',
-        primary: true
-      }
+        primary: true,
+      },
     ],
     active: user.active,
     meta: user.meta || {
       resourceType: 'User',
       created: user.createdAt?.toISOString() || new Date().toISOString(),
-      lastModified: user.updatedAt?.toISOString() || new Date().toISOString()
-    }
+      lastModified: user.updatedAt?.toISOString() || new Date().toISOString(),
+    },
   };
 
   // Add hospital extension if data exists
@@ -535,7 +540,7 @@ export function formatScimUser(user: any): ScimUser {
       licenseExpiry: user.licenseExpiry?.toISOString(),
       specialization: user.specialization,
       employeeId: user.employeeId,
-      supervisorId: user.supervisorId
+      supervisorId: user.supervisorId,
     };
   }
 
@@ -548,12 +553,12 @@ export function formatScimUser(user: any): ScimUser {
 export function createScimError(
   status: number,
   scimType?: string,
-  detail?: string
+  detail?: string,
 ): ScimError {
   return {
     schemas: [SCIM_SCHEMAS.ERROR],
     status: status.toString(),
     scimType,
-    detail
+    detail,
   };
 }

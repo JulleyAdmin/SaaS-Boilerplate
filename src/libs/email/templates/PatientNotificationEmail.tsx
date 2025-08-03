@@ -1,7 +1,8 @@
-import { Text, Button, Section, Heading } from '@react-email/components';
+import { Button, Heading, Section, Text } from '@react-email/components';
+
 import { HospitalEmailLayout } from './HospitalEmailLayout';
 
-interface PatientNotificationEmailProps {
+type PatientNotificationEmailProps = {
   hospitalName: string;
   patientFirstName: string; // Only first name to minimize PHI
   notificationType: 'appointment_reminder' | 'appointment_confirmation' | 'general_notification' | 'portal_access';
@@ -13,7 +14,7 @@ interface PatientNotificationEmailProps {
   actionButtonText?: string;
   supportPhone?: string;
   supportEmail?: string;
-}
+};
 
 export const PatientNotificationEmail = ({
   hospitalName,
@@ -61,42 +62,55 @@ export const PatientNotificationEmail = ({
       complianceLevel="hipaa"
       footerText="This notification contains no personal health information. All medical details are securely stored in your patient portal."
     >
-      <Heading className="text-2xl font-bold text-gray-900 mb-4">
+      <Heading className="mb-4 text-2xl font-bold text-gray-900">
         {getNotificationTitle()}
       </Heading>
-      
-      <Text className="text-gray-700 mb-4">
-        Dear {patientFirstName},
+
+      <Text className="mb-4 text-gray-700">
+        Dear
+        {' '}
+        {patientFirstName}
+        ,
       </Text>
-      
-      <Text className="text-gray-700 mb-6">
+
+      <Text className="mb-6 text-gray-700">
         {message}
       </Text>
 
       {/* Appointment Details (if applicable) */}
       {(appointmentDate || appointmentTime || departmentName) && (
-        <Section className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <Text className="text-blue-800 font-medium m-0 mb-3">
-            {getNotificationIcon()} Appointment Information
+        <Section className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <Text className="m-0 mb-3 font-medium text-blue-800">
+            {getNotificationIcon()}
+            {' '}
+            Appointment Information
           </Text>
-          <div className="text-blue-700 text-sm space-y-1">
+          <div className="space-y-1 text-sm text-blue-700">
             {appointmentDate && (
               <Text className="m-0">
-                <strong>Date:</strong> {appointmentDate}
+                <strong>Date:</strong>
+                {' '}
+                {appointmentDate}
               </Text>
             )}
             {appointmentTime && (
               <Text className="m-0">
-                <strong>Time:</strong> {appointmentTime}
+                <strong>Time:</strong>
+                {' '}
+                {appointmentTime}
               </Text>
             )}
             {departmentName && (
               <Text className="m-0">
-                <strong>Department:</strong> {departmentName}
+                <strong>Department:</strong>
+                {' '}
+                {departmentName}
               </Text>
             )}
             <Text className="m-0">
-              <strong>Location:</strong> {hospitalName}
+              <strong>Location:</strong>
+              {' '}
+              {hospitalName}
             </Text>
           </div>
         </Section>
@@ -104,10 +118,10 @@ export const PatientNotificationEmail = ({
 
       {/* Action Button */}
       {actionUrl && actionButtonText && (
-        <Section className="text-center mb-6">
+        <Section className="mb-6 text-center">
           <Button
             href={actionUrl}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg text-base font-medium no-underline"
+            className="rounded-lg bg-blue-600 px-6 py-3 text-base font-medium text-white no-underline"
           >
             {actionButtonText}
           </Button>
@@ -116,11 +130,11 @@ export const PatientNotificationEmail = ({
 
       {/* Preparation Instructions (for appointment types) */}
       {(notificationType === 'appointment_reminder' || notificationType === 'appointment_confirmation') && (
-        <Section className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-          <Text className="text-green-800 font-medium m-0 mb-2">
+        <Section className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
+          <Text className="m-0 mb-2 font-medium text-green-800">
             📝 Important Reminders
           </Text>
-          <ul className="text-green-700 text-sm m-0 pl-4">
+          <ul className="m-0 pl-4 text-sm text-green-700">
             <li>Please arrive 15 minutes early for check-in</li>
             <li>Bring a valid photo ID and insurance card</li>
             <li>Bring a list of current medications</li>
@@ -130,46 +144,59 @@ export const PatientNotificationEmail = ({
       )}
 
       {/* Contact Information */}
-      <Section className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-        <Text className="font-medium text-gray-900 m-0 mb-2">
+      <Section className="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <Text className="m-0 mb-2 font-medium text-gray-900">
           📞 Need to make changes or have questions?
         </Text>
-        <div className="text-gray-600 text-sm">
+        <div className="text-sm text-gray-600">
           {supportPhone && (
             <Text className="m-0 mb-1">
-              <strong>Phone:</strong> {supportPhone}
+              <strong>Phone:</strong>
+              {' '}
+              {supportPhone}
             </Text>
           )}
           {supportEmail && (
             <Text className="m-0 mb-1">
-              <strong>Email:</strong> {supportEmail}
+              <strong>Email:</strong>
+              {' '}
+              {supportEmail}
             </Text>
           )}
           <Text className="m-0">
-            <strong>Hospital:</strong> {hospitalName}
+            <strong>Hospital:</strong>
+            {' '}
+            {hospitalName}
           </Text>
         </div>
       </Section>
 
       {/* Privacy Notice */}
-      <Section className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-        <Text className="text-purple-800 font-medium m-0 mb-2">
+      <Section className="mb-4 rounded-lg border border-purple-200 bg-purple-50 p-4">
+        <Text className="m-0 mb-2 font-medium text-purple-800">
           🔒 Privacy & Security Notice
         </Text>
-        <Text className="text-purple-700 text-sm m-0">
-          This email contains no personal health information (PHI). All medical details and sensitive 
-          information are securely stored in your patient portal and are only accessible with your 
+        <Text className="m-0 text-sm text-purple-700">
+          This email contains no personal health information (PHI). All medical details and sensitive
+          information are securely stored in your patient portal and are only accessible with your
           secure login credentials.
         </Text>
       </Section>
 
       <Text className="text-gray-700">
-        Thank you for choosing {hospitalName} for your healthcare needs. We look forward to seeing you.
+        Thank you for choosing
+        {' '}
+        {hospitalName}
+        {' '}
+        for your healthcare needs. We look forward to seeing you.
       </Text>
 
-      <Text className="text-gray-700 mt-4">
-        Sincerely,<br />
-        {hospitalName} Patient Services
+      <Text className="mt-4 text-gray-700">
+        Sincerely,
+        <br />
+        {hospitalName}
+        {' '}
+        Patient Services
       </Text>
     </HospitalEmailLayout>
   );

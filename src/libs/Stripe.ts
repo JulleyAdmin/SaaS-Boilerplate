@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+
 import { Env } from '@/libs/Env';
 import { HOSPITAL_PLANS, USAGE_METRICS } from '@/utils/pricing';
 
@@ -28,7 +29,7 @@ export async function createStripeCustomer({
       ...metadata,
     },
   });
-  
+
   return customer;
 }
 
@@ -75,7 +76,7 @@ export async function createCheckoutSession({
       ...metadata,
     },
   });
-  
+
   return session;
 }
 
@@ -91,23 +92,23 @@ export async function createBillingPortalSession({
     customer: customerId,
     return_url: returnUrl,
   });
-  
+
   return session;
 }
 
 // Helper to cancel subscription
 export async function cancelSubscription(
   subscriptionId: string,
-  immediately = false
+  immediately = false,
 ) {
   const subscription = await stripe.subscriptions.update(subscriptionId, {
     cancel_at_period_end: !immediately,
   });
-  
+
   if (immediately) {
     await stripe.subscriptions.cancel(subscriptionId);
   }
-  
+
   return subscription;
 }
 
@@ -122,7 +123,7 @@ export async function updateSubscription({
   prorationBehavior?: Stripe.SubscriptionUpdateParams.ProrationBehavior;
 }) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  
+
   const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
     items: [
       {
@@ -132,7 +133,7 @@ export async function updateSubscription({
     ],
     proration_behavior: prorationBehavior,
   });
-  
+
   return updatedSubscription;
 }
 
@@ -154,9 +155,9 @@ export async function reportUsage({
       quantity,
       timestamp,
       action,
-    }
+    },
   );
-  
+
   return usageRecord;
 }
 
@@ -165,7 +166,7 @@ export async function getSubscriptionDetails(subscriptionId: string) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
     expand: ['customer', 'default_payment_method', 'items.data.price.product'],
   });
-  
+
   return subscription;
 }
 
@@ -184,7 +185,7 @@ export async function listInvoices({
     limit,
     starting_after: startingAfter,
   });
-  
+
   return invoices;
 }
 
@@ -192,11 +193,13 @@ export async function listInvoices({
 export async function syncProductsAndPrices() {
   const products: Record<string, Stripe.Product> = {};
   const prices: Record<string, Stripe.Price> = {};
-  
+
   // Create or update products for each plan
   for (const [key, plan] of Object.entries(HOSPITAL_PLANS)) {
-    if (plan.price === 'custom') continue;
-    
+    if (plan.price === 'custom') {
+      continue;
+    }
+
     // Create or update product
     const productData = {
       name: `${plan.name} Plan`,
@@ -206,18 +209,18 @@ export async function syncProductsAndPrices() {
         features: JSON.stringify(plan.features),
       },
     };
-    
+
     let product: Stripe.Product;
-    
+
     // Check if product exists
     const existingProducts = await stripe.products.search({
       query: `metadata['plan']:'${key}'`,
     });
-    
+
     if (existingProducts.data.length > 0) {
       product = await stripe.products.update(
         existingProducts.data[0].id,
-        productData
+        productData,
       );
     } else {
       product = await stripe.products.create({
@@ -225,9 +228,9 @@ export async function syncProductsAndPrices() {
         id: `prod_hospital_${key.toLowerCase()}`,
       });
     }
-    
+
     products[key] = product;
-    
+
     // Create price if it doesn't exist
     if (plan.stripePriceId) {
       try {
@@ -247,13 +250,13 @@ export async function syncProductsAndPrices() {
           },
         });
         prices[key] = price;
-        
+
         console.log(`Created Stripe price for ${key}: ${price.id}`);
         console.log(`Add this to your .env: NEXT_PUBLIC_STRIPE_${key}_PRICE_ID=${price.id}`);
       }
     }
   }
-  
+
   // Create usage-based prices
   for (const [key, metric] of Object.entries(USAGE_METRICS)) {
     const productData = {
@@ -263,18 +266,18 @@ export async function syncProductsAndPrices() {
         metric: key,
       },
     };
-    
+
     let product: Stripe.Product;
-    
+
     // Check if product exists
     const existingProducts = await stripe.products.search({
       query: `metadata['metric']:'${key}'`,
     });
-    
+
     if (existingProducts.data.length > 0) {
       product = await stripe.products.update(
         existingProducts.data[0].id,
-        productData
+        productData,
       );
     } else {
       product = await stripe.products.create({
@@ -282,7 +285,7 @@ export async function syncProductsAndPrices() {
         id: `prod_usage_${key.toLowerCase()}`,
       });
     }
-    
+
     // Create metered price if it doesn't exist
     if (metric.stripePriceId) {
       try {
@@ -302,13 +305,13 @@ export async function syncProductsAndPrices() {
             metric: key,
           },
         });
-        
+
         console.log(`Created Stripe metered price for ${key}: ${price.id}`);
         console.log(`Add this to your .env: STRIPE_${key}_PRICE_ID=${price.id}`);
       }
     }
   }
-  
+
   return { products, prices };
 }
 
@@ -316,7 +319,7 @@ export async function syncProductsAndPrices() {
 export function constructWebhookEvent(
   payload: string | Buffer,
   signature: string,
-  webhookSecret: string
+  webhookSecret: string,
 ): Stripe.Event {
   return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
 }

@@ -1,14 +1,16 @@
-import { db } from '@/libs/DB';
-import { 
-  oauthAccessToken, 
-  oauthRefreshToken, 
-  oauthAuthorizationCode
-} from '@/models/Schema';
-import { eq, and, lt, isNull } from 'drizzle-orm';
-import crypto from 'crypto';
-import { createAuditLog } from '@/libs/audit';
+import crypto from 'node:crypto';
 
-export interface AccessTokenData {
+import { and, eq, isNull, lt } from 'drizzle-orm';
+
+import { createAuditLog } from '@/libs/audit';
+import { db } from '@/libs/DB';
+import {
+  oauthAccessToken,
+  oauthAuthorizationCode,
+  oauthRefreshToken,
+} from '@/models/Schema';
+
+export type AccessTokenData = {
   clientId: string;
   organizationId: string;
   userId?: string;
@@ -18,9 +20,9 @@ export interface AccessTokenData {
   hospitalRole?: string;
   dataAccessScope?: any;
   expiresIn?: number;
-}
+};
 
-export interface AuthorizationCodeData {
+export type AuthorizationCodeData = {
   clientId: string;
   organizationId: string;
   userId: string;
@@ -31,9 +33,9 @@ export interface AuthorizationCodeData {
   departmentId?: string;
   hospitalRole?: string;
   dataAccessScope?: any;
-}
+};
 
-export interface RefreshTokenData {
+export type RefreshTokenData = {
   accessTokenId: string;
   clientId: string;
   organizationId: string;
@@ -42,7 +44,7 @@ export interface RefreshTokenData {
   departmentId?: string;
   hospitalRole?: string;
   expiresIn?: number;
-}
+};
 
 /**
  * Generate secure random token
@@ -55,7 +57,7 @@ function generateSecureToken(length: number = 64): string {
  * Generate authorization code
  */
 export async function generateAuthorizationCode(
-  data: AuthorizationCodeData
+  data: AuthorizationCodeData,
 ): Promise<string> {
   const code = generateSecureToken(32);
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
@@ -72,7 +74,7 @@ export async function generateAuthorizationCode(
     departmentId: data.departmentId,
     hospitalRole: data.hospitalRole,
     dataAccessScope: data.dataAccessScope,
-    expiresAt
+    expiresAt,
   });
 
   // Audit log
@@ -89,8 +91,8 @@ export async function generateAuthorizationCode(
       scopes: data.scopes,
       redirectUri: data.redirectUri,
       departmentId: data.departmentId,
-      hospitalRole: data.hospitalRole
-    }
+      hospitalRole: data.hospitalRole,
+    },
   });
 
   return code;
@@ -102,7 +104,7 @@ export async function generateAuthorizationCode(
 export async function validateAuthorizationCode(
   code: string,
   clientId: string,
-  redirectUri: string
+  redirectUri: string,
 ): Promise<{
   organizationId: string;
   userId: string;
@@ -116,11 +118,13 @@ export async function validateAuthorizationCode(
     .from(oauthAuthorizationCode)
     .where(and(
       eq(oauthAuthorizationCode.code, code),
-      eq(oauthAuthorizationCode.clientId, clientId)
+      eq(oauthAuthorizationCode.clientId, clientId),
     ))
     .limit(1);
 
-  if (!authCode[0]) return null;
+  if (!authCode[0]) {
+    return null;
+  }
 
   const codeData = authCode[0];
 
@@ -159,8 +163,8 @@ export async function validateAuthorizationCode(
       clientId,
       redirectUri,
       departmentId: codeData.departmentId,
-      hospitalRole: codeData.hospitalRole
-    }
+      hospitalRole: codeData.hospitalRole,
+    },
   });
 
   return {
@@ -169,7 +173,7 @@ export async function validateAuthorizationCode(
     scopes: codeData.scopes as string[],
     departmentId: codeData.departmentId || undefined,
     hospitalRole: codeData.hospitalRole || undefined,
-    dataAccessScope: codeData.dataAccessScope
+    dataAccessScope: codeData.dataAccessScope,
   };
 }
 
@@ -177,13 +181,13 @@ export async function validateAuthorizationCode(
  * Generate access token
  */
 export async function generateAccessToken(
-  data: AccessTokenData
+  data: AccessTokenData,
 ): Promise<{
-  accessToken: string;
-  refreshToken?: string;
-  expiresIn: number;
-  tokenType: string;
-}> {
+    accessToken: string;
+    refreshToken?: string;
+    expiresIn: number;
+    tokenType: string;
+  }> {
   const accessToken = generateSecureToken(64);
   const expiresIn = data.expiresIn || 3600; // 1 hour default
   const expiresAt = new Date(Date.now() + expiresIn * 1000);
@@ -201,7 +205,7 @@ export async function generateAccessToken(
     departmentId: data.departmentId,
     hospitalRole: data.hospitalRole,
     dataAccessScope: data.dataAccessScope,
-    expiresAt
+    expiresAt,
   }).returning({ id: oauthAccessToken.id });
 
   let refreshToken: string | undefined;
@@ -220,7 +224,7 @@ export async function generateAccessToken(
       scopes: data.scopes,
       departmentId: data.departmentId,
       hospitalRole: data.hospitalRole,
-      expiresAt: refreshExpiresAt
+      expiresAt: refreshExpiresAt,
     });
   }
 
@@ -240,15 +244,15 @@ export async function generateAccessToken(
       hasRefreshToken: !!refreshToken,
       departmentId: data.departmentId,
       hospitalRole: data.hospitalRole,
-      phiAccess: data.dataAccessScope?.phiAccess || false
-    }
+      phiAccess: data.dataAccessScope?.phiAccess || false,
+    },
   });
 
   return {
     accessToken,
     refreshToken,
     expiresIn,
-    tokenType: 'Bearer'
+    tokenType: 'Bearer',
   };
 }
 
@@ -256,7 +260,7 @@ export async function generateAccessToken(
  * Validate access token
  */
 export async function validateAccessToken(
-  token: string
+  token: string,
 ): Promise<{
   clientId: string;
   organizationId: string;
@@ -272,7 +276,9 @@ export async function validateAccessToken(
     .where(eq(oauthAccessToken.token, token))
     .limit(1);
 
-  if (!accessToken[0]) return null;
+  if (!accessToken[0]) {
+    return null;
+  }
 
   const tokenData = accessToken[0];
 
@@ -299,7 +305,7 @@ export async function validateAccessToken(
     scopes: tokenData.scopes as string[],
     departmentId: tokenData.departmentId || undefined,
     hospitalRole: tokenData.hospitalRole || undefined,
-    dataAccessScope: tokenData.dataAccessScope
+    dataAccessScope: tokenData.dataAccessScope,
   };
 }
 
@@ -308,7 +314,7 @@ export async function validateAccessToken(
  */
 export async function refreshAccessToken(
   refreshToken: string,
-  clientId: string
+  clientId: string,
 ): Promise<{
   accessToken: string;
   refreshToken: string;
@@ -320,11 +326,13 @@ export async function refreshAccessToken(
     .from(oauthRefreshToken)
     .where(and(
       eq(oauthRefreshToken.token, refreshToken),
-      eq(oauthRefreshToken.clientId, clientId)
+      eq(oauthRefreshToken.clientId, clientId),
     ))
     .limit(1);
 
-  if (!refreshTokenData[0]) return null;
+  if (!refreshTokenData[0]) {
+    return null;
+  }
 
   const tokenData = refreshTokenData[0];
 
@@ -350,7 +358,7 @@ export async function refreshAccessToken(
     userId: tokenData.userId,
     scopes: tokenData.scopes as string[],
     departmentId: tokenData.departmentId || undefined,
-    hospitalRole: tokenData.hospitalRole || undefined
+    hospitalRole: tokenData.hospitalRole || undefined,
   });
 
   return newTokens;
@@ -362,7 +370,7 @@ export async function refreshAccessToken(
 export async function revokeAccessToken(tokenIdOrToken: string): Promise<void> {
   // Try to revoke by ID first, then by token value
   const revokedAt = new Date();
-  
+
   await db
     .update(oauthAccessToken)
     .set({ revokedAt })
@@ -379,7 +387,7 @@ export async function revokeAccessToken(tokenIdOrToken: string): Promise<void> {
  */
 export async function revokeRefreshToken(token: string): Promise<void> {
   const revokedAt = new Date();
-  
+
   await db
     .update(oauthRefreshToken)
     .set({ revokedAt })
@@ -412,7 +420,7 @@ export async function cleanupExpiredTokens(): Promise<void> {
     .set({ revokedAt: now })
     .where(and(
       lt(oauthAccessToken.expiresAt, now),
-      isNull(oauthAccessToken.revokedAt)
+      isNull(oauthAccessToken.revokedAt),
     ));
 
   // Mark expired refresh tokens as revoked
@@ -421,7 +429,7 @@ export async function cleanupExpiredTokens(): Promise<void> {
     .set({ revokedAt: now })
     .where(and(
       lt(oauthRefreshToken.expiresAt, now),
-      isNull(oauthRefreshToken.revokedAt)
+      isNull(oauthRefreshToken.revokedAt),
     ));
 }
 
@@ -429,7 +437,7 @@ export async function cleanupExpiredTokens(): Promise<void> {
  * Get token introspection data
  */
 export async function introspectToken(
-  token: string
+  token: string,
 ): Promise<{
   active: boolean;
   scope?: string;
@@ -446,7 +454,7 @@ export async function introspectToken(
   phi_access?: boolean;
 } | null> {
   const tokenData = await validateAccessToken(token);
-  
+
   if (!tokenData) {
     return { active: false };
   }
@@ -476,6 +484,6 @@ export async function introspectToken(
     // Hospital-specific claims
     hospital_role: tokenData.hospitalRole,
     department_id: tokenData.departmentId,
-    phi_access: tokenData.dataAccessScope?.phiAccess || false
+    phi_access: tokenData.dataAccessScope?.phiAccess || false,
   };
 }

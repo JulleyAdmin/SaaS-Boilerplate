@@ -1,29 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { createHash, timingSafeEqual } from 'node:crypto';
+
+import { eq } from 'drizzle-orm';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
+import { createAuditLog } from '@/libs/audit';
 import { db } from '@/libs/DB';
 import { scimConfiguration } from '@/models/Schema';
-import { eq } from 'drizzle-orm';
-import { createHash, timingSafeEqual } from 'crypto';
-import { createAuditLog } from '@/libs/audit';
+
 import { SCIM_SCHEMAS } from './users';
 
-export interface ScimAuthContext {
+export type ScimAuthContext = {
   organizationId: string;
   isAuthenticated: boolean;
   config: any;
-}
+};
 
 /**
  * SCIM Bearer token authentication middleware
  */
 export async function authenticateScimRequest(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<{ success: boolean; context?: ScimAuthContext; error?: string }> {
-  
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return {
       success: false,
-      error: 'Missing or invalid Authorization header'
+      error: 'Missing or invalid Authorization header',
     };
   }
 
@@ -31,7 +34,7 @@ export async function authenticateScimRequest(
   if (!token) {
     return {
       success: false,
-      error: 'Empty bearer token'
+      error: 'Empty bearer token',
     };
   }
 
@@ -50,9 +53,9 @@ export async function authenticateScimRequest(
       // Use timing-safe comparison to prevent timing attacks
       const configTokenBuffer = Buffer.from(config.bearerToken, 'hex');
       const providedTokenBuffer = Buffer.from(hashedToken, 'hex');
-      
-      if (configTokenBuffer.length === providedTokenBuffer.length &&
-          timingSafeEqual(configTokenBuffer, providedTokenBuffer)) {
+
+      if (configTokenBuffer.length === providedTokenBuffer.length
+        && timingSafeEqual(configTokenBuffer, providedTokenBuffer)) {
         matchedConfig = config;
         break;
       }
@@ -61,7 +64,7 @@ export async function authenticateScimRequest(
     if (!matchedConfig) {
       return {
         success: false,
-        error: 'Invalid bearer token'
+        error: 'Invalid bearer token',
       };
     }
 
@@ -74,15 +77,15 @@ export async function authenticateScimRequest(
       crud: 'read',
       resource: 'scim_endpoint',
       resourceId: request.url,
-      ipAddress: request.headers.get('x-forwarded-for') || 
-                 request.headers.get('x-real-ip') || 
-                 'unknown',
+      ipAddress: request.headers.get('x-forwarded-for')
+        || request.headers.get('x-real-ip')
+        || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
       metadata: {
         endpoint: request.url,
         method: request.method,
-        tokenPrefix: hashedToken.substring(0, 8)
-      }
+        tokenPrefix: hashedToken.substring(0, 8),
+      },
     });
 
     return {
@@ -90,15 +93,14 @@ export async function authenticateScimRequest(
       context: {
         organizationId: matchedConfig.organizationId,
         isAuthenticated: true,
-        config: matchedConfig
-      }
+        config: matchedConfig,
+      },
     };
-
   } catch (error) {
     console.error('SCIM authentication error:', error);
     return {
       success: false,
-      error: 'Authentication service error'
+      error: 'Authentication service error',
     };
   }
 }
@@ -108,13 +110,13 @@ export async function authenticateScimRequest(
  */
 export function validateScimContentType(request: NextRequest): boolean {
   const contentType = request.headers.get('content-type');
-  
+
   if (request.method === 'GET' || request.method === 'DELETE') {
     return true; // No content type validation needed
   }
 
-  return contentType === 'application/scim+json' || 
-         contentType === 'application/json';
+  return contentType === 'application/scim+json'
+    || contentType === 'application/json';
 }
 
 /**
@@ -123,13 +125,13 @@ export function validateScimContentType(request: NextRequest): boolean {
 export function createScimErrorResponse(
   status: number,
   scimType?: string,
-  detail?: string
+  detail?: string,
 ): NextResponse {
   const errorBody = {
     schemas: [SCIM_SCHEMAS.ERROR],
     status: status.toString(),
     scimType,
-    detail
+    detail,
   };
 
   return NextResponse.json(errorBody, {
@@ -137,8 +139,8 @@ export function createScimErrorResponse(
     headers: {
       'Content-Type': 'application/scim+json',
       'Cache-Control': 'no-store',
-      'Pragma': 'no-cache'
-    }
+      'Pragma': 'no-cache',
+    },
   });
 }
 
@@ -148,21 +150,21 @@ export function createScimErrorResponse(
 export function createScimResponse(
   data: any,
   status: number = 200,
-  location?: string
+  location?: string,
 ): NextResponse {
   const headers: Record<string, string> = {
     'Content-Type': 'application/scim+json',
     'Cache-Control': 'no-store',
-    'Pragma': 'no-cache'
+    'Pragma': 'no-cache',
   };
 
   if (location) {
-    headers['Location'] = location;
+    headers.Location = location;
   }
 
   return NextResponse.json(data, {
     status,
-    headers
+    headers,
   });
 }
 
@@ -183,8 +185,8 @@ export function validateScimListParams(searchParams: URLSearchParams): {
   error?: string;
 } {
   try {
-    const startIndex = parseInt(searchParams.get('startIndex') || '1');
-    const count = parseInt(searchParams.get('count') || '20');
+    const startIndex = Number.parseInt(searchParams.get('startIndex') || '1');
+    const count = Number.parseInt(searchParams.get('count') || '20');
     const filter = searchParams.get('filter') || undefined;
     const sortBy = searchParams.get('sortBy') || undefined;
     const sortOrder = (searchParams.get('sortOrder') || 'ascending') as 'ascending' | 'descending';
@@ -213,8 +215,8 @@ export function validateScimListParams(searchParams: URLSearchParams): {
         sortBy,
         sortOrder,
         attributes,
-        excludedAttributes
-      }
+        excludedAttributes,
+      },
     };
   } catch (error) {
     return { valid: false, error: 'Invalid query parameters' };
@@ -271,12 +273,12 @@ const scimRateLimiter = new ScimRateLimiter();
  */
 export async function applyScimRateLimit(
   request: NextRequest,
-  organizationId: string
+  organizationId: string,
 ): Promise<{ allowed: boolean; response?: NextResponse }> {
   const identifier = `${organizationId}:${request.headers.get('x-forwarded-for') || 'unknown'}`;
-  
+
   const result = await scimRateLimiter.checkLimit(identifier);
-  
+
   if (!result.allowed) {
     await createAuditLog({
       organizationId,
@@ -291,18 +293,18 @@ export async function applyScimRateLimit(
       metadata: {
         endpoint: request.url,
         method: request.method,
-        rateLimitExceeded: true
-      }
+        rateLimitExceeded: true,
+      },
     });
 
     const response = createScimErrorResponse(
       429,
       'tooMany',
-      'Rate limit exceeded. Too many requests.'
+      'Rate limit exceeded. Too many requests.',
     );
-    
+
     response.headers.set('Retry-After', Math.ceil((result.resetTime - Date.now()) / 1000).toString());
-    response.headers.set('X-RateLimit-Limit', scimRateLimiter['maxRequests'].toString());
+    response.headers.set('X-RateLimit-Limit', scimRateLimiter.maxRequests.toString());
     response.headers.set('X-RateLimit-Remaining', '0');
     response.headers.set('X-RateLimit-Reset', result.resetTime.toString());
 
@@ -316,16 +318,18 @@ export async function applyScimRateLimit(
  * Validate SCIM filter syntax (basic implementation)
  */
 export function validateScimFilter(filter: string): { valid: boolean; error?: string } {
-  if (!filter) return { valid: true };
+  if (!filter) {
+    return { valid: true };
+  }
 
   // Basic SCIM filter validation
   // In production, implement full SCIM filter parsing per RFC 7644
-  const basicFilterPattern = /^[a-zA-Z][a-zA-Z0-9_.]*(eq|ne|co|sw|ew|gt|ge|lt|le|pr)\s*.+$/;
-  
+  const basicFilterPattern = /^[a-zA-Z][\w.]*(eq|ne|co|sw|ew|gt|ge|lt|le|pr)\s*(?:\S.*|[\t\v\f \xA0\u1680\u2000-\u200A\u202F\u205F\u3000\uFEFF])$/;
+
   if (!basicFilterPattern.test(filter.replace(/\s+/g, ' ').trim())) {
-    return { 
-      valid: false, 
-      error: 'Invalid filter syntax. Use format: attribute operator value' 
+    return {
+      valid: false,
+      error: 'Invalid filter syntax. Use format: attribute operator value',
     };
   }
 
@@ -345,7 +349,7 @@ export function generateScimETag(resource: any): string {
  */
 export function validateETag(
   request: NextRequest,
-  resource: any
+  resource: any,
 ): { valid: boolean; modified: boolean } {
   const ifMatch = request.headers.get('if-match');
   const ifNoneMatch = request.headers.get('if-none-match');
@@ -370,7 +374,7 @@ export function validateETag(
 export function filterHospitalScimAttributes(
   resource: any,
   attributes?: string[],
-  excludedAttributes?: string[]
+  excludedAttributes?: string[],
 ): any {
   if (!attributes && !excludedAttributes) {
     return resource;
@@ -380,7 +384,7 @@ export function filterHospitalScimAttributes(
 
   if (excludedAttributes) {
     // Remove excluded attributes
-    excludedAttributes.forEach(attr => {
+    excludedAttributes.forEach((attr) => {
       if (attr && attr.includes('.')) {
         // Handle nested attributes like "name.familyName"
         const parts = attr.split('.');
@@ -405,16 +409,16 @@ export function filterHospitalScimAttributes(
     // Only include specified attributes
     const result: any = {
       schemas: filtered.schemas,
-      id: filtered.id
+      id: filtered.id,
     };
 
-    attributes.forEach(attr => {
+    attributes.forEach((attr) => {
       if (attr && attr.includes('.')) {
         // Handle nested attributes
         const parts = attr.split('.');
         let source = filtered;
         let target = result;
-        
+
         for (let i = 0; i < parts.length - 1; i++) {
           if (!target[parts[i]]) {
             target[parts[i]] = {};
@@ -426,7 +430,7 @@ export function filterHospitalScimAttributes(
             break;
           }
         }
-        
+
         if (source && source[parts[parts.length - 1]] !== undefined) {
           target[parts[parts.length - 1]] = source[parts[parts.length - 1]];
         }

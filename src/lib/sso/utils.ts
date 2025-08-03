@@ -4,18 +4,30 @@ import type { CreateSSOConnectionParams, SSOConnection, SSOConnectionListRespons
 export async function createSSOConnection(params: CreateSSOConnectionParams): Promise<SSOConnection> {
   const { apiController } = await getJacksonControllers();
 
-  const connectionParams = {
+  const connectionParams: any = {
     tenant: params.organizationId,
     product: 'hospitalos',
     name: params.name,
     description: params.description,
-    metadataUrl: params.metadataUrl,
-    metadata: params.metadata,
     redirectUrl: [params.redirectUrl],
     defaultRedirectUrl: params.redirectUrl,
   };
 
-  return await apiController.createSAMLConnection(connectionParams);
+  // Add either metadataUrl or metadata
+  if (params.metadataUrl) {
+    connectionParams.metadataUrl = params.metadataUrl;
+  } else if (params.metadata) {
+    connectionParams.encodedRawMetadata = Buffer.from(params.metadata).toString('base64');
+  }
+
+  const result = await apiController.createSAMLConnection(connectionParams);
+
+  // Ensure the result has all required fields
+  return {
+    ...result,
+    name: result.name || params.name,
+    enabled: result.enabled !== undefined ? result.enabled : true,
+  } as SSOConnection;
 }
 
 export async function getSSOConnections(organizationId: string): Promise<SSOConnectionListResponse> {

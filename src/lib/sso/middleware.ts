@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 export function withSSOAuth(handler: (req: NextRequest, ...args: any[]) => Promise<NextResponse>) {
   return async (req: NextRequest, ...args: any[]) => {
     try {
-      const { userId, orgId } = auth();
+      const { userId, orgId } = await auth();
 
       if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

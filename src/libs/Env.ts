@@ -1,13 +1,15 @@
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
+const isTestMode = process.env.NODE_ENV === 'test' || process.env.E2E_TESTING === 'true' || process.env.TESTING === 'true';
+
 export const Env = createEnv({
   server: {
-    CLERK_SECRET_KEY: z.string().min(1),
+    CLERK_SECRET_KEY: isTestMode ? z.string().optional() : z.string().min(1),
     DATABASE_URL: z.string().optional(),
     LOGTAIL_SOURCE_TOKEN: z.string().optional(),
-    STRIPE_SECRET_KEY: process.env.NODE_ENV === 'test' ? z.string().optional() : z.string().min(1),
-    STRIPE_WEBHOOK_SECRET: process.env.NODE_ENV === 'test' ? z.string().optional() : z.string().min(1),
+    STRIPE_SECRET_KEY: isTestMode ? z.string().optional() : z.string().min(1),
+    STRIPE_WEBHOOK_SECRET: isTestMode ? z.string().optional() : z.string().min(1),
     BILLING_PLAN_ENV: z.enum(['dev', 'test', 'prod']).optional(),
     JACKSON_CLIENT_SECRET_VERIFIER: z.string().optional(),
     // Email service
@@ -24,15 +26,15 @@ export const Env = createEnv({
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1),
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: isTestMode ? z.string().optional() : z.string().min(1),
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: isTestMode ? z.string().optional() : z.string().min(1),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: isTestMode ? z.string().optional() : z.string().min(1),
     // Stripe price IDs for hospital plans
     NEXT_PUBLIC_STRIPE_CLINIC_PRICE_ID: z.string().optional(),
     NEXT_PUBLIC_STRIPE_HOSPITAL_PRICE_ID: z.string().optional(),
     NEXT_PUBLIC_STRIPE_ENTERPRISE_PRICE_ID: z.string().optional(),
   },
-  skipValidation: process.env.SKIP_ENV_VALIDATION === 'true' || process.env.NODE_ENV === 'test',
+  skipValidation: process.env.SKIP_ENV_VALIDATION === 'true' || isTestMode,
   shared: {
     NODE_ENV: z.enum(['test', 'development', 'production']).optional(),
   },

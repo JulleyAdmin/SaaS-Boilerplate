@@ -14,18 +14,22 @@ export async function createOrUpdateClerkUser(ssoUser: SSOUser): Promise<string>
       const clerkUser = existingUsers.data[0];
 
       // Update user metadata with SSO information
-      await clerk.users.updateUserMetadata(clerkUser.id, {
-        publicMetadata: {
-          ssoProvider: 'saml',
-          ssoUserId: ssoUser.id,
-          ssoRoles: ssoUser.roles || [],
-          ssoGroups: ssoUser.groups || [],
-          lastSSOLogin: new Date().toISOString(),
-          ...ssoUser.raw,
-        },
-      });
+      if (clerkUser?.id) {
+        await clerk.users.updateUserMetadata(clerkUser.id, {
+          publicMetadata: {
+            ssoProvider: 'saml',
+            ssoUserId: ssoUser.id,
+            ssoRoles: ssoUser.roles || [],
+            ssoGroups: ssoUser.groups || [],
+            lastSSOLogin: new Date().toISOString(),
+            ...ssoUser.raw,
+          },
+        });
 
-      return clerkUser.id;
+        return clerkUser.id;
+      } else {
+        throw new Error('User found but no ID available');
+      }
     } else {
       // Create new user
       const clerkUser = await clerk.users.createUser({
@@ -58,7 +62,6 @@ export async function createClerkSession(userId: string, organizationId?: string
     const clerk = await clerkClient();
     const session = await clerk.sessions.createSession({
       userId,
-      actor: organizationId ? { sub: organizationId } : undefined,
     });
 
     return session;
@@ -78,15 +81,17 @@ export async function addUserToOrganization(
     const clerk = await clerkClient();
     const memberships = await clerk.organizations.getOrganizationMembershipList({
       organizationId,
-      userId,
     });
 
-    if (memberships.data.length === 0) {
+    // Check if user is already a member
+    const userMembership = memberships.data.find(m => m.publicUserData?.userId === userId);
+
+    if (!userMembership) {
       // Add user to organization
       await clerk.organizations.createOrganizationMembership({
         organizationId,
         userId,
-        role,
+        role: role as any, // Type cast to bypass incorrect type definition
       });
     }
   } catch (error) {
@@ -127,11 +132,12 @@ export async function syncSSOUserWithTeamMember(
   // to sync SSO roles with internal role system
   try {
     // Map SSO roles to internal roles
-    const mappedRole = mapSSORolesToInternalRole(ssoRoles);
+    // const mappedRole = mapSSORolesToInternalRole(ssoRoles);
 
     // Update team_members table through your database layer
     // This is where you'd use your Drizzle ORM to update the team_members table
     // Syncing user with organization and role
+    console.log('Syncing SSO user with team member:', { userId, organizationId, ssoRoles });
   } catch (error) {
     console.error('Failed to sync SSO user with team member:', error);
   }

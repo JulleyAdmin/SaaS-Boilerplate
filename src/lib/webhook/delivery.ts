@@ -1,30 +1,29 @@
-import { 
-  createWebhookEvent,
+import {
   createWebhookDelivery,
-  updateWebhookDelivery,
-  updateEndpointDeliveryStats,
-  getWebhookEndpointsForEvent,
+  createWebhookEvent,
   createWebhookSignature,
-  type WebhookEventType,
+  getWebhookEndpointsForEvent,
+  updateEndpointDeliveryStats,
+  updateWebhookDelivery,
   type WebhookEndpoint,
-  type WebhookDelivery
+  type WebhookEventType,
 } from '@/models/webhook';
 
-interface WebhookPayload {
+type WebhookPayload = {
   id: string;
   eventType: WebhookEventType;
   createdAt: string;
   data: Record<string, any>;
-}
+};
 
-interface DeliveryResult {
+type DeliveryResult = {
   success: boolean;
   httpStatus?: number;
   responseBody?: string;
   responseHeaders?: Record<string, string>;
   duration: number;
   errorMessage?: string;
-}
+};
 
 // Main function to send webhook events
 export const sendWebhookEvent = async (
@@ -32,7 +31,7 @@ export const sendWebhookEvent = async (
   eventType: WebhookEventType,
   data: Record<string, any>,
   resourceId?: string,
-  resourceType?: string
+  resourceType?: string,
 ): Promise<void> => {
   try {
     // 1. Create webhook event record
@@ -53,8 +52,8 @@ export const sendWebhookEvent = async (
     }
 
     // 3. Send to each endpoint
-    const deliveryPromises = endpoints.map(endpoint => 
-      deliverWebhookToEndpoint(endpoint, event.id, eventType, data)
+    const deliveryPromises = endpoints.map(endpoint =>
+      deliverWebhookToEndpoint(endpoint, event.id, eventType, data),
     );
 
     await Promise.allSettled(deliveryPromises);
@@ -71,7 +70,7 @@ export const deliverWebhookToEndpoint = async (
   eventId: string,
   eventType: WebhookEventType,
   data: Record<string, any>,
-  attempt = 1
+  attempt = 1,
 ): Promise<void> => {
   const payload: WebhookPayload = {
     id: eventId,
@@ -91,7 +90,7 @@ export const deliverWebhookToEndpoint = async (
 
   try {
     const result = await executeWebhookDelivery(endpoint, payload);
-    
+
     // Update delivery record with result
     await updateWebhookDelivery(delivery.id, {
       httpStatus: result.httpStatus,
@@ -111,7 +110,7 @@ export const deliverWebhookToEndpoint = async (
       console.log(`Webhook delivered successfully to ${endpoint.url}`);
     } else {
       console.error(`Webhook delivery failed to ${endpoint.url}:`, result.errorMessage);
-      
+
       // Schedule retry if within retry limit
       if (attempt < endpoint.retryCount) {
         console.log(`Scheduling retry ${attempt + 1} for ${endpoint.url}`);
@@ -119,7 +118,7 @@ export const deliverWebhookToEndpoint = async (
     }
   } catch (error) {
     console.error(`Webhook delivery error to ${endpoint.url}:`, error);
-    
+
     await updateWebhookDelivery(delivery.id, {
       status: 'failed',
       errorMessage: error instanceof Error ? error.message : 'Unknown error',
@@ -133,11 +132,11 @@ export const deliverWebhookToEndpoint = async (
 // Execute the actual HTTP request to webhook endpoint
 const executeWebhookDelivery = async (
   endpoint: WebhookEndpoint,
-  payload: WebhookPayload
+  payload: WebhookPayload,
 ): Promise<DeliveryResult> => {
   const startTime = Date.now();
   const payloadString = JSON.stringify(payload);
-  
+
   // Create signature for verification
   const signature = createWebhookSignature(payloadString, endpoint.secret);
   const timestamp = Math.floor(Date.now() / 1000);
@@ -156,7 +155,7 @@ const executeWebhookDelivery = async (
   try {
     const controller = new AbortController();
     const timeoutMs = endpoint.timeout * 1000;
-    
+
     // Set timeout
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -195,7 +194,7 @@ const executeWebhookDelivery = async (
     };
   } catch (error) {
     const duration = Date.now() - startTime;
-    
+
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
         return {
@@ -204,7 +203,7 @@ const executeWebhookDelivery = async (
           errorMessage: `Timeout after ${endpoint.timeout}s`,
         };
       }
-      
+
       return {
         success: false,
         duration,
@@ -223,19 +222,19 @@ const executeWebhookDelivery = async (
 // Calculate next retry time with exponential backoff
 const calculateNextRetry = (attempt: number): Date => {
   // Exponential backoff: 2^attempt minutes, max 60 minutes
-  const delayMinutes = Math.min(Math.pow(2, attempt), 60);
+  const delayMinutes = Math.min(2 ** attempt, 60);
   const delayMs = delayMinutes * 60 * 1000;
-  
+
   return new Date(Date.now() + delayMs);
 };
 
 // Retry failed webhook deliveries
 export const retryFailedWebhooks = async (): Promise<void> => {
   const { getFailedDeliveriesForRetry } = await import('@/models/webhook');
-  
+
   try {
     const failedDeliveries = await getFailedDeliveriesForRetry();
-    
+
     if (failedDeliveries.length === 0) {
       return;
     }
@@ -246,16 +245,15 @@ export const retryFailedWebhooks = async (): Promise<void> => {
       try {
         // Get the endpoint for this delivery
         const { getWebhookEndpoint } = await import('@/models/webhook');
-        
+
         // We need to get the endpoint, but we don't have organizationId in delivery
         // This is a limitation - we should store it or get it differently
         // For now, skip retry if we can't get the endpoint
         console.log(`Retrying delivery ${delivery.id} (attempt ${delivery.attempt + 1})`);
-        
+
         // TODO: Implement proper retry logic with endpoint lookup
         // This would require either storing organizationId in delivery record
         // or joining with webhook_endpoints table
-        
       } catch (error) {
         console.error(`Failed to retry delivery ${delivery.id}:`, error);
       }
@@ -268,24 +266,24 @@ export const retryFailedWebhooks = async (): Promise<void> => {
 // Webhook event helpers for common scenarios
 export const webhookHelpers = {
   // Team member events
-  memberCreated: (organizationId: string, member: any) => 
+  memberCreated: (organizationId: string, member: any) =>
     sendWebhookEvent(organizationId, 'member.created', member, member.id, 'member'),
 
-  memberRemoved: (organizationId: string, member: any) => 
+  memberRemoved: (organizationId: string, member: any) =>
     sendWebhookEvent(organizationId, 'member.removed', member, member.id, 'member'),
 
-  memberUpdated: (organizationId: string, member: any) => 
+  memberUpdated: (organizationId: string, member: any) =>
     sendWebhookEvent(organizationId, 'member.updated', member, member.id, 'member'),
 
   // Invitation events
-  invitationCreated: (organizationId: string, invitation: any) => 
+  invitationCreated: (organizationId: string, invitation: any) =>
     sendWebhookEvent(organizationId, 'invitation.created', invitation, invitation.id, 'invitation'),
 
-  invitationAccepted: (organizationId: string, invitation: any) => 
+  invitationAccepted: (organizationId: string, invitation: any) =>
     sendWebhookEvent(organizationId, 'invitation.accepted', invitation, invitation.id, 'invitation'),
 
   // API key events
-  apiKeyCreated: (organizationId: string, apiKey: any) => 
+  apiKeyCreated: (organizationId: string, apiKey: any) =>
     sendWebhookEvent(organizationId, 'apikey.created', {
       id: apiKey.id,
       name: apiKey.name,
@@ -294,7 +292,7 @@ export const webhookHelpers = {
       createdBy: apiKey.createdBy,
     }, apiKey.id, 'apikey'),
 
-  apiKeyDeleted: (organizationId: string, apiKey: any) => 
+  apiKeyDeleted: (organizationId: string, apiKey: any) =>
     sendWebhookEvent(organizationId, 'apikey.deleted', {
       id: apiKey.id,
       name: apiKey.name,
@@ -303,16 +301,16 @@ export const webhookHelpers = {
     }, apiKey.id, 'apikey'),
 
   // Organization events
-  organizationUpdated: (organizationId: string, organization: any) => 
+  organizationUpdated: (organizationId: string, organization: any) =>
     sendWebhookEvent(organizationId, 'organization.updated', organization, organizationId, 'organization'),
 
   // SSO events
-  ssoConnectionCreated: (organizationId: string, connection: any) => 
+  ssoConnectionCreated: (organizationId: string, connection: any) =>
     sendWebhookEvent(organizationId, 'sso.connection.created', connection, connection.id, 'sso_connection'),
 
-  ssoConnectionUpdated: (organizationId: string, connection: any) => 
+  ssoConnectionUpdated: (organizationId: string, connection: any) =>
     sendWebhookEvent(organizationId, 'sso.connection.updated', connection, connection.id, 'sso_connection'),
 
-  ssoConnectionDeleted: (organizationId: string, connection: any) => 
+  ssoConnectionDeleted: (organizationId: string, connection: any) =>
     sendWebhookEvent(organizationId, 'sso.connection.deleted', connection, connection.id, 'sso_connection'),
 };

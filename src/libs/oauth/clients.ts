@@ -1,12 +1,14 @@
+import crypto from 'node:crypto';
+
+import { auth } from '@clerk/nextjs/server';
+import bcrypt from 'bcryptjs';
+import { and, eq, isNull } from 'drizzle-orm';
+
+import { createAuditLog } from '@/libs/audit';
 import { db } from '@/libs/DB';
 import { oauthClient, oauthClientPermission } from '@/models/Schema';
-import { eq, and, isNull } from 'drizzle-orm';
-import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
-import { createAuditLog } from '@/libs/audit';
-import { auth } from '@clerk/nextjs/server';
 
-export interface OAuthClientData {
+export type OAuthClientData = {
   name: string;
   description?: string;
   clientType: 'confidential' | 'public';
@@ -25,9 +27,9 @@ export interface OAuthClientData {
   homepageUrl?: string;
   privacyPolicyUrl?: string;
   termsOfServiceUrl?: string;
-}
+};
 
-export interface OAuthClientPermission {
+export type OAuthClientPermission = {
   scope: string;
   resource: string;
   action: string;
@@ -38,9 +40,9 @@ export interface OAuthClientPermission {
   riskLevel?: string;
   complianceRequired?: boolean;
   expiresAt?: Date;
-}
+};
 
-export interface OAuthClient {
+export type OAuthClient = {
   id: string;
   organizationId: string;
   clientId: string;
@@ -68,7 +70,7 @@ export interface OAuthClient {
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 /**
  * Generate secure client credentials
@@ -76,7 +78,7 @@ export interface OAuthClient {
 function generateClientCredentials(): { clientId: string; clientSecret: string } {
   const clientId = `hos_${crypto.randomBytes(16).toString('hex')}`;
   const clientSecret = crypto.randomBytes(32).toString('base64url');
-  
+
   return { clientId, clientSecret };
 }
 
@@ -99,10 +101,10 @@ async function verifyClientSecret(secret: string, hashedSecret: string): Promise
  */
 export async function createOAuthClient(
   clientData: OAuthClientData,
-  organizationId: string
+  organizationId: string,
 ): Promise<{ client: OAuthClient; clientSecret: string }> {
   const { userId } = await auth();
-  
+
   if (!userId) {
     throw new Error('User authentication required');
   }
@@ -126,7 +128,7 @@ export async function createOAuthClient(
   }
 
   const now = new Date();
-  
+
   const newClientResult = await db.insert(oauthClient).values({
     id: crypto.randomUUID(),
     organizationId,
@@ -153,7 +155,7 @@ export async function createOAuthClient(
     isActive: true,
     createdBy: userId,
     createdAt: now,
-    updatedAt: now
+    updatedAt: now,
   }).returning();
 
   if (!newClientResult[0]) {
@@ -178,13 +180,13 @@ export async function createOAuthClient(
       scopes: newClient.scopes,
       phiAccess: newClient.phiAccess,
       dataAccessLevel: newClient.dataAccessLevel,
-      redirectUris: newClient.redirectUris
-    }
+      redirectUris: newClient.redirectUris,
+    },
   });
 
   return {
     client: formatOAuthClient(newClient),
-    clientSecret // Return plain secret only once
+    clientSecret, // Return plain secret only once
   };
 }
 
@@ -193,7 +195,7 @@ export async function createOAuthClient(
  */
 export async function getOAuthClient(
   clientId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<OAuthClient | null> {
   const client = await db
     .select()
@@ -201,11 +203,13 @@ export async function getOAuthClient(
     .where(and(
       eq(oauthClient.clientId, clientId),
       eq(oauthClient.organizationId, organizationId),
-      eq(oauthClient.isActive, true)
+      eq(oauthClient.isActive, true),
     ))
     .limit(1);
 
-  if (!client[0]) return null;
+  if (!client[0]) {
+    return null;
+  }
 
   return formatOAuthClient(client[0]);
 }
@@ -216,7 +220,7 @@ export async function getOAuthClient(
 export async function validateClientCredentials(
   clientId: string,
   clientSecret: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<OAuthClient | null> {
   const client = await db
     .select()
@@ -224,14 +228,18 @@ export async function validateClientCredentials(
     .where(and(
       eq(oauthClient.clientId, clientId),
       eq(oauthClient.organizationId, organizationId),
-      eq(oauthClient.isActive, true)
+      eq(oauthClient.isActive, true),
     ))
     .limit(1);
 
-  if (!client[0]) return null;
+  if (!client[0]) {
+    return null;
+  }
 
   const isValidSecret = await verifyClientSecret(clientSecret, client[0].clientSecret);
-  if (!isValidSecret) return null;
+  if (!isValidSecret) {
+    return null;
+  }
 
   // Update last used timestamp
   await db
@@ -251,12 +259,12 @@ export async function listOAuthClients(
     includeInactive?: boolean;
     limit?: number;
     offset?: number;
-  } = {}
+  } = {},
 ): Promise<OAuthClient[]> {
   const { includeInactive = false, limit = 50, offset = 0 } = options;
 
   const whereConditions = [eq(oauthClient.organizationId, organizationId)];
-  
+
   if (!includeInactive) {
     whereConditions.push(eq(oauthClient.isActive, true));
   }
@@ -277,10 +285,10 @@ export async function listOAuthClients(
 export async function updateOAuthClient(
   clientId: string,
   updates: Partial<OAuthClientData>,
-  organizationId: string
+  organizationId: string,
 ): Promise<OAuthClient> {
   const { userId } = await auth();
-  
+
   if (!userId) {
     throw new Error('User authentication required');
   }
@@ -317,11 +325,11 @@ export async function updateOAuthClient(
       homepageUrl: updates.homepageUrl,
       privacyPolicyUrl: updates.privacyPolicyUrl,
       termsOfServiceUrl: updates.termsOfServiceUrl,
-      updatedAt: now
+      updatedAt: now,
     })
     .where(and(
       eq(oauthClient.clientId, clientId),
-      eq(oauthClient.organizationId, organizationId)
+      eq(oauthClient.organizationId, organizationId),
     ))
     .returning();
 
@@ -343,8 +351,8 @@ export async function updateOAuthClient(
     resourceName: updatedClient.name,
     metadata: {
       clientId: updatedClient.clientId,
-      changes: updates
-    }
+      changes: updates,
+    },
   });
 
   return formatOAuthClient(updatedClient);
@@ -355,10 +363,10 @@ export async function updateOAuthClient(
  */
 export async function revokeOAuthClient(
   clientId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<void> {
   const { userId } = await auth();
-  
+
   if (!userId) {
     throw new Error('User authentication required');
   }
@@ -374,11 +382,11 @@ export async function revokeOAuthClient(
     .update(oauthClient)
     .set({
       isActive: false,
-      updatedAt: now
+      updatedAt: now,
     })
     .where(and(
       eq(oauthClient.clientId, clientId),
-      eq(oauthClient.organizationId, organizationId)
+      eq(oauthClient.organizationId, organizationId),
     ));
 
   // Create audit log
@@ -393,8 +401,8 @@ export async function revokeOAuthClient(
     resourceName: existingClient.name,
     metadata: {
       clientId: existingClient.clientId,
-      revocationReason: 'manual_revocation'
-    }
+      revocationReason: 'manual_revocation',
+    },
   });
 }
 
@@ -404,10 +412,10 @@ export async function revokeOAuthClient(
 export async function addClientPermission(
   clientId: string,
   permission: OAuthClientPermission,
-  organizationId: string
+  organizationId: string,
 ): Promise<void> {
   const { userId } = await auth();
-  
+
   if (!userId) {
     throw new Error('User authentication required');
   }
@@ -432,7 +440,7 @@ export async function addClientPermission(
     complianceRequired: permission.complianceRequired ?? true,
     grantedBy: userId,
     grantedAt: new Date(),
-    expiresAt: permission.expiresAt
+    expiresAt: permission.expiresAt,
   });
 
   // Create audit log
@@ -451,9 +459,9 @@ export async function addClientPermission(
         resource: permission.resource,
         action: permission.action,
         riskLevel: permission.riskLevel,
-        phiAccessLevel: permission.phiAccessLevel
-      }
-    }
+        phiAccessLevel: permission.phiAccessLevel,
+      },
+    },
   });
 }
 
@@ -462,7 +470,7 @@ export async function addClientPermission(
  */
 export async function getClientPermissions(
   clientId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<OAuthClientPermission[]> {
   const permissions = await db
     .select()
@@ -470,7 +478,7 @@ export async function getClientPermissions(
     .where(and(
       eq(oauthClientPermission.clientId, clientId),
       eq(oauthClientPermission.organizationId, organizationId),
-      isNull(oauthClientPermission.revokedAt)
+      isNull(oauthClientPermission.revokedAt),
     ));
 
   return permissions.map(p => ({
@@ -483,7 +491,7 @@ export async function getClientPermissions(
     description: p.description || undefined,
     riskLevel: p.riskLevel || 'medium',
     complianceRequired: p.complianceRequired || true,
-    expiresAt: p.expiresAt || undefined
+    expiresAt: p.expiresAt || undefined,
   }));
 }
 
@@ -496,13 +504,17 @@ export async function validateClientPermission(
   resource: string,
   action: string,
   organizationId: string,
-  departmentId?: string
+  departmentId?: string,
 ): Promise<boolean> {
   const client = await getOAuthClient(clientId, organizationId);
-  if (!client) return false;
+  if (!client) {
+    return false;
+  }
 
   // Check if client has the required scope
-  if (!client.scopes.includes(scope)) return false;
+  if (!client.scopes.includes(scope)) {
+    return false;
+  }
 
   // Get specific permissions
   const permissions = await db
@@ -514,13 +526,17 @@ export async function validateClientPermission(
       eq(oauthClientPermission.scope, scope),
       eq(oauthClientPermission.resource, resource),
       eq(oauthClientPermission.action, action),
-      isNull(oauthClientPermission.revokedAt)
+      isNull(oauthClientPermission.revokedAt),
     ));
 
-  if (!permissions.length) return false;
+  if (!permissions.length) {
+    return false;
+  }
 
   const permission = permissions[0];
-  if (!permission) return false;
+  if (!permission) {
+    return false;
+  }
 
   // Check if permission is expired
   if (permission.expiresAt && new Date() > permission.expiresAt) {
@@ -569,6 +585,6 @@ function formatOAuthClient(client: any): OAuthClient {
     lastUsedAt: client.lastUsedAt,
     createdBy: client.createdBy,
     createdAt: client.createdAt,
-    updatedAt: client.updatedAt
+    updatedAt: client.updatedAt,
   };
 }

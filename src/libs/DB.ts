@@ -12,34 +12,76 @@ import * as schema from '@/models/Schema';
 
 import { Env } from './Env';
 
-let client;
-let drizzle;
+// Database instance and initialization promise
+let dbInstance: any = null;
+let initPromise: Promise<any> | null = null;
 
-if (process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD && Env.DATABASE_URL) {
-  client = new Client({
-    connectionString: Env.DATABASE_URL,
-  });
-  await client.connect();
+// Global storage for PGLite to survive hot reloads
+const globalForDb = globalThis as unknown as {
+  pgliteClient?: PGlite;
+  pgliteDrizzle?: PgliteDatabase<typeof schema>;
+};
 
-  drizzle = drizzlePg(client, { schema });
-  await migratePg(drizzle, {
-    migrationsFolder: path.join(process.cwd(), 'migrations'),
-  });
-} else {
-  // Stores the db connection in the global scope to prevent multiple instances due to hot reloading with Next.js
-  const global = globalThis as unknown as { client: PGlite; drizzle: PgliteDatabase<typeof schema> };
+async function initializeDatabase() {
+  console.log('Initializing database connection...');
 
-  if (!global.client) {
-    global.client = new PGlite();
-    await global.client.waitReady;
+  if (process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD && Env.DATABASE_URL) {
+    console.log('Using PostgreSQL database');
+    const client = new Client({
+      connectionString: Env.DATABASE_URL,
+    });
 
-    global.drizzle = drizzlePglite(global.client, { schema });
+    try {
+      await client.connect();
+      const drizzle = drizzlePg(client, { schema });
+
+      // Run migrations
+      await migratePg(drizzle, {
+        migrationsFolder: path.join(process.cwd(), 'migrations'),
+      });
+
+      console.log('PostgreSQL database connected and migrations completed');
+      return drizzle;
+    } catch (error) {
+      console.error('Failed to connect to PostgreSQL:', error);
+      throw error;
+    }
+  } else {
+    console.log('Using PGLite in-memory database');
+    // Use PGLite for development without DATABASE_URL
+    if (!globalForDb.pgliteClient) {
+      globalForDb.pgliteClient = new PGlite();
+      await globalForDb.pgliteClient.waitReady;
+      globalForDb.pgliteDrizzle = drizzlePglite(globalForDb.pgliteClient, { schema });
+    }
+
+    // Run migrations
+    await migratePglite(globalForDb.pgliteDrizzle!, {
+      migrationsFolder: path.join(process.cwd(), 'migrations'),
+    });
+
+    console.log('PGLite database initialized and migrations completed');
+    return globalForDb.pgliteDrizzle;
   }
-
-  drizzle = global.drizzle;
-  await migratePglite(global.drizzle, {
-    migrationsFolder: path.join(process.cwd(), 'migrations'),
-  });
 }
 
-export const db = drizzle;
+// Get database instance with lazy initialization
+export async function getDb() {
+  if (!dbInstance) {
+    if (!initPromise) {
+      initPromise = initializeDatabase();
+    }
+    dbInstance = await initPromise;
+  }
+  return dbInstance;
+}
+
+// For backward compatibility - will be undefined until first getDb() call
+export let db: any;
+
+// Initialize db on first module load
+getDb().then((database) => {
+  db = database;
+}).catch((error) => {
+  console.error('Failed to initialize database:', error);
+});

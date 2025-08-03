@@ -1,6 +1,11 @@
 import type { CRUD, Event } from '@retracedhq/retraced';
 import { Client } from '@retracedhq/retraced';
 
+import type { auditActionEnum, auditResourceEnum } from '@/models/Schema';
+import { auditLogs } from '@/models/Schema';
+
+// Database audit log function for webhook handlers
+import { db } from './DB';
 import { Env } from './Env';
 
 // Hospital-specific audit event types
@@ -40,7 +45,7 @@ export type HospitalAuditEventType =
   | 'sensitive.data.access'
   | 'permission.denied'
   | 'compliance.report.generated'
-  
+
   // Billing Events
   | 'billing.subscription.created'
   | 'billing.subscription.updated'
@@ -292,11 +297,6 @@ export class HospitalAuditLogger {
   }
 }
 
-// Database audit log function for webhook handlers
-import { db } from './DB';
-import { auditLogs } from '@/models/Schema';
-import type { auditActionEnum, auditResourceEnum } from '@/models/Schema';
-
 type AuditLogInput = {
   organizationId: string;
   actorId: string;
@@ -360,11 +360,13 @@ export async function createAuditLog(input: AuditLogInput) {
           name: 'Organization', // This would be fetched from organization data
         },
         crud: input.crud === 'create' ? 'c' : input.crud === 'read' ? 'r' : input.crud === 'update' ? 'u' : 'd',
-        target: input.resourceId ? {
-          id: input.resourceId,
-          name: input.resourceName,
-          type: input.resource,
-        } : undefined,
+        target: input.resourceId
+          ? {
+              id: input.resourceId,
+              name: input.resourceName,
+              type: input.resource,
+            }
+          : undefined,
         metadata: input.metadata,
         ipAddress: input.ipAddress,
         userAgent: input.userAgent,

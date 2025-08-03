@@ -1,24 +1,26 @@
-import { db } from '@/libs/DB';
-import { scimGroup, scimUser, scimConfiguration } from '@/models/Schema';
-import { eq, and, inArray } from 'drizzle-orm';
-import { createAuditLog } from '@/libs/audit';
 import { auth } from '@clerk/nextjs/server';
-import { SCIM_SCHEMAS, type ScimListResponse, type ScimError } from './users';
+import { and, eq, inArray } from 'drizzle-orm';
+
+import { createAuditLog } from '@/libs/audit';
+import { db } from '@/libs/DB';
+import { scimConfiguration, scimGroup, scimUser } from '@/models/Schema';
+
+import { SCIM_SCHEMAS, type ScimError, type ScimListResponse } from './users';
 
 // SCIM Group resource interface following RFC 7643
-export interface ScimGroup {
-  schemas: string[];
-  id: string;
-  externalId?: string;
-  displayName: string;
-  description?: string;
-  members?: Array<{
+export type ScimGroup = {
+  'schemas': string[];
+  'id': string;
+  'externalId'?: string;
+  'displayName': string;
+  'description'?: string;
+  'members'?: Array<{
     value: string;
     $ref?: string;
     display?: string;
     type?: string;
   }>;
-  meta: {
+  'meta': {
     resourceType: string;
     created: string;
     lastModified: string;
@@ -37,22 +39,22 @@ export interface ScimGroup {
       auditRequired: boolean;
     };
   };
-}
+};
 
-export interface ScimGroupPatch {
+export type ScimGroupPatch = {
   schemas: string[];
   Operations: Array<{
     op: 'add' | 'remove' | 'replace';
     path?: string;
     value?: any;
   }>;
-}
+};
 
 // SCIM Group schema constants
 export const SCIM_GROUP_SCHEMAS = {
   GROUP: 'urn:ietf:params:scim:schemas:core:2.0:Group',
   HOSPITAL_GROUP_EXTENSION: 'urn:ietf:params:scim:schemas:extension:hospital:2.0:Group',
-  ...SCIM_SCHEMAS
+  ...SCIM_SCHEMAS,
 };
 
 /**
@@ -73,10 +75,10 @@ async function getScimConfiguration(organizationId: string) {
  */
 export async function createScimGroup(
   groupData: Partial<ScimGroup>,
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimGroup> {
   const { userId } = await auth();
-  
+
   if (!groupData.displayName) {
     throw new Error('displayName is required');
   }
@@ -95,7 +97,7 @@ export async function createScimGroup(
     created: now,
     lastModified: now,
     location: `/scim/v2/Groups/${groupData.id || 'temp'}`,
-    version: '1'
+    version: '1',
   };
 
   // Validate and process members
@@ -115,14 +117,14 @@ export async function createScimGroup(
       departments: [],
       patientDataAccess: false,
       phiAccess: false,
-      auditRequired: true
+      auditRequired: true,
     },
     meta,
     members: processedMembers,
     customAttributes: {},
     lastSyncedAt: new Date(),
     syncErrors: [],
-    provisioningStatus: 'provisioned'
+    provisioningStatus: 'provisioned',
   }).returning();
 
   if (!newGroupResult[0]) {
@@ -147,8 +149,8 @@ export async function createScimGroup(
       groupType: newGroup.groupType,
       memberCount: processedMembers.length,
       departmentCode: hospitalExt?.departmentCode,
-      accessLevel: hospitalExt?.accessLevel
-    }
+      accessLevel: hospitalExt?.accessLevel,
+    },
   });
 
   return formatScimGroup(newGroup);
@@ -159,18 +161,20 @@ export async function createScimGroup(
  */
 export async function getScimGroup(
   groupId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimGroup | null> {
   const group = await db
     .select()
     .from(scimGroup)
     .where(and(
       eq(scimGroup.id, groupId),
-      eq(scimGroup.organizationId, organizationId)
+      eq(scimGroup.organizationId, organizationId),
     ))
     .limit(1);
 
-  if (!group[0]) return null;
+  if (!group[0]) {
+    return null;
+  }
 
   return formatScimGroup(group[0]);
 }
@@ -181,10 +185,10 @@ export async function getScimGroup(
 export async function updateScimGroup(
   groupId: string,
   groupData: Partial<ScimGroup>,
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimGroup> {
   const { userId } = await auth();
-  
+
   const existingGroup = await getScimGroup(groupId, organizationId);
   if (!existingGroup) {
     throw new Error('Group not found');
@@ -202,7 +206,7 @@ export async function updateScimGroup(
   const meta = {
     ...existingGroup.meta,
     lastModified: now.toISOString(),
-    version: String(parseInt(existingGroup.meta.version || '1') + 1)
+    version: String(Number.parseInt(existingGroup.meta.version || '1') + 1),
   };
 
   // Update group
@@ -218,11 +222,11 @@ export async function updateScimGroup(
       meta,
       members: processedMembers,
       lastSyncedAt: now,
-      updatedAt: now
+      updatedAt: now,
     })
     .where(and(
       eq(scimGroup.id, groupId),
-      eq(scimGroup.organizationId, organizationId)
+      eq(scimGroup.organizationId, organizationId),
     ))
     .returning();
 
@@ -247,9 +251,9 @@ export async function updateScimGroup(
         displayName: groupData.displayName,
         description: groupData.description,
         groupType: hospitalExt?.groupType,
-        memberCount: processedMembers?.length
-      }
-    }
+        memberCount: processedMembers?.length,
+      },
+    },
   });
 
   return formatScimGroup(updatedGroup);
@@ -260,7 +264,7 @@ export async function updateScimGroup(
  */
 export async function deleteScimGroup(
   groupId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<void> {
   const { userId } = await auth();
 
@@ -274,7 +278,7 @@ export async function deleteScimGroup(
     .delete(scimGroup)
     .where(and(
       eq(scimGroup.id, groupId),
-      eq(scimGroup.organizationId, organizationId)
+      eq(scimGroup.organizationId, organizationId),
     ));
 
   // Create audit log
@@ -289,8 +293,8 @@ export async function deleteScimGroup(
     resourceName: existingGroup.displayName,
     metadata: {
       deletionType: 'hard_delete',
-      memberCount: existingGroup.members?.length || 0
-    }
+      memberCount: existingGroup.members?.length || 0,
+    },
   });
 }
 
@@ -305,15 +309,15 @@ export async function listScimGroups(
     filter?: string;
     sortBy?: string;
     sortOrder?: 'ascending' | 'descending';
-  } = {}
+  } = {},
 ): Promise<ScimListResponse<ScimGroup>> {
   const {
     startIndex = 1,
-    count = 50
+    count = 50,
   } = options;
 
   // Basic query
-  let query = db
+  const query = db
     .select()
     .from(scimGroup)
     .where(eq(scimGroup.organizationId, organizationId));
@@ -326,7 +330,7 @@ export async function listScimGroups(
     totalResults,
     startIndex,
     itemsPerPage: count,
-    Resources: groups.map(formatScimGroup)
+    Resources: groups.map(formatScimGroup),
   };
 }
 
@@ -336,7 +340,7 @@ export async function listScimGroups(
 export async function addGroupMembers(
   groupId: string,
   memberIds: string[],
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimGroup> {
   const { userId } = await auth();
 
@@ -352,7 +356,7 @@ export async function addGroupMembers(
     .where(and(
       inArray(scimUser.id, memberIds),
       eq(scimUser.organizationId, organizationId),
-      eq(scimUser.active, true)
+      eq(scimUser.active, true),
     ));
 
   if (members.length !== memberIds.length) {
@@ -364,7 +368,7 @@ export async function addGroupMembers(
   const newMembers = members.map(user => ({
     value: user.id,
     display: user.displayName || user.userName,
-    type: 'User'
+    type: 'User',
   }));
 
   // Merge without duplicates
@@ -376,7 +380,7 @@ export async function addGroupMembers(
   const meta = {
     ...existingGroup.meta,
     lastModified: now.toISOString(),
-    version: String(parseInt(existingGroup.meta.version || '1') + 1)
+    version: String(Number.parseInt(existingGroup.meta.version || '1') + 1),
   };
 
   // Update group with new members
@@ -386,11 +390,11 @@ export async function addGroupMembers(
       members: updatedMembers,
       meta,
       lastSyncedAt: now,
-      updatedAt: now
+      updatedAt: now,
     })
     .where(and(
       eq(scimGroup.id, groupId),
-      eq(scimGroup.organizationId, organizationId)
+      eq(scimGroup.organizationId, organizationId),
     ))
     .returning();
 
@@ -412,8 +416,8 @@ export async function addGroupMembers(
     resourceName: existingGroup.displayName,
     metadata: {
       addedMemberIds: uniqueNewMembers.map(m => m.value),
-      totalMembers: updatedMembers.length
-    }
+      totalMembers: updatedMembers.length,
+    },
   });
 
   return formatScimGroup(updatedGroup);
@@ -425,7 +429,7 @@ export async function addGroupMembers(
 export async function removeGroupMembers(
   groupId: string,
   memberIds: string[],
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimGroup> {
   const { userId } = await auth();
 
@@ -443,7 +447,7 @@ export async function removeGroupMembers(
   const meta = {
     ...existingGroup.meta,
     lastModified: now.toISOString(),
-    version: String(parseInt(existingGroup.meta.version || '1') + 1)
+    version: String(Number.parseInt(existingGroup.meta.version || '1') + 1),
   };
 
   // Update group
@@ -453,11 +457,11 @@ export async function removeGroupMembers(
       members: updatedMembers,
       meta,
       lastSyncedAt: now,
-      updatedAt: now
+      updatedAt: now,
     })
     .where(and(
       eq(scimGroup.id, groupId),
-      eq(scimGroup.organizationId, organizationId)
+      eq(scimGroup.organizationId, organizationId),
     ))
     .returning();
 
@@ -479,8 +483,8 @@ export async function removeGroupMembers(
     resourceName: existingGroup.displayName,
     metadata: {
       removedMemberIds: memberIds,
-      totalMembers: updatedMembers.length
-    }
+      totalMembers: updatedMembers.length,
+    },
   });
 
   return formatScimGroup(updatedGroup2);
@@ -491,12 +495,14 @@ export async function removeGroupMembers(
  */
 async function validateGroupMembers(
   members: Array<{ value: string; display?: string; type?: string }>,
-  organizationId: string
+  organizationId: string,
 ): Promise<Array<{ value: string; $ref?: string; display?: string; type: string }>> {
-  if (!members.length) return [];
+  if (!members.length) {
+    return [];
+  }
 
   const memberIds = members.map(m => m.value);
-  
+
   // Validate all member IDs exist and are active
   const existingUsers = await db
     .select({ id: scimUser.id, userName: scimUser.userName, displayName: scimUser.displayName })
@@ -504,7 +510,7 @@ async function validateGroupMembers(
     .where(and(
       inArray(scimUser.id, memberIds),
       eq(scimUser.organizationId, organizationId),
-      eq(scimUser.active, true)
+      eq(scimUser.active, true),
     ));
 
   const existingUserIds = new Set(existingUsers.map(u => u.id));
@@ -515,13 +521,13 @@ async function validateGroupMembers(
   }
 
   // Return formatted members with display names
-  return members.map(member => {
+  return members.map((member) => {
     const user = existingUsers.find(u => u.id === member.value);
     return {
       value: member.value,
       $ref: `/scim/v2/Users/${member.value}`,
       display: member.display || user?.displayName || user?.userName || 'Unknown User',
-      type: 'User'
+      type: 'User',
     };
   });
 }
@@ -540,8 +546,8 @@ export function formatScimGroup(group: any): ScimGroup {
     meta: group.meta || {
       resourceType: 'Group',
       created: group.createdAt?.toISOString() || new Date().toISOString(),
-      lastModified: group.updatedAt?.toISOString() || new Date().toISOString()
-    }
+      lastModified: group.updatedAt?.toISOString() || new Date().toISOString(),
+    },
   };
 
   // Add hospital extension if data exists
@@ -551,7 +557,7 @@ export function formatScimGroup(group: any): ScimGroup {
       groupType: group.groupType,
       departmentCode: group.departmentCode,
       accessLevel: group.accessLevel,
-      dataAccessScope: group.dataAccessScope
+      dataAccessScope: group.dataAccessScope,
     };
   }
 
@@ -564,9 +570,8 @@ export function formatScimGroup(group: any): ScimGroup {
 export async function patchScimGroup(
   groupId: string,
   patchOps: ScimGroupPatch,
-  organizationId: string
+  organizationId: string,
 ): Promise<ScimGroup> {
-
   const existingGroup = await getScimGroup(groupId, organizationId);
   if (!existingGroup) {
     throw new Error('Group not found');
@@ -581,14 +586,14 @@ export async function patchScimGroup(
           await addGroupMembers(groupId, membersToAdd.map(m => m.value), organizationId);
         }
         break;
-        
+
       case 'remove':
         if (operation.path === 'members') {
           const membersToRemove = Array.isArray(operation.value) ? operation.value : [operation.value];
           await removeGroupMembers(groupId, membersToRemove.map(m => m.value || m), organizationId);
         }
         break;
-        
+
       case 'replace':
         // Handle replace operations for group attributes
         if (operation.path) {
@@ -614,12 +619,12 @@ export async function patchScimGroup(
 export function createScimGroupError(
   status: number,
   scimType?: string,
-  detail?: string
+  detail?: string,
 ): ScimError {
   return {
     schemas: [SCIM_SCHEMAS.ERROR],
     status: status.toString(),
     scimType,
-    detail
+    detail,
   };
 }
