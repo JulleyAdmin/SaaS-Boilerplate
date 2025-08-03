@@ -154,3 +154,71 @@ src/
 - **BoxyHQ**: `/template-references/boxyhq/` - SSO, API keys, webhooks
 - **Nextacular**: `/template-references/nextacular/` - Team management
 - **Supabase**: `/template-references/supabase-template/` - Auth patterns
+
+## Hospital Management System Gap Closure Context
+
+### Current Status (v6.0.0)
+- **Schema**: 98% complete with 95+ roles, comprehensive tables
+- **Implementation**: 20% complete (only patients/appointments APIs functional)
+- **Critical Gap**: 80% of schema features have no implementation
+
+### Development Plan Documents
+- `HMS_GAP_CLOSURE_DEVELOPMENT_PLAN.md` - Comprehensive implementation strategy
+- `HMS_IMPLEMENTATION_TRACKER.md` - Real-time progress tracking
+- `COMPREHENSIVE_SCHEMA_ANALYSIS_REPORT.md` - Detailed gap analysis
+
+### Implementation Standards
+
+#### API Development Workflow
+1. **Verify Alignment**: `npm run verify:alignment [tableName]`
+2. **Use Templates**: Copy from `scripts/api-templates/`
+3. **Follow Patterns**: Reference `/api/patients/` implementation
+4. **Test Coverage**: Minimum 80% required
+
+#### Type Alignment Protocol
+- Database Schema → Drizzle ORM → Zod Validation → TypeScript Types
+- All layers MUST align before implementation
+- Sensitive fields (passwordHash, encrypted) excluded from APIs
+
+#### Key Commands
+```bash
+# Verify type alignment
+npm run verify:alignment consultations
+
+# Check types during development
+npm run check-types
+
+# Run tests with coverage
+npm run test -- --coverage
+```
+
+### Active Development Focus
+**Phase 1 Priority (Weeks 1-2)**:
+1. Consultations API (with vitals, diagnosis)
+2. Prescriptions API (with items, dispensing)
+3. Queue Management API (token generation)
+
+**Phase 2 (Weeks 3-4)**: Pharmacy System
+**Phase 3 (Weeks 5-6)**: Departments & Scheduling
+**Phase 4 (Weeks 7-8)**: Billing & Government Schemes
+
+## Code Patterns
+
+### Standard API Response
+```typescript
+// Success
+{ data: T, pagination?: {...} }
+
+// Error
+{ error: { code: string, message: string, details?: any } }
+```
+
+### Multi-tenant Security
+- Always filter by `clinicId` (orgId)
+- Use `validateOrganizationAccess()`
+- Implement audit logging for all operations
+
+### Performance Targets
+- API Response: <200ms
+- Database Queries: Use indexes
+- Batch Operations: When possible
