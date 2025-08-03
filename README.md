@@ -80,6 +80,24 @@ Clone this project and use it to create your own SaaS. You can check the live de
   </tr>
   <tr height="187px">
     <td align="center" width="33%">
+      <a href="https://surveyjs.io/?utm_source=nextjs_readme&utm_medium=banner&utm_campaign=q3_2025">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="public/assets/images/surveyjs.svg?raw=true">
+          <source media="(prefers-color-scheme: light)" srcset="public/assets/images/surveyjs.svg?raw=true">
+          <img alt="SurveyJS" src="public/assets/images/surveyjs.svg?raw=true">
+        </picture>
+      </a>
+    </td>
+    <td align="center" width="33%">
+      <a href="https://www.nutrient.io/guides/web/nextjs/?utm_source=nextjs-boilerplate&utm_medium=referral">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="public/assets/images/nutrient-dark.png?raw=true">
+          <source media="(prefers-color-scheme: light)" srcset="public/assets/images/nutrient-light.png?raw=true">
+          <img alt="Nutrient" src="public/assets/images/nutrient-light.png?raw=true">
+        </picture>
+      </a>
+    </td>
+    <td align="center" width="33%">
       <a href="mailto:contact@creativedesignsguru.com">
         Add your logo here
       </a>
@@ -195,6 +213,44 @@ npm run dev
 ```
 
 Open http://localhost:3000 with your favorite browser to see your project.
+
+### Free vs Pro version
+
+This project offers both a free open-source version and a premium Pro version. Here's a detailed comparison:
+
+| Features | Free Version | Pro Version |
+|---------|:------------:|:-----------:|
+| **Authentication** | ✅ | ✅ |
+| **Social Login (Google, Facebook, GitHub, etc.)** | ✅ | ✅ |
+| **Multi-Factor Auth & User Impersonation** | ✅ | ✅ |
+| **Multi-tenancy & Team Support** | ✅ | ✅ |
+| **Role-based Access Control (RBAC)** | ✅ | ✅ |
+| **Landing Page (Hero, Features, Pricing)** | ✅ | ✅ |
+| **Internationalization (i18n)** | ✅ | ✅ |
+| **Drizzle ORM & Dev Database** | ✅ | ✅ |
+| **GitHub Actions** | ✅ | ✅ |
+| **VSCode Configuration** | ✅ | ✅ |
+| **[Sentry Error Monitoring](https://sentry.io/for/nextjs/?utm_source=github&utm_medium=paid-community&utm_campaign=general-fy25q1-nextjs&utm_content=github-banner-nextjsboilerplate-logo)** | ✅ | ✅ |
+| **Shadcn UI** | ✅ | ✅ |
+| **Next.js** | 14 | 15 |
+| **React** | 18 | 19 |
+| **Tailwind CSS** | 3 | 4 |
+| **ESLint** | 8 | 9 |
+| **User Dashboard** | Basic | Extended |
+| **Code Quality Tools** | Basic | Extended |
+| **Testing: Unit, Integration, E2E, Visual** | Basic | Extended |
+| **Stripe Integration** | ❌ | ✅ |
+| **Todo App Example (CRUD)** | ❌ | ✅ |
+| **End-to-End Typesafe APIs (oRPC)** | ❌ | ✅ |
+| **Dark Mode** | ❌ | ✅ |
+| **Latest version** | ❌ | ✅ |
+| **Email support (1 year)** | ❌ | ✅ |
+
+**Live Demos:**
+- Free Version: [https://react-saas.com](https://react-saas.com)
+- Pro Version: [https://pro-demo.nextjs-boilerplate.com](https://pro-demo.nextjs-boilerplate.com)
+
+**Note:** Some differences like Next.js 15/React 19 and Tailwind CSS 4 are currently temporary as the free version will eventually be updated. However, Pro version users always get access to the latest version first.
 
 ### Set up authentication
 
@@ -514,6 +570,24 @@ See [LICENSE](LICENSE) for more information.
     </td>
   </tr>
   <tr height="187px">
+    <td align="center" width="33%">
+      <a href="https://surveyjs.io/?utm_source=nextjs_readme&utm_medium=banner&utm_campaign=q3_2025">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="public/assets/images/surveyjs.svg?raw=true">
+          <source media="(prefers-color-scheme: light)" srcset="public/assets/images/surveyjs.svg?raw=true">
+          <img alt="SurveyJS" src="public/assets/images/surveyjs.svg?raw=true">
+        </picture>
+      </a>
+    </td>
+    <td align="center" width="33%">
+      <a href="https://www.nutrient.io/guides/web/nextjs/?utm_source=nextjs-boilerplate&utm_medium=referral">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="public/assets/images/nutrient-dark.png?raw=true">
+          <source media="(prefers-color-scheme: light)" srcset="public/assets/images/nutrient-light.png?raw=true">
+          <img alt="Nutrient" src="public/assets/images/nutrient-light.png?raw=true">
+        </picture>
+      </a>
+    </td>
     <td align="center" width="33%">
       <a href="mailto:contact@creativedesignsguru.com">
         Add your logo here
