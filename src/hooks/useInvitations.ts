@@ -11,9 +11,9 @@ type ApiResponse<T> = {
   error: Error;
 };
 
-interface InvitationWithUrl extends Invitation {
+type InvitationWithUrl = {
   invitationUrl?: string;
-}
+} & Invitation;
 
 const fetcher = async (url: string) => {
   const response = await fetch(url);
@@ -29,7 +29,7 @@ export const useInvitations = () => {
 
   const { data, error, isLoading, mutate } = useSWR<ApiResponse<Invitation[]>>(
     orgId ? `/api/organizations/${orgId}/invitations` : null,
-    fetcher
+    fetcher,
   );
 
   return {
@@ -46,7 +46,7 @@ export const createInvitation = async (
     email?: string;
     role: 'ADMIN' | 'MEMBER';
     allowedDomains?: string[];
-  }
+  },
 ): Promise<InvitationWithUrl> => {
   const response = await fetch(`/api/organizations/${orgId}/invitations`, {
     method: 'POST',
@@ -67,7 +67,7 @@ export const createInvitation = async (
 
 export const deleteInvitation = async (
   orgId: string,
-  invitationId: string
+  invitationId: string,
 ): Promise<void> => {
   const response = await fetch(`/api/organizations/${orgId}/invitations/${invitationId}`, {
     method: 'DELETE',

@@ -25,7 +25,7 @@ export const useTeamMembers = () => {
 
   const { data, error, isLoading, mutate } = useSWR<ApiResponse<TeamMemberWithUser[]>>(
     orgId ? `/api/organizations/${orgId}/members` : null,
-    fetcher
+    fetcher,
   );
 
   return {
@@ -39,7 +39,7 @@ export const useTeamMembers = () => {
 export const updateMemberRole = async (
   orgId: string,
   memberId: string,
-  role: 'ADMIN' | 'MEMBER'
+  role: 'ADMIN' | 'MEMBER',
 ): Promise<void> => {
   const response = await fetch(`/api/organizations/${orgId}/members/${memberId}`, {
     method: 'PATCH',
@@ -57,7 +57,7 @@ export const updateMemberRole = async (
 
 export const removeMember = async (
   orgId: string,
-  memberId: string
+  memberId: string,
 ): Promise<void> => {
   const response = await fetch(`/api/organizations/${orgId}/members/${memberId}`, {
     method: 'DELETE',

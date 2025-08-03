@@ -1,7 +1,7 @@
 import { useOrganization } from '@clerk/nextjs';
 import useSWR from 'swr';
 
-import type { WebhookEndpoint, WebhookDelivery, WebhookEventType } from '@/models/webhook';
+import type { WebhookDelivery, WebhookEndpoint, WebhookEventType } from '@/types/webhook';
 
 type ApiResponse<T> = {
   data: T;
@@ -25,7 +25,7 @@ export const useWebhooks = () => {
 
   const { data, error, isLoading, mutate } = useSWR<ApiResponse<WebhookEndpoint[]>>(
     orgId ? `/api/organizations/${orgId}/webhooks` : null,
-    fetcher
+    fetcher,
   );
 
   return {
@@ -42,7 +42,7 @@ export const useWebhookDeliveries = (webhookId: string | null) => {
 
   const { data, error, isLoading, mutate } = useSWR<ApiResponse<WebhookDelivery[]>>(
     orgId && webhookId ? `/api/organizations/${orgId}/webhooks/${webhookId}/deliveries` : null,
-    fetcher
+    fetcher,
   );
 
   return {
@@ -63,7 +63,7 @@ export const createWebhook = async (
     headers?: Record<string, string>;
     timeout?: number;
     retryCount?: number;
-  }
+  },
 ): Promise<WebhookEndpoint> => {
   const response = await fetch(`/api/organizations/${orgId}/webhooks`, {
     method: 'POST',
@@ -94,7 +94,7 @@ export const updateWebhook = async (
     headers?: Record<string, string>;
     timeout?: number;
     retryCount?: number;
-  }
+  },
 ): Promise<WebhookEndpoint> => {
   const response = await fetch(`/api/organizations/${orgId}/webhooks/${webhookId}`, {
     method: 'PATCH',
@@ -115,7 +115,7 @@ export const updateWebhook = async (
 
 export const deleteWebhook = async (
   orgId: string,
-  webhookId: string
+  webhookId: string,
 ): Promise<void> => {
   const response = await fetch(`/api/organizations/${orgId}/webhooks/${webhookId}`, {
     method: 'DELETE',
@@ -129,7 +129,7 @@ export const deleteWebhook = async (
 
 export const testWebhook = async (
   orgId: string,
-  webhookId: string
+  webhookId: string,
 ): Promise<{ message: string; testEvent: { id: string; timestamp: string } }> => {
   const response = await fetch(`/api/organizations/${orgId}/webhooks/${webhookId}/test`, {
     method: 'POST',
