@@ -1,14 +1,15 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { db } from '@/libs/DB';
-import { apiKey } from '@/models/Schema';
 import { eq } from 'drizzle-orm';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { db } from '@/libs/DB';
 import {
   createApiKey,
-  fetchApiKeys,
   deleteApiKey,
+  fetchApiKeys,
   validateApiKey,
   verifyApiKeyOwnership,
 } from '@/models/apiKey';
+import { apiKey } from '@/models/Schema';
 
 describe('API Key Management Integration Tests', () => {
   const testOrgId = 'test_org_123';
@@ -38,7 +39,7 @@ describe('API Key Management Integration Tests', () => {
       expect(newKey.name).toBe('Test API Key');
       expect(newKey.organizationId).toBe(testOrgId);
       expect(plainKey).toMatch(/^sk_[a-f0-9]{48}$/);
-      
+
       // Store for cleanup
       createdKeyIds.push(newKey.id);
 
@@ -47,7 +48,7 @@ describe('API Key Management Integration Tests', () => {
         .select()
         .from(apiKey)
         .where(eq(apiKey.id, newKey.id));
-      
+
       expect(storedKey.hashedKey).toBeDefined();
       expect(storedKey.hashedKey).not.toBe(plainKey); // Should be hashed
     });
@@ -61,6 +62,7 @@ describe('API Key Management Integration Tests', () => {
       });
 
       expect(newKey.expiresAt).toEqual(expiryDate);
+
       createdKeyIds.push(newKey.id);
     });
   });
@@ -76,7 +78,7 @@ describe('API Key Management Integration Tests', () => {
         name: 'Key 2',
         organizationId: testOrgId,
       });
-      
+
       createdKeyIds.push(key1.apiKey.id, key2.apiKey.id);
 
       // Create a key for different org
@@ -93,15 +95,16 @@ describe('API Key Management Integration Tests', () => {
       expect(keys.map(k => k.name)).toContain('Key 1');
       expect(keys.map(k => k.name)).toContain('Key 2');
       expect(keys.map(k => k.name)).not.toContain('Other Org Key');
-      
+
       // Verify no sensitive data is exposed
-      keys.forEach(key => {
+      keys.forEach((key) => {
         expect(key).not.toHaveProperty('hashedKey');
       });
     });
 
     it('should return empty array for organization with no keys', async () => {
       const keys = await fetchApiKeys('org_with_no_keys');
+
       expect(keys).toEqual([]);
     });
   });
@@ -123,6 +126,7 @@ describe('API Key Management Integration Tests', () => {
 
     it('should reject invalid API key', async () => {
       const validatedKey = await validateApiKey('sk_invalid_key_12345');
+
       expect(validatedKey).toBeNull();
     });
 
@@ -134,6 +138,7 @@ describe('API Key Management Integration Tests', () => {
       });
 
       const validatedKey = await validateApiKey(plainKey);
+
       expect(validatedKey).toBeNull();
     });
   });
@@ -148,6 +153,7 @@ describe('API Key Management Integration Tests', () => {
       await deleteApiKey(newKey.id);
 
       const keys = await fetchApiKeys(testOrgId);
+
       expect(keys.find(k => k.id === newKey.id)).toBeUndefined();
     });
   });
@@ -161,6 +167,7 @@ describe('API Key Management Integration Tests', () => {
       createdKeyIds.push(newKey.id);
 
       const isOwner = await verifyApiKeyOwnership(newKey.id, testOrgId);
+
       expect(isOwner).toBe(true);
     });
 
@@ -172,11 +179,13 @@ describe('API Key Management Integration Tests', () => {
       createdKeyIds.push(newKey.id);
 
       const isOwner = await verifyApiKeyOwnership(newKey.id, testOrgId);
+
       expect(isOwner).toBe(false);
     });
 
     it('should return false for non-existent key', async () => {
       const isOwner = await verifyApiKeyOwnership('non_existent_id', testOrgId);
+
       expect(isOwner).toBe(false);
     });
   });
@@ -203,19 +212,19 @@ describe('API Key Management Integration Tests', () => {
         createApiKey({
           name: `Concurrent Key ${i}`,
           organizationId: testOrgId,
-        })
-      );
+        }));
 
       const results = await Promise.all(promises);
-      
+
       // Store for cleanup
       results.forEach(r => createdKeyIds.push(r.apiKey.id));
 
       // All should succeed
       expect(results.length).toBe(5);
-      
+
       // All should have unique IDs
       const ids = results.map(r => r.apiKey.id);
+
       expect(new Set(ids).size).toBe(5);
     });
   });

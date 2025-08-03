@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { enforceMFA } from '@/lib/auth/mfa-enforcement';
 import { currentUser } from '@clerk/nextjs/server';
+import { describe, expect, it, vi } from 'vitest';
+
+import { enforceMFA } from '@/lib/auth/mfa-enforcement';
 
 // Mock Clerk's currentUser function
 vi.mock('@clerk/nextjs/server', () => ({
@@ -50,9 +51,9 @@ describe('MFA Enforcement Integration Tests', () => {
         publicMetadata: {},
       } as any);
 
-      const result = await enforceMFA({ 
-        requireMFA: true, 
-        requireTOTP: true 
+      const result = await enforceMFA({
+        requireMFA: true,
+        requireTOTP: true,
       });
 
       expect(result.allowed).toBe(false);
@@ -68,9 +69,9 @@ describe('MFA Enforcement Integration Tests', () => {
         publicMetadata: { role: 'viewer' },
       } as any);
 
-      const result = await enforceMFA({ 
+      const result = await enforceMFA({
         requireMFA: true,
-        allowedRoles: ['administrator', 'manager']
+        allowedRoles: ['administrator', 'manager'],
       });
 
       expect(result.allowed).toBe(false);
@@ -87,9 +88,9 @@ describe('MFA Enforcement Integration Tests', () => {
         publicMetadata: { role: 'administrator' },
       } as any);
 
-      const result = await enforceMFA({ 
+      const result = await enforceMFA({
         requireMFA: true,
-        allowedRoles: ['administrator', 'manager']
+        allowedRoles: ['administrator', 'manager'],
       });
 
       expect(result.allowed).toBe(true);
@@ -116,9 +117,9 @@ describe('MFA Enforcement Integration Tests', () => {
         publicMetadata: {},
       } as any);
 
-      const result = await enforceMFA({ 
+      const result = await enforceMFA({
         requireMFA: true,
-        redirectUrl: '/custom/mfa-setup'
+        redirectUrl: '/custom/mfa-setup',
       });
 
       expect(result.allowed).toBe(false);
@@ -171,7 +172,7 @@ describe('MFA Enforcement Integration Tests', () => {
         } as any);
 
         const result = await enforceMFA({ requireMFA: true });
-        
+
         if (testCase.expectedMFA) {
           expect(result.allowed).toBe(true);
         } else {

@@ -1,30 +1,31 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { db } from '@/libs/DB';
-import { oauthClient, organizationSchema } from '@/models/Schema';
-import { 
-  createOAuthClient, 
-  getOAuthClient, 
-  validateClientCredentials,
-  type OAuthClientData 
-} from '@/libs/oauth/clients';
-import { 
-  generateAuthorizationCode, 
-  validateAuthorizationCode,
-  generateAccessToken,
-  validateAccessToken,
-  introspectToken
-} from '@/libs/oauth/tokens';
-import { oauthServer } from '@/libs/oauth/server';
 import { eq } from 'drizzle-orm';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { db } from '@/libs/DB';
+import {
+  createOAuthClient,
+  getOAuthClient,
+  type OAuthClientData,
+  validateClientCredentials,
+} from '@/libs/oauth/clients';
+import { oauthServer } from '@/libs/oauth/server';
+import {
+  generateAccessToken,
+  generateAuthorizationCode,
+  introspectToken,
+  validateAccessToken,
+  validateAuthorizationCode,
+} from '@/libs/oauth/tokens';
+import { oauthClient, organizationSchema } from '@/models/Schema';
 
 // Mock auth for testing
 jest.mock('@clerk/nextjs/server', () => ({
-  auth: () => ({ userId: 'test-user-id', orgId: 'test-org-id' })
+  auth: () => ({ userId: 'test-user-id', orgId: 'test-org-id' }),
 }));
 
 // Mock audit logging
 jest.mock('@/libs/audit', () => ({
-  createAuditLog: jest.fn()
+  createAuditLog: jest.fn(),
 }));
 
 const TEST_ORG_ID = 'test-hospital-org-123';
@@ -33,13 +34,13 @@ describe('OAuth 2.0 Server Validation', () => {
   beforeEach(async () => {
     // Clean up any existing test data
     await db.delete(oauthClient).where(eq(oauthClient.organizationId, TEST_ORG_ID));
-    
+
     // Create test organization if it doesn't exist
     try {
       await db.insert(organizationSchema).values({
         id: TEST_ORG_ID,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }).onConflictDoNothing();
     } catch (error) {
       // Organization might already exist
@@ -67,7 +68,7 @@ describe('OAuth 2.0 Server Validation', () => {
         auditRequired: true,
         rateLimit: 5000,
         tokenLifetime: 3600,
-        refreshTokenLifetime: 86400
+        refreshTokenLifetime: 86400,
       };
 
       const result = await createOAuthClient(clientData, TEST_ORG_ID);
@@ -85,26 +86,28 @@ describe('OAuth 2.0 Server Validation', () => {
         name: 'Test Client',
         clientType: 'confidential',
         redirectUris: ['https://test.com/callback'],
-        phiAccess: false
+        phiAccess: false,
       };
 
       const { client, clientSecret } = await createOAuthClient(clientData, TEST_ORG_ID);
 
       // Valid credentials
       const validClient = await validateClientCredentials(
-        client.clientId, 
-        clientSecret, 
-        TEST_ORG_ID
+        client.clientId,
+        clientSecret,
+        TEST_ORG_ID,
       );
+
       expect(validClient).toBeDefined();
       expect(validClient?.clientId).toBe(client.clientId);
 
       // Invalid credentials
       const invalidClient = await validateClientCredentials(
-        client.clientId, 
-        'wrong-secret', 
-        TEST_ORG_ID
+        client.clientId,
+        'wrong-secret',
+        TEST_ORG_ID,
       );
+
       expect(invalidClient).toBeNull();
     });
 
@@ -112,12 +115,13 @@ describe('OAuth 2.0 Server Validation', () => {
       const clientData: OAuthClientData = {
         name: 'Retrievable Client',
         clientType: 'confidential',
-        redirectUris: ['https://test.com/callback']
+        redirectUris: ['https://test.com/callback'],
       };
 
       const { client } = await createOAuthClient(clientData, TEST_ORG_ID);
 
       const retrievedClient = await getOAuthClient(client.clientId, TEST_ORG_ID);
+
       expect(retrievedClient).toBeDefined();
       expect(retrievedClient?.name).toBe('Retrievable Client');
       expect(retrievedClient?.clientSecret).toBeUndefined(); // Should not expose secret
@@ -136,7 +140,7 @@ describe('OAuth 2.0 Server Validation', () => {
         scopes: ['read', 'write', 'patient:read'],
         allowedGrantTypes: ['authorization_code', 'refresh_token'],
         allowedDepartments: ['emergency'],
-        phiAccess: true
+        phiAccess: true,
       };
 
       const result = await createOAuthClient(clientData, TEST_ORG_ID);
@@ -153,10 +157,11 @@ describe('OAuth 2.0 Server Validation', () => {
         redirectUri: 'https://hospital.com/oauth/callback',
         departmentId: 'emergency',
         hospitalRole: 'doctor' as const,
-        dataAccessScope: { phiAccess: true, auditRequired: true }
+        dataAccessScope: { phiAccess: true, auditRequired: true },
       };
 
       const authCode = await generateAuthorizationCode(authCodeData);
+
       expect(authCode).toBeDefined();
       expect(typeof authCode).toBe('string');
 
@@ -164,7 +169,7 @@ describe('OAuth 2.0 Server Validation', () => {
       const validatedCode = await validateAuthorizationCode(
         authCode,
         testClient.clientId,
-        'https://hospital.com/oauth/callback'
+        'https://hospital.com/oauth/callback',
       );
 
       expect(validatedCode).toBeDefined();
@@ -184,7 +189,7 @@ describe('OAuth 2.0 Server Validation', () => {
         departmentId: 'emergency',
         hospitalRole: 'doctor' as const,
         dataAccessScope: { phiAccess: true },
-        expiresIn: 3600
+        expiresIn: 3600,
       };
 
       const tokens = await generateAccessToken(tokenData);
@@ -196,6 +201,7 @@ describe('OAuth 2.0 Server Validation', () => {
 
       // Validate the access token
       const validatedToken = await validateAccessToken(tokens.accessToken);
+
       expect(validatedToken).toBeDefined();
       expect(validatedToken?.clientId).toBe(testClient.clientId);
       expect(validatedToken?.organizationId).toBe(TEST_ORG_ID);
@@ -212,7 +218,7 @@ describe('OAuth 2.0 Server Validation', () => {
         scopes: ['read', 'patient:read'],
         hospitalRole: 'nurse' as const,
         departmentId: 'icu',
-        dataAccessScope: { phiAccess: true }
+        dataAccessScope: { phiAccess: true },
       };
 
       const tokens = await generateAccessToken(tokenData);
@@ -239,7 +245,7 @@ describe('OAuth 2.0 Server Validation', () => {
         clientType: 'confidential',
         redirectUris: ['https://hospital.com/callback'],
         scopes: ['read', 'write'],
-        allowedGrantTypes: ['authorization_code', 'client_credentials', 'refresh_token']
+        allowedGrantTypes: ['authorization_code', 'client_credentials', 'refresh_token'],
       };
 
       const result = await createOAuthClient(clientData, TEST_ORG_ID);
@@ -255,17 +261,18 @@ describe('OAuth 2.0 Server Validation', () => {
         scope: 'read write',
         state: 'test-state-123',
         hospital_role: 'doctor',
-        department_id: 'emergency'
+        department_id: 'emergency',
       };
 
       const result = await oauthServer.authorize(
         authorizeParams,
         'test-user-123',
-        TEST_ORG_ID
+        TEST_ORG_ID,
       );
 
       expect(result).toBeDefined();
       expect('redirectUri' in result).toBe(true);
+
       if ('redirectUri' in result) {
         expect(result.redirectUri).toContain('code=');
         expect(result.redirectUri).toContain('state=test-state-123');
@@ -277,13 +284,14 @@ describe('OAuth 2.0 Server Validation', () => {
         grant_type: 'client_credentials',
         client_id: testClient.clientId,
         client_secret: testClientSecret,
-        scope: 'read'
+        scope: 'read',
       };
 
       const result = await oauthServer.token(tokenParams, TEST_ORG_ID);
 
       expect(result).toBeDefined();
       expect('access_token' in result).toBe(true);
+
       if ('access_token' in result) {
         expect(result.access_token).toBeDefined();
         expect(result.token_type).toBe('Bearer');
@@ -299,20 +307,20 @@ describe('OAuth 2.0 Server Validation', () => {
         grant_type: 'client_credentials',
         client_id: testClient.clientId,
         client_secret: testClientSecret,
-        scope: 'read'
+        scope: 'read',
       };
 
       const tokenResult = await oauthServer.token(tokenParams, TEST_ORG_ID);
-      
+
       if ('access_token' in tokenResult) {
         const authHeader = `Bearer ${tokenResult.access_token}`;
-        
+
         const validation = await oauthServer.validateTokenForAPI(
           authHeader,
           'read',
           'patient_data',
           'read',
-          TEST_ORG_ID
+          TEST_ORG_ID,
         );
 
         expect(validation.valid).toBe(true);
@@ -331,7 +339,7 @@ describe('OAuth 2.0 Server Validation', () => {
         scopes: ['patient:read', 'patient:write'],
         phiAccess: true,
         auditRequired: true,
-        dataAccessLevel: 'patient'
+        dataAccessLevel: 'patient',
       };
 
       const { client } = await createOAuthClient(phiClientData, TEST_ORG_ID);
@@ -352,8 +360,8 @@ describe('OAuth 2.0 Server Validation', () => {
         dataAccessScope: {
           phiAccess: true,
           departments: ['cardiology'],
-          auditRequired: true
-        }
+          auditRequired: true,
+        },
       };
 
       const tokens = await generateAccessToken(tokenData);
@@ -368,6 +376,7 @@ describe('OAuth 2.0 Server Validation', () => {
   describe('Error Handling', () => {
     it('should handle invalid client IDs', async () => {
       const invalidClient = await getOAuthClient('invalid-client-id', TEST_ORG_ID);
+
       expect(invalidClient).toBeNull();
     });
 
@@ -377,8 +386,9 @@ describe('OAuth 2.0 Server Validation', () => {
       const expiredCode = await validateAuthorizationCode(
         'expired-code',
         'invalid-client',
-        'invalid-uri'
+        'invalid-uri',
       );
+
       expect(expiredCode).toBeNull();
     });
 
@@ -386,7 +396,7 @@ describe('OAuth 2.0 Server Validation', () => {
       const clientData: OAuthClientData = {
         name: 'Redirect Test Client',
         clientType: 'confidential',
-        redirectUris: ['https://allowed.com/callback']
+        redirectUris: ['https://allowed.com/callback'],
       };
 
       const { client } = await createOAuthClient(clientData, TEST_ORG_ID);
@@ -395,16 +405,17 @@ describe('OAuth 2.0 Server Validation', () => {
         response_type: 'code',
         client_id: client.clientId,
         redirect_uri: 'https://malicious.com/callback', // Not in allowed list
-        scope: 'read'
+        scope: 'read',
       };
 
       const result = await oauthServer.authorize(
         authorizeParams,
         'test-user',
-        TEST_ORG_ID
+        TEST_ORG_ID,
       );
 
       expect('error' in result).toBe(true);
+
       if ('error' in result) {
         expect(result.error).toBe('invalid_redirect_uri');
       }

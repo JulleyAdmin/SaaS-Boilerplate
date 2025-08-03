@@ -1,4 +1,5 @@
-import { beforeAll, afterAll } from 'vitest';
+import { afterAll } from 'vitest';
+
 import { db } from '@/libs/DB';
 import { apiKey, auditLogs, securityEvents } from '@/models/Schema';
 
