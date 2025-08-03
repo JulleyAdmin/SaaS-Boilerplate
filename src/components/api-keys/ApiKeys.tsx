@@ -17,9 +17,9 @@ import type { ApiKeyWithoutSensitive } from '@/models/apiKey';
 
 import { NewApiKey } from './NewApiKey';
 
-interface ApiKeysProps {
+type ApiKeysProps = {
   organizationId: string;
-}
+};
 
 export const ApiKeys = ({ organizationId }: ApiKeysProps) => {
   const { apiKeys, isLoading, error, mutate } = useApiKeys();
@@ -56,14 +56,14 @@ export const ApiKeys = ({ organizationId }: ApiKeysProps) => {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">API Keys</h2>
           <Button disabled>
             Create API Key
           </Button>
         </div>
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div className="size-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
         </div>
       </div>
     );
@@ -72,7 +72,7 @@ export const ApiKeys = ({ organizationId }: ApiKeysProps) => {
   if (error) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">API Keys</h2>
           <Button onClick={() => setShowCreateModal(true)}>
             Create API Key
@@ -89,7 +89,7 @@ export const ApiKeys = ({ organizationId }: ApiKeysProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">API Keys</h2>
           <p className="text-sm text-gray-600">
@@ -101,67 +101,69 @@ export const ApiKeys = ({ organizationId }: ApiKeysProps) => {
         </Button>
       </div>
 
-      {apiKeys.length === 0 ? (
-        <div className="text-center py-8">
-          <div className="mx-auto h-12 w-12 text-gray-400">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-              />
-            </svg>
-          </div>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No API keys</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Get started by creating your first API key.
-          </p>
-          <div className="mt-6">
-            <Button onClick={() => setShowCreateModal(true)}>
-              Create API Key
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Last Used</TableHead>
-                <TableHead>Expires</TableHead>
-                <TableHead className="w-[100px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {apiKeys.map((apiKey) => (
-                <TableRow key={apiKey.id}>
-                  <TableCell className="font-medium">{apiKey.name}</TableCell>
-                  <TableCell>{formatDate(apiKey.createdAt)}</TableCell>
-                  <TableCell>
-                    {apiKey.lastUsedAt ? formatDate(apiKey.lastUsedAt) : 'Never'}
-                  </TableCell>
-                  <TableCell>
-                    {apiKey.expiresAt ? formatDate(apiKey.expiresAt) : 'Never'}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(apiKey)}
-                      disabled={deletingId === apiKey.id}
-                    >
-                      {deletingId === apiKey.id ? 'Deleting...' : 'Delete'}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      {apiKeys.length === 0
+        ? (
+            <div className="py-8 text-center">
+              <div className="mx-auto size-12 text-gray-400">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No API keys</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Get started by creating your first API key.
+              </p>
+              <div className="mt-6">
+                <Button onClick={() => setShowCreateModal(true)}>
+                  Create API Key
+                </Button>
+              </div>
+            </div>
+          )
+        : (
+            <div className="rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Last Used</TableHead>
+                    <TableHead>Expires</TableHead>
+                    <TableHead className="w-[100px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {apiKeys.map(apiKey => (
+                    <TableRow key={apiKey.id}>
+                      <TableCell className="font-medium">{apiKey.name}</TableCell>
+                      <TableCell>{formatDate(apiKey.createdAt)}</TableCell>
+                      <TableCell>
+                        {apiKey.lastUsedAt ? formatDate(apiKey.lastUsedAt) : 'Never'}
+                      </TableCell>
+                      <TableCell>
+                        {apiKey.expiresAt ? formatDate(apiKey.expiresAt) : 'Never'}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(apiKey)}
+                          disabled={deletingId === apiKey.id}
+                        >
+                          {deletingId === apiKey.id ? 'Deleting...' : 'Delete'}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
       <NewApiKey
         isOpen={showCreateModal}

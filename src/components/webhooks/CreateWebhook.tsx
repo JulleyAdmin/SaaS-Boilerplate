@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import { useOrganization } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -27,9 +28,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { createWebhook } from '@/hooks/useWebhooks';
-import { webhookEventTypes, getEventTypeDescription, type WebhookEventType } from '@/models/webhook';
+import { getEventTypeDescription, type WebhookEventType, webhookEventTypes } from '@/types/webhook';
 
 const createWebhookSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
@@ -42,11 +42,11 @@ const createWebhookSchema = z.object({
 
 type CreateWebhookFormValues = z.infer<typeof createWebhookSchema>;
 
-interface CreateWebhookProps {
+type CreateWebhookProps = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-}
+};
 
 export const CreateWebhook = ({ isOpen, onClose, onSuccess }: CreateWebhookProps) => {
   const { organization } = useOrganization();
@@ -70,13 +70,15 @@ export const CreateWebhook = ({ isOpen, onClose, onSuccess }: CreateWebhookProps
     const newSelected = selectedEvents.includes(eventType)
       ? selectedEvents.filter(e => e !== eventType)
       : [...selectedEvents, eventType];
-    
+
     setSelectedEvents(newSelected);
     form.setValue('eventTypes', newSelected);
   };
 
   const handleSubmit = async (values: CreateWebhookFormValues) => {
-    if (!organization) return;
+    if (!organization) {
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -116,211 +118,216 @@ export const CreateWebhook = ({ isOpen, onClose, onSuccess }: CreateWebhookProps
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-        {createdWebhook ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>Webhook Created Successfully</DialogTitle>
-              <DialogDescription>
-                Your webhook "{createdWebhook.name}" has been created. Save the secret below - it won't be shown again.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Webhook Secret</label>
-                <div className="flex gap-2">
-                  <Input
-                    value={createdWebhook.secret}
-                    readOnly
-                    className="font-mono text-sm"
-                  />
-                  <Button type="button" variant="outline" onClick={copySecret}>
-                    Copy
-                  </Button>
-                </div>
-                <p className="text-sm text-gray-500">
-                  Use this secret to verify webhook signatures in your endpoint
-                </p>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={() => {
-                onSuccess();
-                handleClose();
-              }}>
-                Done
-              </Button>
-            </DialogFooter>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle>Create Webhook</DialogTitle>
-              <DialogDescription>
-                Create a new webhook endpoint to receive real-time notifications
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="My webhook endpoint" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="What this webhook is used for..."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Endpoint URL</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="https://your-app.com/webhooks/hospitalos"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        The URL where webhook events will be sent
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="space-y-3">
-                  <label className="text-sm font-medium">Event Types</label>
-                  <p className="text-sm text-gray-600">
-                    Select which events you want to receive
-                  </p>
-                  <div className="space-y-2 max-h-48 overflow-y-auto border rounded-md p-3">
-                    {webhookEventTypes.map((eventType) => (
-                      <div
-                        key={eventType}
-                        className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
-                        onClick={() => handleEventToggle(eventType)}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedEvents.includes(eventType)}
-                          onChange={() => handleEventToggle(eventType)}
-                          className="h-4 w-4 text-blue-600 rounded border-gray-300"
-                        />
-                        <div className="flex-1">
-                          <div className="text-sm font-medium">{eventType}</div>
-                          <div className="text-xs text-gray-500">
-                            {getEventTypeDescription(eventType)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {selectedEvents.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {selectedEvents.map((eventType) => (
-                        <Badge key={eventType} variant="secondary" className="text-xs">
-                          {eventType}
-                        </Badge>
-                      ))}
+      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-[600px]">
+        {createdWebhook
+          ? (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Webhook Created Successfully</DialogTitle>
+                  <DialogDescription>
+                    Your webhook "
+                    {createdWebhook.name}
+                    " has been created. Save the secret below - it won't be shown again.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Webhook Secret</label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={createdWebhook.secret}
+                        readOnly
+                        className="font-mono text-sm"
+                      />
+                      <Button type="button" variant="outline" onClick={copySecret}>
+                        Copy
+                      </Button>
                     </div>
-                  )}
-                  {form.formState.errors.eventTypes && (
-                    <p className="text-sm text-red-600">
-                      {form.formState.errors.eventTypes.message}
+                    <p className="text-sm text-gray-500">
+                      Use this secret to verify webhook signatures in your endpoint
                     </p>
-                  )}
+                  </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="timeout"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Timeout (seconds)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            min={5}
-                            max={120}
-                            {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Request timeout (5-120 seconds)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="retryCount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Retry Count</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number"
-                            min={0}
-                            max={5}
-                            {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Number of retries on failure
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
                 <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleClose}
-                    disabled={isSubmitting}
+                  <Button onClick={() => {
+                    onSuccess();
+                    handleClose();
+                  }}
                   >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Creating...' : 'Create Webhook'}
+                    Done
                   </Button>
                 </DialogFooter>
-              </form>
-            </Form>
-          </>
-        )}
+              </>
+            )
+          : (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Create Webhook</DialogTitle>
+                  <DialogDescription>
+                    Create a new webhook endpoint to receive real-time notifications
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="My webhook endpoint" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="What this webhook is used for..."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Endpoint URL</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="https://your-app.com/webhooks/hospitalos"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            The URL where webhook events will be sent
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium">Event Types</label>
+                      <p className="text-sm text-gray-600">
+                        Select which events you want to receive
+                      </p>
+                      <div className="max-h-48 space-y-2 overflow-y-auto rounded-md border p-3">
+                        {webhookEventTypes.map(eventType => (
+                          <div
+                            key={eventType}
+                            className="flex cursor-pointer items-center space-x-3 rounded p-2 hover:bg-gray-50"
+                            onClick={() => handleEventToggle(eventType)}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedEvents.includes(eventType)}
+                              onChange={() => handleEventToggle(eventType)}
+                              className="size-4 rounded border-gray-300 text-blue-600"
+                            />
+                            <div className="flex-1">
+                              <div className="text-sm font-medium">{eventType}</div>
+                              <div className="text-xs text-gray-500">
+                                {getEventTypeDescription(eventType)}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {selectedEvents.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {selectedEvents.map(eventType => (
+                            <Badge key={eventType} variant="secondary" className="text-xs">
+                              {eventType}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      {form.formState.errors.eventTypes && (
+                        <p className="text-sm text-red-600">
+                          {form.formState.errors.eventTypes.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="timeout"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Timeout (seconds)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min={5}
+                                max={120}
+                                {...field}
+                                onChange={e => field.onChange(Number.parseInt(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Request timeout (5-120 seconds)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="retryCount"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Retry Count</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min={0}
+                                max={5}
+                                {...field}
+                                onChange={e => field.onChange(Number.parseInt(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Number of retries on failure
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleClose}
+                        disabled={isSubmitting}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Creating...' : 'Create Webhook'}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </>
+            )}
       </DialogContent>
     </Dialog>
   );

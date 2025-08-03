@@ -68,7 +68,9 @@ export const useMockApiKeys = (enabled: boolean = false) => {
   }, [enabled]);
 
   const getMockKeys = (): ApiKeyWithoutSensitive[] => {
-    if (!enabled) return [];
+    if (!enabled) {
+      return [];
+    }
     const stored = sessionStorage.getItem('demo_api_keys');
     return stored ? JSON.parse(stored) : mockApiKeys;
   };

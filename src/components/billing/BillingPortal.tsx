@@ -1,23 +1,24 @@
 'use client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  CreditCard, 
-  Calendar, 
-  AlertCircle, 
-  ExternalLink, 
-  Loader2,
-  Download
-} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
+import {
+  AlertCircle,
+  Calendar,
+  CreditCard,
+  Download,
+  ExternalLink,
+  Loader2,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 // import { HOSPITAL_PLANS } from '@/utils/pricing';
 
-interface Subscription {
+type Subscription = {
   id: string;
   status: string;
   currentPeriodEnd: Date;
@@ -32,9 +33,9 @@ interface Subscription {
     storage: number;
     dataTransfer: number;
   };
-}
+};
 
-interface Invoice {
+type Invoice = {
   id: string;
   status: string;
   amountPaid: number;
@@ -42,7 +43,7 @@ interface Invoice {
   paidAt: Date;
   hostedInvoiceUrl?: string;
   invoicePdf?: string;
-}
+};
 
 export function BillingPortal() {
   const [loadingPortal, setLoadingPortal] = useState(false);
@@ -91,7 +92,7 @@ export function BillingPortal() {
 
   const handleOpenPortal = async () => {
     setLoadingPortal(true);
-    
+
     try {
       const response = await fetch('/api/stripe/portal', {
         method: 'POST',
@@ -135,7 +136,7 @@ export function BillingPortal() {
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-64 mt-2" />
+            <Skeleton className="mt-2 h-4 w-64" />
           </CardHeader>
           <CardContent>
             <Skeleton className="h-20 w-full" />
@@ -157,80 +158,90 @@ export function BillingPortal() {
                 Manage your HospitalOS subscription and billing
               </CardDescription>
             </div>
-            <Button 
+            <Button
               onClick={handleOpenPortal}
               disabled={loadingPortal}
               variant="outline"
             >
-              {loadingPortal ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Manage Billing
-                </>
-              )}
+              {loadingPortal
+                ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Loading...
+                    </>
+                  )
+                : (
+                    <>
+                      <CreditCard className="mr-2 size-4" />
+                      Manage Billing
+                    </>
+                  )}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          {subscription ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Current Plan</p>
-                  <p className="text-2xl font-bold">{subscription.plan.name}</p>
-                </div>
-                {getStatusBadge(subscription.status)}
-              </div>
+          {subscription
+            ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">Current Plan</p>
+                      <p className="text-2xl font-bold">{subscription.plan.name}</p>
+                    </div>
+                    {getStatusBadge(subscription.status)}
+                  </div>
 
-              <div className="grid gap-4 md:grid-cols-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">Billing Period</p>
-                  <p className="font-medium">
-                    ${subscription.plan.price}/{subscription.plan.interval}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Next Billing Date</p>
-                  <p className="font-medium flex items-center">
-                    <Calendar className="mr-1 h-4 w-4" />
-                    {formatDistanceToNow(new Date(subscription.currentPeriodEnd), { 
-                      addSuffix: true 
-                    })}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Auto-Renewal</p>
-                  <p className="font-medium">
-                    {subscription.cancelAtPeriodEnd ? 'Disabled' : 'Enabled'}
-                  </p>
-                </div>
-              </div>
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Billing Period</p>
+                      <p className="font-medium">
+                        $
+                        {subscription.plan.price}
+                        /
+                        {subscription.plan.interval}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Next Billing Date</p>
+                      <p className="flex items-center font-medium">
+                        <Calendar className="mr-1 size-4" />
+                        {formatDistanceToNow(new Date(subscription.currentPeriodEnd), {
+                          addSuffix: true,
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Auto-Renewal</p>
+                      <p className="font-medium">
+                        {subscription.cancelAtPeriodEnd ? 'Disabled' : 'Enabled'}
+                      </p>
+                    </div>
+                  </div>
 
-              {subscription.cancelAtPeriodEnd && (
+                  {subscription.cancelAtPeriodEnd && (
+                    <Alert>
+                      <AlertCircle className="size-4" />
+                      <AlertTitle>Subscription Ending</AlertTitle>
+                      <AlertDescription>
+                        Your subscription will end on
+                        {' '}
+                        {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                        .
+                        Renew to keep access to all features.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              )
+            : (
                 <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Subscription Ending</AlertTitle>
+                  <AlertCircle className="size-4" />
+                  <AlertTitle>No Active Subscription</AlertTitle>
                   <AlertDescription>
-                    Your subscription will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}.
-                    Renew to keep access to all features.
+                    Choose a plan to get started with HospitalOS.
                   </AlertDescription>
                 </Alert>
               )}
-            </div>
-          ) : (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>No Active Subscription</AlertTitle>
-              <AlertDescription>
-                Choose a plan to get started with HospitalOS.
-              </AlertDescription>
-            </Alert>
-          )}
         </CardContent>
       </Card>
 
@@ -246,45 +257,51 @@ export function BillingPortal() {
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <p className="text-sm font-medium">API Calls</p>
                   <p className="text-sm text-muted-foreground">
-                    {subscription.usage.apiCalls.toLocaleString()} / 10,000
+                    {subscription.usage.apiCalls.toLocaleString()}
+                    {' '}
+                    / 10,000
                   </p>
                 </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div 
-                    className="bg-primary rounded-full h-2"
+                <div className="h-2 w-full rounded-full bg-secondary">
+                  <div
+                    className="h-2 rounded-full bg-primary"
                     style={{ width: `${(subscription.usage.apiCalls / 10000) * 100}%` }}
                   />
                 </div>
               </div>
-              
+
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <p className="text-sm font-medium">Storage</p>
                   <p className="text-sm text-muted-foreground">
-                    {subscription.usage.storage} GB / 25 GB
+                    {subscription.usage.storage}
+                    {' '}
+                    GB / 25 GB
                   </p>
                 </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div 
-                    className="bg-primary rounded-full h-2"
+                <div className="h-2 w-full rounded-full bg-secondary">
+                  <div
+                    className="h-2 rounded-full bg-primary"
                     style={{ width: `${(subscription.usage.storage / 25) * 100}%` }}
                   />
                 </div>
               </div>
-              
+
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <p className="text-sm font-medium">Data Transfer</p>
                   <p className="text-sm text-muted-foreground">
-                    {subscription.usage.dataTransfer} GB / 100 GB
+                    {subscription.usage.dataTransfer}
+                    {' '}
+                    GB / 100 GB
                   </p>
                 </div>
-                <div className="w-full bg-secondary rounded-full h-2">
-                  <div 
-                    className="bg-primary rounded-full h-2"
+                <div className="h-2 w-full rounded-full bg-secondary">
+                  <div
+                    className="h-2 rounded-full bg-primary"
                     style={{ width: `${(subscription.usage.dataTransfer / 100) * 100}%` }}
                   />
                 </div>
@@ -303,56 +320,65 @@ export function BillingPortal() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loadingInvoices ? (
-            <div className="space-y-2">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-            </div>
-          ) : invoices && invoices.length > 0 ? (
-            <div className="space-y-2">
-              {invoices.map((invoice) => (
-                <div 
-                  key={invoice.id}
-                  className="flex items-center justify-between p-3 rounded-lg border"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium">
-                      ${(invoice.amountPaid / 100).toFixed(2)} {invoice.currency.toUpperCase()}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Paid on {new Date(invoice.paidAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {getStatusBadge(invoice.status)}
-                    {invoice.hostedInvoiceUrl && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => window.open(invoice.hostedInvoiceUrl, '_blank')}
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {invoice.invoicePdf && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => window.open(invoice.invoicePdf, '_blank')}
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
+          {loadingInvoices
+            ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              No invoices yet
-            </p>
-          )}
+              )
+            : invoices && invoices.length > 0
+              ? (
+                  <div className="space-y-2">
+                    {invoices.map(invoice => (
+                      <div
+                        key={invoice.id}
+                        className="flex items-center justify-between rounded-lg border p-3"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">
+                            $
+                            {(invoice.amountPaid / 100).toFixed(2)}
+                            {' '}
+                            {invoice.currency.toUpperCase()}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Paid on
+                            {' '}
+                            {new Date(invoice.paidAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {getStatusBadge(invoice.status)}
+                          {invoice.hostedInvoiceUrl && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => window.open(invoice.hostedInvoiceUrl, '_blank')}
+                            >
+                              <ExternalLink className="size-4" />
+                            </Button>
+                          )}
+                          {invoice.invoicePdf && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => window.open(invoice.invoicePdf, '_blank')}
+                            >
+                              <Download className="size-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              : (
+                  <p className="py-4 text-center text-sm text-muted-foreground">
+                    No invoices yet
+                  </p>
+                )}
         </CardContent>
       </Card>
     </div>

@@ -1,20 +1,20 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface MFASetupFlowProps {
+type MFASetupFlowProps = {
   onComplete?: () => void;
   onCancel?: () => void;
-}
+};
 
 export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
   const { user } = useUser();
@@ -30,7 +30,7 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
       // In Clerk, we need to redirect to the user profile page for TOTP setup
       // or use the Clerk API directly
       const response = await user?.createTOTP();
-      
+
       if (response?.uri) {
         setTotpUri(response.uri);
         setSecret(response.secret || '');
@@ -54,7 +54,7 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
     setIsVerifying(true);
     try {
       await user?.verifyTOTP({ code: verificationCode });
-      
+
       // Generate backup codes after successful verification
       const backupResponse = await user?.createBackupCode();
       if (backupResponse?.codes) {
@@ -88,7 +88,7 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl">
       {step === 'intro' && (
         <Card>
           <CardHeader>
@@ -100,8 +100,8 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-blue-600 font-semibold text-sm">1</span>
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                  <span className="text-sm font-semibold text-blue-600">1</span>
                 </div>
                 <div>
                   <h4 className="font-medium">Install an authenticator app</h4>
@@ -110,10 +110,10 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-blue-600 font-semibold text-sm">2</span>
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                  <span className="text-sm font-semibold text-blue-600">2</span>
                 </div>
                 <div>
                   <h4 className="font-medium">Scan the QR code</h4>
@@ -122,10 +122,10 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-blue-600 font-semibold text-sm">3</span>
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                  <span className="text-sm font-semibold text-blue-600">3</span>
                 </div>
                 <div>
                   <h4 className="font-medium">Enter the verification code</h4>
@@ -134,10 +134,10 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-blue-600 font-semibold text-sm">4</span>
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                  <span className="text-sm font-semibold text-blue-600">4</span>
                 </div>
                 <div>
                   <h4 className="font-medium">Save backup codes</h4>
@@ -147,7 +147,7 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex gap-3 pt-4">
               <Button onClick={startSetup}>
                 Start Setup
@@ -170,17 +170,19 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex justify-center">
-              {totpUri ? (
-                <QRCodeSVG value={totpUri} size={200} />
-              ) : (
-                <div className="w-[200px] h-[200px] bg-gray-100 animate-pulse rounded" />
-              )}
+              {totpUri
+                ? (
+                    <QRCodeSVG value={totpUri} size={200} />
+                  )
+                : (
+                    <div className="size-[200px] animate-pulse rounded bg-gray-100" />
+                  )}
             </div>
-            
+
             <div className="space-y-2">
               <Label>Can't scan? Enter this code manually:</Label>
               <div className="flex items-center gap-2">
-                <code className="flex-1 p-2 bg-gray-100 rounded text-sm font-mono break-all">
+                <code className="flex-1 break-all rounded bg-gray-100 p-2 font-mono text-sm">
                   {secret || 'Loading...'}
                 </code>
                 <Button
@@ -193,13 +195,13 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
                 </Button>
               </div>
             </div>
-            
+
             <Alert>
               <AlertDescription>
                 After scanning, your authenticator app will show a 6-digit code that changes every 30 seconds.
               </AlertDescription>
             </Alert>
-            
+
             <div className="flex gap-3">
               <Button onClick={() => setStep('verify')}>
                 Continue
@@ -231,11 +233,11 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
                 maxLength={6}
                 placeholder="000000"
                 value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                className="text-center text-2xl font-mono tracking-widest"
+                onChange={e => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                className="text-center font-mono text-2xl tracking-widest"
               />
             </div>
-            
+
             <div className="flex gap-3">
               <Button
                 onClick={verifyTOTP}
@@ -265,15 +267,15 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
                 ⚠️ These codes will not be shown again. Save them in a secure location.
               </AlertDescription>
             </Alert>
-            
-            <div className="grid grid-cols-2 gap-2 p-4 bg-gray-50 rounded-lg">
+
+            <div className="grid grid-cols-2 gap-2 rounded-lg bg-gray-50 p-4">
               {backupCodes.map((code, index) => (
                 <code key={index} className="font-mono text-sm">
                   {code}
                 </code>
               ))}
             </div>
-            
+
             <div className="flex gap-3">
               <Button
                 variant="outline"
@@ -299,8 +301,8 @@ export const MFASetupFlow = ({ onComplete, onCancel }: MFASetupFlowProps) => {
           </CardHeader>
           <CardContent>
             <div className="flex justify-center py-6">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex size-16 items-center justify-center rounded-full bg-green-100">
+                <svg className="size-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>

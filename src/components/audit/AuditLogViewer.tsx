@@ -1,44 +1,22 @@
 'use client';
 
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { AccessControl } from '@/components/security/AccessControl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import type { AuditLogEntry } from '@/hooks/api/useAuditLogs';
+import { useAuditLogs, useExportAuditLogs } from '@/hooks/api/useAuditLogs';
 import { useHospitalPermissions } from '@/hooks/useHospitalPermissions';
-import type { HospitalAuditEventType } from '@/libs/audit';
-
-type AuditLogEntry = {
-  id: string;
-  timestamp: string;
-  action: HospitalAuditEventType;
-  actor: {
-    id: string;
-    name: string;
-    email?: string;
-    role?: string;
-    department?: string;
-  };
-  resource?: {
-    id?: string;
-    name?: string;
-    type?: string;
-  };
-  metadata?: Record<string, any>;
-  success: boolean;
-  ipAddress?: string;
-};
 
 type AuditLogViewerProps = {
   organizationId: string;
 };
 
 export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ organizationId }) => {
-  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState<string>('');
   const [filterUser, setFilterUser] = useState<string>('');
@@ -46,19 +24,33 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ organizationId }
     start: format(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'), // Last 7 days
     end: format(new Date(), 'yyyy-MM-dd'),
   });
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { } = useHospitalPermissions();
 
-  // Mock data for demonstration - in real implementation, this would fetch from API
-  useEffect(() => {
-    const fetchAuditLogs = async () => {
-      setLoading(true);
+  // Use the API hook
+  const { data: auditData, isLoading: loading } = useAuditLogs({
+    page: currentPage,
+    pageSize: 20,
+    startDate: dateRange.start,
+    endDate: dateRange.end,
+    action: filterAction as any || undefined,
+    search: searchTerm || undefined,
+  });
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+  const { mutate: exportLogs } = useExportAuditLogs();
 
-      // Mock audit log data
-      const mockLogs: AuditLogEntry[] = [
+  const logs = auditData?.data || [];
+  const pagination = auditData?.pagination || {
+    totalCount: 0,
+    totalPages: 0,
+    hasMore: false,
+  };
+
+  // Fallback mock data if API is not ready
+  const useMockData = !auditData && !loading;
+  const mockLogs: AuditLogEntry[] = useMockData
+    ? [
         {
           id: '1',
           timestamp: new Date().toISOString(),
@@ -137,16 +129,12 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ organizationId }
           success: true,
           ipAddress: '192.168.1.102',
         },
-      ];
+      ]
+    : [];
 
-      setLogs(mockLogs);
-      setLoading(false);
-    };
+  const displayLogs = useMockData ? mockLogs : logs;
 
-    fetchAuditLogs();
-  }, [organizationId]);
-
-  const filteredLogs = logs.filter((log) => {
+  const filteredLogs = displayLogs.filter((log) => {
     const matchesSearch
       = log.actor.name.toLowerCase().includes(searchTerm.toLowerCase())
       || log.action.toLowerCase().includes(searchTerm.toLowerCase())
@@ -163,7 +151,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ organizationId }
     return matchesSearch && matchesAction && matchesUser && matchesDateRange;
   });
 
-  const getActionBadge = (action: HospitalAuditEventType, success: boolean) => {
+  const getActionBadge = (action: string, success: boolean) => {
     const variant = success ? 'default' : 'destructive';
 
     const actionColors: Record<string, string> = {
@@ -185,7 +173,41 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ organizationId }
     );
   };
 
-  const exportLogs = () => {
+  const handleExportLogs = () => {
+    if (useMockData) {
+      // Mock export for demo
+      const csvContent = [
+        ['Timestamp', 'Action', 'Actor', 'Resource', 'Success', 'IP Address'].join(','),
+        ...filteredLogs.map(log => [
+          log.timestamp,
+          log.action,
+          log.actor.name,
+          log.resource?.name || 'N/A',
+          log.success.toString(),
+          log.metadata?.ipAddress || 'N/A',
+        ].join(',')),
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `audit-logs-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      return;
+    }
+
+    // Use real export API
+    exportLogs({
+      startDate: dateRange.start,
+      endDate: dateRange.end,
+      action: filterAction as any || undefined,
+      search: searchTerm || undefined,
+    });
+  };
+
+  const OLD_exportLogs = () => {
     const csvContent = [
       ['Timestamp', 'Action', 'Actor', 'Resource', 'Success', 'IP Address'].join(','),
       ...filteredLogs.map(log => [
@@ -225,7 +247,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ organizationId }
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             🔍 Audit Logs
-            <Button onClick={exportLogs} variant="outline" size="sm">
+            <Button onClick={handleExportLogs} variant="outline" size="sm">
               Export CSV
             </Button>
           </CardTitle>

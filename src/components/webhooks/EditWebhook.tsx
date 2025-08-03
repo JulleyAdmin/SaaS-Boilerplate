@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useOrganization } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -26,7 +27,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -34,14 +34,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { updateWebhook } from '@/hooks/useWebhooks';
-import { 
-  webhookEventTypes, 
-  getEventTypeDescription, 
-  type WebhookEventType, 
-  type WebhookEndpoint 
-} from '@/models/webhook';
+import {
+  getEventTypeDescription,
+  type WebhookEndpoint,
+  type WebhookEventType,
+  webhookEventTypes,
+} from '@/types/webhook';
 
 const editWebhookSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
@@ -55,12 +55,12 @@ const editWebhookSchema = z.object({
 
 type EditWebhookFormValues = z.infer<typeof editWebhookSchema>;
 
-interface EditWebhookProps {
+type EditWebhookProps = {
   webhook: WebhookEndpoint;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-}
+};
 
 export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhookProps) => {
   const { organization } = useOrganization();
@@ -97,13 +97,15 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
     const newSelected = selectedEvents.includes(eventType)
       ? selectedEvents.filter(e => e !== eventType)
       : [...selectedEvents, eventType];
-    
+
     setSelectedEvents(newSelected);
     form.setValue('eventTypes', newSelected);
   };
 
   const handleSubmit = async (values: EditWebhookFormValues) => {
-    if (!organization) return;
+    if (!organization) {
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -133,7 +135,7 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Edit Webhook</DialogTitle>
           <DialogDescription>
@@ -163,7 +165,7 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
                 <FormItem>
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="What this webhook is used for..."
                       {...field}
                     />
@@ -180,7 +182,7 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
                 <FormItem>
                   <FormLabel>Endpoint URL</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       placeholder="https://your-app.com/webhooks/hospitalos"
                       {...field}
                     />
@@ -224,18 +226,18 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
               <p className="text-sm text-gray-600">
                 Select which events you want to receive
               </p>
-              <div className="space-y-2 max-h-48 overflow-y-auto border rounded-md p-3">
-                {webhookEventTypes.map((eventType) => (
+              <div className="max-h-48 space-y-2 overflow-y-auto rounded-md border p-3">
+                {webhookEventTypes.map(eventType => (
                   <div
                     key={eventType}
-                    className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                    className="flex cursor-pointer items-center space-x-3 rounded p-2 hover:bg-gray-50"
                     onClick={() => handleEventToggle(eventType)}
                   >
                     <input
                       type="checkbox"
                       checked={selectedEvents.includes(eventType)}
                       onChange={() => handleEventToggle(eventType)}
-                      className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                      className="size-4 rounded border-gray-300 text-blue-600"
                     />
                     <div className="flex-1">
                       <div className="text-sm font-medium">{eventType}</div>
@@ -248,7 +250,7 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
               </div>
               {selectedEvents.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {selectedEvents.map((eventType) => (
+                  {selectedEvents.map(eventType => (
                     <Badge key={eventType} variant="secondary" className="text-xs">
                       {eventType}
                     </Badge>
@@ -270,12 +272,12 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
                   <FormItem>
                     <FormLabel>Timeout (seconds)</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         type="number"
                         min={5}
                         max={120}
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        onChange={e => field.onChange(Number.parseInt(e.target.value))}
                       />
                     </FormControl>
                     <FormDescription>
@@ -293,12 +295,12 @@ export const EditWebhook = ({ webhook, isOpen, onClose, onSuccess }: EditWebhook
                   <FormItem>
                     <FormLabel>Retry Count</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         type="number"
                         min={0}
                         max={5}
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        onChange={e => field.onChange(Number.parseInt(e.target.value))}
                       />
                     </FormControl>
                     <FormDescription>

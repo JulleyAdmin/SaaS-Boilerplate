@@ -1,10 +1,10 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -34,12 +34,12 @@ const createApiKeySchema = z.object({
 
 type CreateApiKeyForm = z.infer<typeof createApiKeySchema>;
 
-interface NewApiKeyProps {
+type NewApiKeyProps = {
   isOpen: boolean;
   onClose: () => void;
   organizationId: string;
   onSuccess: () => void;
-}
+};
 
 export const NewApiKey = ({ isOpen, onClose, organizationId, onSuccess }: NewApiKeyProps) => {
   const [step, setStep] = useState<'form' | 'display'>('form');
@@ -99,103 +99,107 @@ export const NewApiKey = ({ isOpen, onClose, organizationId, onSuccess }: NewApi
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
-        {step === 'form' ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>Create API Key</DialogTitle>
-              <DialogDescription>
-                Create a new API key for programmatic access to your organization.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="My API Key"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        A descriptive name for this API key.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="expiresAt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Expiration Date (Optional)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="datetime-local"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Leave empty for a key that never expires.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        {step === 'form'
+          ? (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Create API Key</DialogTitle>
+                  <DialogDescription>
+                    Create a new API key for programmatic access to your organization.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="My API Key"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            A descriptive name for this API key.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="expiresAt"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Expiration Date (Optional)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="datetime-local"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Leave empty for a key that never expires.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <DialogFooter>
+                      <Button type="button" variant="outline" onClick={handleClose}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={form.formState.isSubmitting}>
+                        {form.formState.isSubmitting ? 'Creating...' : 'Create API Key'}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </>
+            )
+          : (
+              <>
+                <DialogHeader>
+                  <DialogTitle>API Key Created</DialogTitle>
+                  <DialogDescription>
+                    Your API key has been created. Copy it now as it won't be shown again.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="rounded-lg bg-gray-50 p-4">
+                    <div className="flex items-center justify-between">
+                      <code className="break-all pr-2 font-mono text-sm">
+                        {createdApiKey}
+                      </code>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={copyToClipboard}
+                      >
+                        {copied ? 'Copied!' : 'Copy'}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Important:</strong>
+                      {' '}
+                      This is the only time you'll see this API key.
+                      Make sure to copy it and store it securely.
+                    </p>
+                  </div>
+                </div>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={handleClose}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? 'Creating...' : 'Create API Key'}
+                  <Button onClick={handleFinish}>
+                    Done
                   </Button>
                 </DialogFooter>
-              </form>
-            </Form>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle>API Key Created</DialogTitle>
-              <DialogDescription>
-                Your API key has been created. Copy it now as it won't be shown again.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <code className="text-sm font-mono break-all pr-2">
-                    {createdApiKey}
-                  </code>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={copyToClipboard}
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </Button>
-                </div>
-              </div>
-              <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
-                <p className="text-sm text-yellow-800">
-                  <strong>Important:</strong> This is the only time you'll see this API key. 
-                  Make sure to copy it and store it securely.
-                </p>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleFinish}>
-                Done
-              </Button>
-            </DialogFooter>
-          </>
-        )}
+              </>
+            )}
       </DialogContent>
     </Dialog>
   );

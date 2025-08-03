@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useOrganization } from '@clerk/nextjs';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useInvitations, deleteInvitation } from '@/hooks/useInvitations';
+import { deleteInvitation, useInvitations } from '@/hooks/useInvitations';
 
 export const PendingInvitations = () => {
   const { organization } = useOrganization();
@@ -54,7 +54,7 @@ export const PendingInvitations = () => {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Pending Invitations</h3>
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div className="size-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
         </div>
       </div>
     );
@@ -75,7 +75,7 @@ export const PendingInvitations = () => {
         </p>
       </div>
 
-      <div className="border rounded-lg">
+      <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -89,36 +89,42 @@ export const PendingInvitations = () => {
           <TableBody>
             {activeInvitations.map((invitation) => {
               const daysUntilExpiry = Math.ceil(
-                (new Date(invitation.expires).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+                (new Date(invitation.expires).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
               );
               const isExpiringSoon = daysUntilExpiry <= 2;
 
               return (
                 <TableRow key={invitation.id}>
                   <TableCell>
-                    {invitation.email ? (
-                      <span>{invitation.email}</span>
-                    ) : invitation.allowedDomains && invitation.allowedDomains.length > 0 ? (
-                      <div className="space-y-1">
-                        <span className="text-sm text-gray-500">Allowed domains:</span>
-                        <div className="flex flex-wrap gap-1">
-                          {invitation.allowedDomains.map((domain) => (
-                            <Badge key={domain} variant="outline" className="text-xs">
-                              {domain}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-gray-500">Open invitation</span>
-                    )}
+                    {invitation.email
+                      ? (
+                          <span>{invitation.email}</span>
+                        )
+                      : invitation.allowedDomains && invitation.allowedDomains.length > 0
+                        ? (
+                            <div className="space-y-1">
+                              <span className="text-sm text-gray-500">Allowed domains:</span>
+                              <div className="flex flex-wrap gap-1">
+                                {invitation.allowedDomains.map(domain => (
+                                  <Badge key={domain} variant="outline" className="text-xs">
+                                    {domain}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        : (
+                            <span className="text-gray-500">Open invitation</span>
+                          )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{invitation.role}</Badge>
                   </TableCell>
                   <TableCell>
                     <span className={isExpiringSoon ? 'text-orange-600' : ''}>
-                      {daysUntilExpiry} days
+                      {daysUntilExpiry}
+                      {' '}
+                      days
                     </span>
                   </TableCell>
                   <TableCell className="text-sm text-gray-600">
