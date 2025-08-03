@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 
 import { acceptInvitation } from '@/models/invitation';
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return Response.json(
         { error: 'Invalid request data', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     console.error('Error accepting invitation:', error);
     return Response.json(
       { error: 'Failed to accept invitation' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { oauthServer } from '@/libs/oauth/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 import { createAuditLog } from '@/libs/audit';
+import { oauthServer } from '@/libs/oauth/server';
 
 /**
  * OAuth 2.0 Token Introspection Endpoint (RFC 7662)
@@ -13,7 +15,7 @@ export async function POST(request: NextRequest) {
     const headersList = await headers();
     const orgHeader = headersList.get('x-organization-id');
     const host = headersList.get('host');
-    
+
     // Extract organization ID from subdomain or header
     let organizationId: string | null = orgHeader || null;
     if (!organizationId && host) {
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (!organizationId) {
       return NextResponse.json({
         error: 'invalid_request',
-        error_description: 'Organization context required'
+        error_description: 'Organization context required',
       }, { status: 400 });
     }
 
@@ -68,14 +70,14 @@ export async function POST(request: NextRequest) {
     if (!token) {
       return NextResponse.json({
         error: 'invalid_request',
-        error_description: 'Token parameter is required'
+        error_description: 'Token parameter is required',
       }, { status: 400 });
     }
 
     if (!clientId || !clientSecret) {
       return NextResponse.json({
         error: 'invalid_request',
-        error_description: 'Client authentication is required'
+        error_description: 'Client authentication is required',
       }, { status: 400 });
     }
 
@@ -85,7 +87,7 @@ export async function POST(request: NextRequest) {
     // Handle error responses
     if ('error' in result) {
       const statusCode = getErrorStatusCode(result.error);
-      
+
       // Audit log for failed introspection
       await createAuditLog({
         organizationId,
@@ -98,16 +100,16 @@ export async function POST(request: NextRequest) {
         metadata: {
           clientId,
           error: result.error,
-          tokenHash: hashToken(token) // Don't log actual token
-        }
+          tokenHash: hashToken(token), // Don't log actual token
+        },
       });
 
-      return NextResponse.json(result, { 
+      return NextResponse.json(result, {
         status: statusCode,
         headers: {
           'Cache-Control': 'no-store',
-          'Pragma': 'no-cache'
-        }
+          'Pragma': 'no-cache',
+        },
       });
     }
 
@@ -128,8 +130,8 @@ export async function POST(request: NextRequest) {
           tokenHash: hashToken(token),
           hospitalRole: result.hospital_role,
           departmentId: result.department_id,
-          phiAccess: result.phi_access || false
-        }
+          phiAccess: result.phi_access || false,
+        },
       });
     }
 
@@ -139,22 +141,21 @@ export async function POST(request: NextRequest) {
       headers: {
         'Cache-Control': 'no-store',
         'Pragma': 'no-cache',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
-
   } catch (error) {
     console.error('Introspection endpoint error:', error);
-    
+
     return NextResponse.json({
       error: 'server_error',
-      error_description: 'Internal server error'
-    }, { 
+      error_description: 'Internal server error',
+    }, {
       status: 500,
       headers: {
         'Cache-Control': 'no-store',
-        'Pragma': 'no-cache'
-      }
+        'Pragma': 'no-cache',
+      },
     });
   }
 }
@@ -179,8 +180,8 @@ function getErrorStatusCode(error: string): number {
  * Create a hash of the token for audit logging (don't log actual tokens)
  */
 function hashToken(token: string): string {
-  const crypto = require('crypto');
-  return crypto.createHash('sha256').update(token).digest('hex').substring(0, 16) + '...';
+  const crypto = require('node:crypto');
+  return `${crypto.createHash('sha256').update(token).digest('hex').substring(0, 16)}...`;
 }
 
 /**
@@ -193,7 +194,7 @@ export async function OPTIONS(_request: NextRequest) {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Organization-Id',
-      'Access-Control-Max-Age': '86400'
-    }
+      'Access-Control-Max-Age': '86400',
+    },
   });
 }

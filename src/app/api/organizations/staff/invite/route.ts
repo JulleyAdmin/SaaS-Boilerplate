@@ -1,14 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'node:crypto';
+
 import { auth } from '@clerk/nextjs/server';
-import { z } from 'zod';
-import { db } from '@/libs/DB';
-import { organizationSchema } from '@/models/Schema';
 import { eq } from 'drizzle-orm';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { createAuditLog } from '@/libs/audit';
+import { db } from '@/libs/DB';
 import { sendHospitalNotification } from '@/libs/email/client';
 import { StaffInvitationEmail } from '@/libs/email/templates/StaffInvitationEmail';
-import { createAuditLog } from '@/libs/audit';
 import { Env } from '@/libs/Env';
-import crypto from 'crypto';
+import { organizationSchema } from '@/models/Schema';
 
 const inviteStaffSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -25,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (!userId || !orgId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
     if (!organization) {
       return NextResponse.json(
         { error: 'Organization not found' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -54,7 +57,7 @@ export async function POST(request: NextRequest) {
     // Generate invitation token
     const inviteToken = crypto.randomBytes(32).toString('hex');
     const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-    
+
     const acceptInviteUrl = `${Env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'}/invitations/accept?token=${inviteToken}&email=${encodeURIComponent(email)}&org=${orgId}`;
 
     // In a real implementation, you would store the invitation in the database
@@ -89,7 +92,7 @@ export async function POST(request: NextRequest) {
       actorId: userId,
       tags: ['staff-invitation', `role:${role}`, `department:${department}`],
       metadata: {
-        inviteToken: inviteToken.substring(0, 8) + '...', // Log partial token
+        inviteToken: `${inviteToken.substring(0, 8)}...`, // Log partial token
         inviteeEmail: email,
         inviteeName: name,
         assignedRole: role,
@@ -125,7 +128,7 @@ export async function POST(request: NextRequest) {
     if (!emailResult.success) {
       return NextResponse.json(
         { error: 'Failed to send invitation email' },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -138,23 +141,22 @@ export async function POST(request: NextRequest) {
         role,
         department,
         expiresAt: expirationDate.toISOString(),
-        inviteToken: inviteToken.substring(0, 8) + '...', // Return partial token for reference
+        inviteToken: `${inviteToken.substring(0, 8)}...`, // Return partial token for reference
       },
     });
-
   } catch (error) {
     console.error('Staff invitation failed:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { error: 'Failed to send staff invitation' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

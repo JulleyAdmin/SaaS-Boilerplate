@@ -1,14 +1,14 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-import { 
+import { canManageWebhooks, getUserRole } from '@/models/team';
+import {
   createWebhookEndpoint,
   getWebhookEndpoints,
+  type WebhookEventType,
   webhookEventTypes,
-  type WebhookEventType
 } from '@/models/webhook';
-import { getUserRole, canManageWebhooks } from '@/models/team';
 
 const createWebhookSchema = z.object({
   name: z.string().min(1).max(100),
@@ -22,7 +22,7 @@ const createWebhookSchema = z.object({
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: { orgId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -40,7 +40,7 @@ export async function GET(
     if (!canManageWebhooks(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to view webhooks' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -57,14 +57,14 @@ export async function GET(
     console.error('Error fetching webhooks:', error);
     return Response.json(
       { error: 'Failed to fetch webhooks' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: { orgId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -82,7 +82,7 @@ export async function POST(
     if (!canManageWebhooks(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to create webhooks' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -113,14 +113,14 @@ export async function POST(
     if (error instanceof z.ZodError) {
       return Response.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('Error creating webhook:', error);
     return Response.json(
       { error: 'Failed to create webhook' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,15 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
-import { constructWebhookEvent } from '@/libs/Stripe';
-import { Env } from '@/libs/Env';
-import { db } from '@/libs/DB';
-import { subscription, invoice, organizationSchema, securityEvents } from '@/models/Schema';
 import { eq } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { Stripe } from 'stripe';
+
 import { createAuditLog } from '@/libs/audit';
-import { getPlanByPriceId } from '@/utils/pricing';
+import { getDb } from '@/libs/DB';
 import { sendSystemNotification } from '@/libs/email/client';
 import { SubscriptionWelcomeEmail } from '@/libs/email/templates/SubscriptionWelcomeEmail';
-import type { Stripe } from 'stripe';
+import { Env } from '@/libs/Env';
+import { constructWebhookEvent } from '@/libs/Stripe';
+import { invoice, organizationSchema, securityEvents, subscription } from '@/models/Schema';
+import { getPlanByPriceId } from '@/utils/pricing';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
       console.error('STRIPE_WEBHOOK_SECRET not configured');
       return NextResponse.json(
         { error: 'Webhook secret not configured' },
-        { status: 500 }
+        { status: 500 },
       );
     }
     event = constructWebhookEvent(body, signature, webhookSecret);
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
     console.error('Webhook signature verification failed:', err);
     return NextResponse.json(
       { error: 'Invalid signature' },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -77,19 +79,23 @@ export async function POST(request: NextRequest) {
     console.error('Webhook handler error:', error);
     return NextResponse.json(
       { error: 'Webhook handler failed' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-  if (!session.customer || !session.subscription) return;
+  if (!session.customer || !session.subscription) {
+    return;
+  }
 
   const organizationId = session.metadata?.organizationId;
   if (!organizationId) {
     console.error('No organizationId in checkout session metadata');
     return;
   }
+
+  const db = await getDb();
 
   // Update organization with Stripe customer ID
   await db
@@ -125,6 +131,8 @@ async function handleSubscriptionChange(stripeSubscription: Stripe.Subscription)
 
   const priceId = stripeSubscription.items.data[0]?.price.id;
   const plan = priceId ? getPlanByPriceId(priceId) : undefined;
+
+  const db = await getDb();
 
   // Check if subscription exists
   const existingSubscription = await db
@@ -187,7 +195,7 @@ async function handleSubscriptionChange(stripeSubscription: Stripe.Subscription)
   // Hospital-specific onboarding for new subscriptions
   if (stripeSubscription.status === 'active' && existingSubscription.length === 0) {
     await createHospitalOnboardingTasks(organizationId, plan?.name || 'CLINIC');
-    
+
     // Send welcome email for new subscriptions
     await sendSubscriptionWelcomeEmail(organizationId, plan?.name || 'CLINIC');
   }
@@ -211,7 +219,9 @@ async function handleSubscriptionChange(stripeSubscription: Stripe.Subscription)
 
 async function handleSubscriptionCancellation(stripeSubscription: Stripe.Subscription) {
   const organizationId = stripeSubscription.metadata?.organizationId;
-  if (!organizationId) return;
+  if (!organizationId) {
+    return;
+  }
 
   // Update subscription status
   await db
@@ -249,13 +259,15 @@ async function handleSubscriptionCancellation(stripeSubscription: Stripe.Subscri
 }
 
 async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
-  const organizationId = stripeInvoice.subscription_details?.metadata?.organizationId ||
-                        stripeInvoice.metadata?.organizationId;
-  
+  const organizationId = stripeInvoice.subscription_details?.metadata?.organizationId
+    || stripeInvoice.metadata?.organizationId;
+
   if (!organizationId) {
     console.error('No organizationId in invoice metadata');
     return;
   }
+
+  const db = await getDb();
 
   // Create or update invoice record
   const existingInvoice = await db
@@ -274,7 +286,7 @@ async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
       amountDue: stripeInvoice.amount_due,
       currency: stripeInvoice.currency,
       status: stripeInvoice.status || 'paid',
-      paidAt: stripeInvoice.status_transitions?.paid_at 
+      paidAt: stripeInvoice.status_transitions?.paid_at
         ? new Date(stripeInvoice.status_transitions.paid_at * 1000)
         : new Date(),
       hostedInvoiceUrl: stripeInvoice.hosted_invoice_url || undefined,
@@ -307,10 +319,14 @@ async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaymentFailed(stripeInvoice: Stripe.Invoice) {
-  const organizationId = stripeInvoice.subscription_details?.metadata?.organizationId ||
-                        stripeInvoice.metadata?.organizationId;
-  
-  if (!organizationId) return;
+  const organizationId = stripeInvoice.subscription_details?.metadata?.organizationId
+    || stripeInvoice.metadata?.organizationId;
+
+  if (!organizationId) {
+    return;
+  }
+
+  const db = await getDb();
 
   // Update subscription status if needed
   if (stripeInvoice.subscription) {
@@ -358,7 +374,7 @@ async function createHospitalOnboardingTasks(organizationId: string, planName: s
   // This would create onboarding tasks based on the plan
   // For now, just log
   console.log(`Creating onboarding tasks for ${organizationId} on ${planName} plan`);
-  
+
   // TODO: Implement actual onboarding workflow
   // - Send welcome email
   // - Create default departments
@@ -370,7 +386,7 @@ async function scheduleDataArchival(organizationId: string, archiveAfter: number
   // This would schedule data archival after subscription ends
   const archiveDate = new Date(archiveAfter * 1000);
   console.log(`Scheduling data archival for ${organizationId} after ${archiveDate}`);
-  
+
   // TODO: Implement data archival workflow
   // - Export all data to secure storage
   // - Remove PHI after grace period
@@ -383,10 +399,10 @@ async function sendSubscriptionWelcomeEmail(organizationId: string, planName: st
     const hospitalName = organizationId; // Placeholder
     const administratorEmail = 'admin@hospital.com'; // Placeholder
     const administratorName = 'Hospital Administrator'; // Placeholder
-    
+
     const loginUrl = `${Env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'}/dashboard`;
     const setupGuideUrl = `${Env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'}/docs/setup`;
-    
+
     await sendSystemNotification({
       to: administratorEmail,
       subject: `Welcome to HospitalOS! Your ${planName} subscription is active`,
@@ -412,4 +428,3 @@ async function sendSubscriptionWelcomeEmail(organizationId: string, planName: st
     // Don't throw - email failures shouldn't break webhook processing
   }
 }
-

@@ -1,12 +1,12 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-import { getApiKey, deleteApiKey } from '@/models/apiKey';
-import { getUserRole, canManageApiKeys } from '@/models/team';
+import { deleteApiKey, getApiKey } from '@/models/apiKey';
+import { canManageApiKeys, getUserRole } from '@/models/team';
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { orgId: string; keyId: string } }
+  { params }: { params: { orgId: string; keyId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -24,7 +24,7 @@ export async function GET(
     if (!canManageApiKeys(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to view API keys' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,14 +45,14 @@ export async function GET(
     console.error('Error fetching API key:', error);
     return Response.json(
       { error: 'Failed to fetch API key' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { orgId: string; keyId: string } }
+  { params }: { params: { orgId: string; keyId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -70,7 +70,7 @@ export async function DELETE(
     if (!canManageApiKeys(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to delete API keys' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -85,7 +85,7 @@ export async function DELETE(
     console.error('Error deleting API key:', error);
     return Response.json(
       { error: 'Failed to delete API key' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

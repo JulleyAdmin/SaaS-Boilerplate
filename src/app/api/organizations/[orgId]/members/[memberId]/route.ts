@@ -1,16 +1,16 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-import { 
-  updateTeamMemberRole, 
-  removeTeamMember, 
-  getUserRole, 
-  canUpdateMemberRole,
-  canRemoveMember,
-  fetchTeamMembers
-} from '@/models/team';
 import type { TeamRole } from '@/models/team';
+import {
+  canRemoveMember,
+  canUpdateMemberRole,
+  fetchTeamMembers,
+  getUserRole,
+  removeTeamMember,
+  updateTeamMemberRole,
+} from '@/models/team';
 
 const updateRoleSchema = z.object({
   role: z.enum(['ADMIN', 'MEMBER']), // Can't promote to OWNER via this endpoint
@@ -18,7 +18,7 @@ const updateRoleSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { orgId: string; memberId: string } }
+  { params }: { params: { orgId: string; memberId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -36,11 +36,11 @@ export async function PATCH(
 
     // Get current user's role
     const userRole = await getUserRole(params.orgId, userId);
-    
+
     // Get target member's current role
     const members = await fetchTeamMembers(params.orgId);
     const targetMember = members.find(m => m.id === params.memberId);
-    
+
     if (!targetMember) {
       return Response.json({ error: 'Member not found' }, { status: 404 });
     }
@@ -49,7 +49,7 @@ export async function PATCH(
     if (!canUpdateMemberRole(userRole, targetMember.role, validatedData.role as TeamRole)) {
       return Response.json(
         { error: 'Insufficient permissions to update this member\'s role' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -65,21 +65,21 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return Response.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('Error updating member role:', error);
     return Response.json(
       { error: 'Failed to update member role' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { orgId: string; memberId: string } }
+  { params }: { params: { orgId: string; memberId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -94,11 +94,11 @@ export async function DELETE(
 
     // Get current user's role
     const userRole = await getUserRole(params.orgId, userId);
-    
+
     // Get target member's role
     const members = await fetchTeamMembers(params.orgId);
     const targetMember = members.find(m => m.id === params.memberId);
-    
+
     if (!targetMember) {
       return Response.json({ error: 'Member not found' }, { status: 404 });
     }
@@ -107,7 +107,7 @@ export async function DELETE(
     if (targetMember.userId === userId) {
       return Response.json(
         { error: 'You cannot remove yourself from the team' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -115,7 +115,7 @@ export async function DELETE(
     if (!canRemoveMember(userRole, targetMember.role)) {
       return Response.json(
         { error: 'Insufficient permissions to remove this member' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -127,7 +127,7 @@ export async function DELETE(
     console.error('Error removing team member:', error);
     return Response.json(
       { error: 'Failed to remove team member' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

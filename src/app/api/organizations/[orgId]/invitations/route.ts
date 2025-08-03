@@ -1,14 +1,14 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-import { 
-  createInvitation, 
-  fetchInvitations, 
-  hasPendingInvitation 
-} from '@/models/invitation';
-import { getUserRole, canManageTeamMembers } from '@/models/team';
 import { Env } from '@/libs/Env';
+import {
+  createInvitation,
+  fetchInvitations,
+  hasPendingInvitation,
+} from '@/models/invitation';
+import { canManageTeamMembers, getUserRole } from '@/models/team';
 
 const createInvitationSchema = z.object({
   email: z.string().email().optional(),
@@ -18,7 +18,7 @@ const createInvitationSchema = z.object({
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: { orgId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -36,7 +36,7 @@ export async function GET(
     if (!canManageTeamMembers(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to view invitations' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -47,14 +47,14 @@ export async function GET(
     console.error('Error fetching invitations:', error);
     return Response.json(
       { error: 'Failed to fetch invitations' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: { orgId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -72,7 +72,7 @@ export async function POST(
     if (!canManageTeamMembers(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to create invitations' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -85,7 +85,7 @@ export async function POST(
       if (hasPending) {
         return Response.json(
           { error: 'This email already has a pending invitation' },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -109,24 +109,24 @@ export async function POST(
       console.log(`Invitation email would be sent to: ${invitation.email}`);
     }
 
-    return Response.json({ 
+    return Response.json({
       data: {
         ...invitation,
         invitationUrl,
-      }
+      },
     }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return Response.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('Error creating invitation:', error);
     return Response.json(
       { error: 'Failed to create invitation' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,12 +1,12 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
+import { canManageWebhooks, getUserRole } from '@/models/team';
 import { getWebhookDeliveries, getWebhookEndpoint } from '@/models/webhook';
-import { getUserRole, canManageWebhooks } from '@/models/team';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string; webhookId: string } }
+  { params }: { params: { orgId: string; webhookId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -24,7 +24,7 @@ export async function GET(
     if (!canManageWebhooks(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to view webhook deliveries' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -36,7 +36,7 @@ export async function GET(
 
     // Get query parameters
     const { searchParams } = new URL(request.url);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
+    const limit = Math.min(Number.parseInt(searchParams.get('limit') || '50'), 100);
 
     const deliveries = await getWebhookDeliveries(params.webhookId, limit);
 
@@ -45,7 +45,7 @@ export async function GET(
     console.error('Error fetching webhook deliveries:', error);
     return Response.json(
       { error: 'Failed to fetch webhook deliveries' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

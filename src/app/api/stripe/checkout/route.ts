@@ -1,12 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { createCheckoutSession, createStripeCustomer } from '@/libs/Stripe';
-import { db } from '@/libs/DB';
-import { organizationSchema } from '@/models/Schema';
 import { eq } from 'drizzle-orm';
-import { Env } from '@/libs/Env';
-import { HOSPITAL_PLANS, TRIAL_PERIOD_DAYS } from '@/utils/pricing';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 import { createAuditLog } from '@/libs/audit';
+import { db } from '@/libs/DB';
+import { Env } from '@/libs/Env';
+import { createCheckoutSession, createStripeCustomer } from '@/libs/Stripe';
+import { organizationSchema } from '@/models/Schema';
+import { HOSPITAL_PLANS, TRIAL_PERIOD_DAYS } from '@/utils/pricing';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!userId || !orgId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -24,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!priceId || !planKey) {
       return NextResponse.json(
         { error: 'Price ID and plan key are required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (!plan) {
       return NextResponse.json(
         { error: 'Invalid plan' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,7 +49,7 @@ export async function POST(request: NextRequest) {
     if (!organization) {
       return NextResponse.json(
         { error: 'Organization not found' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -55,13 +57,13 @@ export async function POST(request: NextRequest) {
     if (organization.stripeSubscriptionId && organization.stripeSubscriptionStatus === 'active') {
       return NextResponse.json(
         { error: 'Organization already has an active subscription' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Create or retrieve Stripe customer
     let customerId = organization.stripeCustomerId;
-    
+
     if (!customerId) {
       // Get organization details from Clerk
       const orgResponse = await fetch(
@@ -70,11 +72,11 @@ export async function POST(request: NextRequest) {
           headers: {
             Authorization: `Bearer ${Env.CLERK_SECRET_KEY}`,
           },
-        }
+        },
       );
-      
+
       const orgData = await orgResponse.json();
-      
+
       const customer = await createStripeCustomer({
         organizationId: orgId,
         email: orgData.emailAddress,
@@ -84,9 +86,9 @@ export async function POST(request: NextRequest) {
           hospitalPlan: planKey,
         },
       });
-      
+
       customerId = customer.id;
-      
+
       // Update organization with customer ID
       await db
         .update(organizationSchema)
@@ -127,7 +129,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       checkoutUrl: session.url,
       sessionId: session.id,
     });
@@ -135,7 +137,7 @@ export async function POST(request: NextRequest) {
     console.error('Checkout session creation error:', error);
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

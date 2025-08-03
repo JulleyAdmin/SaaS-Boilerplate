@@ -1,27 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 import {
+  applyScimRateLimit,
   authenticateScimRequest,
-  validateScimContentType,
   createScimErrorResponse,
   createScimResponse,
-  applyScimRateLimit,
+  filterHospitalScimAttributes,
   generateScimETag,
   validateETag,
-  filterHospitalScimAttributes
+  validateScimContentType,
 } from '@/libs/scim/middleware';
 import {
-  getScimUser,
-  updateScimUser,
   deleteScimUser,
+  getScimUser,
   type ScimUser,
-  type ScimUserPatch
+  type ScimUserPatch,
+  updateScimUser,
 } from '@/libs/scim/users';
 
-interface RouteParams {
+type RouteParams = {
   params: {
     id: string;
   };
-}
+};
 
 // GET /api/scim/v2/Users/{id} - Get user by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
@@ -72,13 +74,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     const response = createScimResponse(responseUser);
-    
+
     // Add ETag header
     const etag = generateScimETag(user);
     response.headers.set('ETag', etag);
 
     return response;
-
   } catch (error) {
     console.error('SCIM User GET error:', error);
     return createScimErrorResponse(500, 'internalError', 'Internal server error');
@@ -150,16 +151,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updatedUser = await updateScimUser(userId, userData, organizationId);
 
     const response = createScimResponse(updatedUser);
-    
+
     // Add ETag header
     const etag = generateScimETag(updatedUser);
     response.headers.set('ETag', etag);
 
     return response;
-
   } catch (error) {
     console.error('SCIM User PUT error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('license')) {
         return createScimErrorResponse(400, 'invalidValue', error.message);
@@ -280,16 +280,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const updatedUser = await updateScimUser(userId, updatedUserData, organizationId);
 
     const response = createScimResponse(updatedUser);
-    
+
     // Add ETag header
     const etag = generateScimETag(updatedUser);
     response.headers.set('ETag', etag);
 
     return response;
-
   } catch (error) {
     console.error('SCIM User PATCH error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('license')) {
         return createScimErrorResponse(400, 'invalidValue', error.message);
@@ -341,10 +340,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     await deleteScimUser(userId, organizationId);
 
     return new NextResponse(null, { status: 204 });
-
   } catch (error) {
     console.error('SCIM User DELETE error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         return createScimErrorResponse(404, 'resourceNotFound', error.message);

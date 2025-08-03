@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { revokeAccessToken, revokeRefreshToken } from '@/libs/oauth/tokens';
-import { validateClientCredentials } from '@/libs/oauth/clients';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 import { createAuditLog } from '@/libs/audit';
+import { validateClientCredentials } from '@/libs/oauth/clients';
+import { revokeAccessToken, revokeRefreshToken } from '@/libs/oauth/tokens';
 
 /**
  * OAuth 2.0 Token Revocation Endpoint (RFC 7009)
@@ -14,7 +16,7 @@ export async function POST(request: NextRequest) {
     const headersList = await headers();
     const orgHeader = headersList.get('x-organization-id');
     const host = headersList.get('host');
-    
+
     // Extract organization ID from subdomain or header
     let organizationId: string | null = orgHeader || null;
     if (!organizationId && host) {
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (!organizationId) {
       return NextResponse.json({
         error: 'invalid_request',
-        error_description: 'Organization context required'
+        error_description: 'Organization context required',
       }, { status: 400 });
     }
 
@@ -72,14 +74,14 @@ export async function POST(request: NextRequest) {
     if (!token) {
       return NextResponse.json({
         error: 'invalid_request',
-        error_description: 'Token parameter is required'
+        error_description: 'Token parameter is required',
       }, { status: 400 });
     }
 
     if (!clientId || !clientSecret) {
       return NextResponse.json({
         error: 'invalid_request',
-        error_description: 'Client authentication is required'
+        error_description: 'Client authentication is required',
       }, { status: 400 });
     }
 
@@ -88,21 +90,21 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json({
         error: 'invalid_client',
-        error_description: 'Client authentication failed'
+        error_description: 'Client authentication failed',
       }, { status: 401 });
     }
 
     // Revoke the token
     // Note: According to RFC 7009, we should revoke regardless of token type hint
     // and return success even if token doesn't exist (to prevent enumeration)
-    
+
     try {
       // Try to revoke as access token first
       await revokeAccessToken(token);
-      
+
       // Also try to revoke as refresh token
       await revokeRefreshToken(token);
-      
+
       // Create audit log for successful revocation
       await createAuditLog({
         organizationId,
@@ -116,14 +118,13 @@ export async function POST(request: NextRequest) {
           clientId,
           tokenTypeHint,
           tokenHash: hashToken(token), // Don't log actual token
-          revokedBy: 'client_request'
-        }
+          revokedBy: 'client_request',
+        },
       });
-
     } catch (error) {
       // Log the error but still return success to prevent enumeration
       console.error('Token revocation error:', error);
-      
+
       await createAuditLog({
         organizationId,
         actorId: 'system',
@@ -136,8 +137,8 @@ export async function POST(request: NextRequest) {
           clientId,
           tokenTypeHint,
           tokenHash: hashToken(token),
-          error: 'revocation_failed'
-        }
+          error: 'revocation_failed',
+        },
       });
     }
 
@@ -147,22 +148,21 @@ export async function POST(request: NextRequest) {
       status: 200,
       headers: {
         'Cache-Control': 'no-store',
-        'Pragma': 'no-cache'
-      }
+        'Pragma': 'no-cache',
+      },
     });
-
   } catch (error) {
     console.error('Revocation endpoint error:', error);
-    
+
     return NextResponse.json({
       error: 'server_error',
-      error_description: 'Internal server error'
-    }, { 
+      error_description: 'Internal server error',
+    }, {
       status: 500,
       headers: {
         'Cache-Control': 'no-store',
-        'Pragma': 'no-cache'
-      }
+        'Pragma': 'no-cache',
+      },
     });
   }
 }
@@ -171,8 +171,8 @@ export async function POST(request: NextRequest) {
  * Create a hash of the token for audit logging (don't log actual tokens)
  */
 function hashToken(token: string): string {
-  const crypto = require('crypto');
-  return crypto.createHash('sha256').update(token).digest('hex').substring(0, 16) + '...';
+  const crypto = require('node:crypto');
+  return `${crypto.createHash('sha256').update(token).digest('hex').substring(0, 16)}...`;
 }
 
 /**
@@ -185,7 +185,7 @@ export async function OPTIONS(_request: NextRequest) {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Organization-Id',
-      'Access-Control-Max-Age': '86400'
-    }
+      'Access-Control-Max-Age': '86400',
+    },
   });
 }

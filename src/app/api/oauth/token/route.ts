@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { oauthServer, type TokenParams } from '@/libs/oauth/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 import { createAuditLog } from '@/libs/audit';
+import { oauthServer, type TokenParams } from '@/libs/oauth/server';
 
 /**
  * OAuth 2.0 Token Endpoint
@@ -13,7 +15,7 @@ export async function POST(request: NextRequest) {
     const headersList = await headers();
     const orgHeader = headersList.get('x-organization-id');
     const host = headersList.get('host');
-    
+
     // Extract organization ID from subdomain or header
     let organizationId: string | null = orgHeader || null;
     if (!organizationId && host) {
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (!organizationId) {
       return NextResponse.json({
         error: 'invalid_request',
-        error_description: 'Organization context required'
+        error_description: 'Organization context required',
       }, { status: 400 });
     }
 
@@ -45,7 +47,7 @@ export async function POST(request: NextRequest) {
         redirect_uri: formData.get('redirect_uri') as string || undefined,
         refresh_token: formData.get('refresh_token') as string || undefined,
         scope: formData.get('scope') as string || undefined,
-        code_verifier: formData.get('code_verifier') as string || undefined
+        code_verifier: formData.get('code_verifier') as string || undefined,
       };
     } else {
       const body = await request.json();
@@ -57,7 +59,7 @@ export async function POST(request: NextRequest) {
         redirect_uri: body.redirect_uri,
         refresh_token: body.refresh_token,
         scope: body.scope,
-        code_verifier: body.code_verifier
+        code_verifier: body.code_verifier,
       };
     }
 
@@ -83,7 +85,7 @@ export async function POST(request: NextRequest) {
     // Handle error responses
     if ('error' in result) {
       const statusCode = getErrorStatusCode(result.error);
-      
+
       // Audit log for failed token request
       await createAuditLog({
         organizationId,
@@ -97,16 +99,16 @@ export async function POST(request: NextRequest) {
           clientId: params.client_id,
           grantType: params.grant_type,
           error: result.error,
-          errorDescription: result.error_description
-        }
+          errorDescription: result.error_description,
+        },
       });
 
-      return NextResponse.json(result, { 
+      return NextResponse.json(result, {
         status: statusCode,
         headers: {
           'Cache-Control': 'no-store',
-          'Pragma': 'no-cache'
-        }
+          'Pragma': 'no-cache',
+        },
       });
     }
 
@@ -127,8 +129,8 @@ export async function POST(request: NextRequest) {
         hasRefreshToken: !!result.refresh_token,
         hospitalRole: result.hospital_role,
         departmentId: result.department_id,
-        phiAccess: result.phi_access || false
-      }
+        phiAccess: result.phi_access || false,
+      },
     });
 
     // Return successful token response
@@ -137,22 +139,21 @@ export async function POST(request: NextRequest) {
       headers: {
         'Cache-Control': 'no-store',
         'Pragma': 'no-cache',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
-
   } catch (error) {
     console.error('Token endpoint error:', error);
-    
+
     return NextResponse.json({
       error: 'server_error',
-      error_description: 'Internal server error'
-    }, { 
+      error_description: 'Internal server error',
+    }, {
       status: 500,
       headers: {
         'Cache-Control': 'no-store',
-        'Pragma': 'no-cache'
-      }
+        'Pragma': 'no-cache',
+      },
     });
   }
 }
@@ -188,7 +189,7 @@ export async function OPTIONS(_request: NextRequest) {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Organization-Id',
-      'Access-Control-Max-Age': '86400'
-    }
+      'Access-Control-Max-Age': '86400',
+    },
   });
 }

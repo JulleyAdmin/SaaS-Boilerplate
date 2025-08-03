@@ -1,15 +1,15 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-import { 
+import { canManageWebhooks, getUserRole } from '@/models/team';
+import {
+  deleteWebhookEndpoint,
   getWebhookEndpoint,
   updateWebhookEndpoint,
-  deleteWebhookEndpoint,
+  type WebhookEventType,
   webhookEventTypes,
-  type WebhookEventType
 } from '@/models/webhook';
-import { getUserRole, canManageWebhooks } from '@/models/team';
 
 const updateWebhookSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -24,7 +24,7 @@ const updateWebhookSchema = z.object({
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { orgId: string; webhookId: string } }
+  { params }: { params: { orgId: string; webhookId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -42,7 +42,7 @@ export async function GET(
     if (!canManageWebhooks(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to view webhooks' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -63,14 +63,14 @@ export async function GET(
     console.error('Error fetching webhook:', error);
     return Response.json(
       { error: 'Failed to fetch webhook' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { orgId: string; webhookId: string } }
+  { params }: { params: { orgId: string; webhookId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -88,7 +88,7 @@ export async function PATCH(
     if (!canManageWebhooks(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to update webhooks' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -98,7 +98,7 @@ export async function PATCH(
     const updated = await updateWebhookEndpoint(
       params.orgId,
       params.webhookId,
-      validatedData
+      validatedData,
     );
 
     if (!updated) {
@@ -116,21 +116,21 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return Response.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('Error updating webhook:', error);
     return Response.json(
       { error: 'Failed to update webhook' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { orgId: string; webhookId: string } }
+  { params }: { params: { orgId: string; webhookId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -148,7 +148,7 @@ export async function DELETE(
     if (!canManageWebhooks(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to delete webhooks' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -163,7 +163,7 @@ export async function DELETE(
     console.error('Error deleting webhook:', error);
     return Response.json(
       { error: 'Failed to delete webhook' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

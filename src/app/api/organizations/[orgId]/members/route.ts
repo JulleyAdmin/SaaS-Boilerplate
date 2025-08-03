@@ -1,9 +1,9 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-import { fetchTeamMembers, addTeamMember, getUserRole, canManageTeamMembers } from '@/models/team';
 import type { TeamRole } from '@/models/team';
+import { addTeamMember, canManageTeamMembers, fetchTeamMembers, getUserRole } from '@/models/team';
 
 const addMemberSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
@@ -12,7 +12,7 @@ const addMemberSchema = z.object({
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: { orgId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -34,16 +34,18 @@ export async function GET(
     const users = await clerk.users.getUserList({ userId: userIds });
 
     // Combine member data with user data
-    const membersWithUsers = members.map(member => {
+    const membersWithUsers = members.map((member) => {
       const user = users.data.find(u => u.id === member.userId);
       return {
         ...member,
-        user: user ? {
-          id: user.id,
-          email: user.emailAddresses[0]?.emailAddress || '',
-          name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
-          imageUrl: user.imageUrl,
-        } : undefined,
+        user: user
+          ? {
+              id: user.id,
+              email: user.emailAddresses[0]?.emailAddress || '',
+              name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
+              imageUrl: user.imageUrl,
+            }
+          : undefined,
       };
     });
 
@@ -52,14 +54,14 @@ export async function GET(
     console.error('Error fetching team members:', error);
     return Response.json(
       { error: 'Failed to fetch team members' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: { orgId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -77,7 +79,7 @@ export async function POST(
     if (!canManageTeamMembers(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to manage team members' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -96,14 +98,14 @@ export async function POST(
     if (error instanceof z.ZodError) {
       return Response.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error('Error adding team member:', error);
     return Response.json(
       { error: 'Failed to add team member' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

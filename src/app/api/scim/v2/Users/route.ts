@@ -1,18 +1,19 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
+
 import {
+  applyScimRateLimit,
   authenticateScimRequest,
-  validateScimContentType,
   createScimErrorResponse,
   createScimResponse,
-  validateScimListParams,
-  applyScimRateLimit,
+  filterHospitalScimAttributes,
+  validateScimContentType,
   validateScimFilter,
-  filterHospitalScimAttributes
+  validateScimListParams,
 } from '@/libs/scim/middleware';
 import {
   createScimUser,
   listScimUsers,
-  type ScimUser
+  type ScimUser,
 } from '@/libs/scim/users';
 
 // GET /api/scim/v2/Users - List users
@@ -55,18 +56,17 @@ export async function GET(request: NextRequest) {
       count: params.count,
       filter: params.filter,
       sortBy: params.sortBy,
-      sortOrder: params.sortOrder
+      sortOrder: params.sortOrder,
     });
 
     // Apply attribute filtering if requested
     if (params.attributes || params.excludedAttributes) {
       result.Resources = result.Resources.map(user =>
-        filterHospitalScimAttributes(user, params.attributes, params.excludedAttributes)
+        filterHospitalScimAttributes(user, params.attributes, params.excludedAttributes),
       );
     }
 
     return createScimResponse(result);
-
   } catch (error) {
     console.error('SCIM Users GET error:', error);
     return createScimErrorResponse(500, 'internalError', 'Internal server error');
@@ -122,10 +122,9 @@ export async function POST(request: NextRequest) {
 
     const location = `${request.nextUrl.origin}/api/scim/v2/Users/${newUser.id}`;
     return createScimResponse(newUser, 201, location);
-
   } catch (error) {
     console.error('SCIM Users POST error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('license')) {
         return createScimErrorResponse(400, 'invalidValue', error.message);

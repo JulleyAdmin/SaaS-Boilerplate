@@ -1,19 +1,20 @@
-import { NextRequest } from 'next/server';
-import {
-  authenticateScimRequest,
-  validateScimContentType,
-  createScimErrorResponse,
-  createScimResponse,
-  validateScimListParams,
-  applyScimRateLimit,
-  validateScimFilter,
-  filterHospitalScimAttributes
-} from '@/libs/scim/middleware';
+import type { NextRequest } from 'next/server';
+
 import {
   createScimGroup,
   listScimGroups,
-  type ScimGroup
+  type ScimGroup,
 } from '@/libs/scim/groups';
+import {
+  applyScimRateLimit,
+  authenticateScimRequest,
+  createScimErrorResponse,
+  createScimResponse,
+  filterHospitalScimAttributes,
+  validateScimContentType,
+  validateScimFilter,
+  validateScimListParams,
+} from '@/libs/scim/middleware';
 
 // GET /api/scim/v2/Groups - List groups
 export async function GET(request: NextRequest) {
@@ -55,18 +56,17 @@ export async function GET(request: NextRequest) {
       count: params.count,
       filter: params.filter,
       sortBy: params.sortBy,
-      sortOrder: params.sortOrder
+      sortOrder: params.sortOrder,
     });
 
     // Apply attribute filtering if requested
     if (params.attributes || params.excludedAttributes) {
       result.Resources = result.Resources.map(group =>
-        filterHospitalScimAttributes(group, params.attributes, params.excludedAttributes)
+        filterHospitalScimAttributes(group, params.attributes, params.excludedAttributes),
       );
     }
 
     return createScimResponse(result);
-
   } catch (error) {
     console.error('SCIM Groups GET error:', error);
     return createScimErrorResponse(500, 'internalError', 'Internal server error');
@@ -142,10 +142,9 @@ export async function POST(request: NextRequest) {
 
     const location = `${request.nextUrl.origin}/api/scim/v2/Groups/${newGroup.id}`;
     return createScimResponse(newGroup, 201, location);
-
   } catch (error) {
     console.error('SCIM Groups POST error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('already exists')) {
         return createScimErrorResponse(409, 'uniqueness', error.message);

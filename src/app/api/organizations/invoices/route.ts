@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { desc, eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
+
 import { db } from '@/libs/DB';
-import { invoice, organizationSchema } from '@/models/Schema';
-import { eq, desc } from 'drizzle-orm';
 import { listInvoices } from '@/libs/Stripe';
+import { invoice, organizationSchema } from '@/models/Schema';
 
 export async function GET() {
   try {
@@ -12,7 +13,7 @@ export async function GET() {
     if (!userId || !orgId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -38,7 +39,7 @@ export async function GET() {
     // If we have invoices in DB, return them
     if (dbInvoices.length > 0) {
       return NextResponse.json(
-        dbInvoices.map((inv) => ({
+        dbInvoices.map(inv => ({
           id: inv.stripeInvoiceId,
           status: inv.status,
           amountPaid: inv.amountPaid,
@@ -46,7 +47,7 @@ export async function GET() {
           paidAt: inv.paidAt,
           hostedInvoiceUrl: inv.hostedInvoiceUrl,
           invoicePdf: inv.invoicePdf,
-        }))
+        })),
       );
     }
 
@@ -58,17 +59,17 @@ export async function GET() {
       });
 
       return NextResponse.json(
-        stripeInvoices.data.map((inv) => ({
+        stripeInvoices.data.map(inv => ({
           id: inv.id,
           status: inv.status,
           amountPaid: inv.amount_paid,
           currency: inv.currency,
-          paidAt: inv.status_transitions?.paid_at 
+          paidAt: inv.status_transitions?.paid_at
             ? new Date(inv.status_transitions.paid_at * 1000)
             : null,
           hostedInvoiceUrl: inv.hosted_invoice_url,
           invoicePdf: inv.invoice_pdf,
-        }))
+        })),
       );
     } catch (error) {
       console.error('Failed to fetch Stripe invoices:', error);
@@ -78,7 +79,7 @@ export async function GET() {
     console.error('Error fetching invoices:', error);
     return NextResponse.json(
       { error: 'Failed to fetch invoices' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

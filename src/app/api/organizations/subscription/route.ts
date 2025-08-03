@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { db } from '@/libs/DB';
-import { subscription, organizationSchema } from '@/models/Schema';
 import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
+
+import { db } from '@/libs/DB';
 import { getSubscriptionDetails } from '@/libs/Stripe';
+import { organizationSchema, subscription } from '@/models/Schema';
 import { getPlanByPriceId } from '@/utils/pricing';
 
 export async function GET() {
@@ -13,7 +14,7 @@ export async function GET() {
     if (!userId || !orgId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -78,7 +79,7 @@ export async function GET() {
     console.error('Error fetching subscription:', error);
     return NextResponse.json(
       { error: 'Failed to fetch subscription' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

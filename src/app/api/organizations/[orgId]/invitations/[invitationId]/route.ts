@@ -1,12 +1,12 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 import { deleteInvitation } from '@/models/invitation';
-import { getUserRole, canManageTeamMembers } from '@/models/team';
+import { canManageTeamMembers, getUserRole } from '@/models/team';
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { orgId: string; invitationId: string } }
+  { params }: { params: { orgId: string; invitationId: string } },
 ) {
   try {
     const { userId, orgId } = await auth();
@@ -24,7 +24,7 @@ export async function DELETE(
     if (!canManageTeamMembers(userRole)) {
       return Response.json(
         { error: 'Insufficient permissions to delete invitations' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function DELETE(
     console.error('Error deleting invitation:', error);
     return Response.json(
       { error: 'Failed to delete invitation' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

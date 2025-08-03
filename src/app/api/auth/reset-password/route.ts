@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
+
 import { createAuditLog } from '@/libs/audit';
 
 const resetPasswordSchema = z.object({
@@ -8,9 +10,9 @@ const resetPasswordSchema = z.object({
   newPassword: z.string().min(8, 'Password must be at least 8 characters'),
   confirmPassword: z.string(),
   organizationId: z.string().optional(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
+}).refine(data => data.newPassword === data.confirmPassword, {
+  message: 'Passwords don\'t match',
+  path: ['confirmPassword'],
 });
 
 export async function POST(request: NextRequest) {
@@ -19,9 +21,9 @@ export async function POST(request: NextRequest) {
     const { token, email, organizationId } = resetPasswordSchema.parse(body);
 
     // Get IP address and user agent for security logging
-    const ipAddress = request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
-                     'unknown';
+    const ipAddress = request.headers.get('x-forwarded-for')
+      || request.headers.get('x-real-ip')
+      || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // In a real implementation, you would:
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (!token || token.length < 32) {
       return NextResponse.json(
         { error: 'Invalid or expired reset token' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -45,7 +47,7 @@ export async function POST(request: NextRequest) {
     if (!passwordUpdateSuccess) {
       return NextResponse.json(
         { error: 'Failed to update password' },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -63,7 +65,7 @@ export async function POST(request: NextRequest) {
         metadata: {
           requestIp: ipAddress,
           userAgent,
-          resetTokenUsed: token.substring(0, 8) + '...',
+          resetTokenUsed: `${token.substring(0, 8)}...`,
           passwordChanged: true,
         },
         ipAddress,
@@ -76,20 +78,19 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Password has been reset successfully. You can now log in with your new password.',
     });
-
   } catch (error) {
     console.error('Password reset failed:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { error: 'Failed to reset password' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

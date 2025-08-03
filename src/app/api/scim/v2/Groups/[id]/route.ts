@@ -1,28 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
 import {
-  authenticateScimRequest,
-  validateScimContentType,
-  createScimErrorResponse,
-  createScimResponse,
-  applyScimRateLimit,
-  generateScimETag,
-  validateETag,
-  filterHospitalScimAttributes
-} from '@/libs/scim/middleware';
-import {
-  getScimGroup,
-  updateScimGroup,
   deleteScimGroup,
+  getScimGroup,
   patchScimGroup,
   type ScimGroup,
-  type ScimGroupPatch
+  type ScimGroupPatch,
+  updateScimGroup,
 } from '@/libs/scim/groups';
+import {
+  applyScimRateLimit,
+  authenticateScimRequest,
+  createScimErrorResponse,
+  createScimResponse,
+  filterHospitalScimAttributes,
+  generateScimETag,
+  validateETag,
+  validateScimContentType,
+} from '@/libs/scim/middleware';
 
-interface RouteParams {
+type RouteParams = {
   params: {
     id: string;
   };
-}
+};
 
 // GET /api/scim/v2/Groups/{id} - Get group by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
@@ -73,13 +75,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     const response = createScimResponse(responseGroup);
-    
+
     // Add ETag header
     const etag = generateScimETag(group);
     response.headers.set('ETag', etag);
 
     return response;
-
   } catch (error) {
     console.error('SCIM Group GET error:', error);
     return createScimErrorResponse(500, 'internalError', 'Internal server error');
@@ -171,16 +172,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updatedGroup = await updateScimGroup(groupId, groupData, organizationId);
 
     const response = createScimResponse(updatedGroup);
-    
+
     // Add ETag header
     const etag = generateScimETag(updatedGroup);
     response.headers.set('ETag', etag);
 
     return response;
-
   } catch (error) {
     console.error('SCIM Group PUT error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         return createScimErrorResponse(404, 'resourceNotFound', error.message);
@@ -279,16 +279,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const updatedGroup = await patchScimGroup(groupId, patchData, organizationId);
 
     const response = createScimResponse(updatedGroup);
-    
+
     // Add ETag header
     const etag = generateScimETag(updatedGroup);
     response.headers.set('ETag', etag);
 
     return response;
-
   } catch (error) {
     console.error('SCIM Group PATCH error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         return createScimErrorResponse(404, 'resourceNotFound', error.message);
@@ -342,8 +341,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       // Check if this is a critical department group
       const criticalDepartments = ['emergency', 'icu', 'surgery'];
       if (criticalDepartments.includes(hospitalExt.departmentCode)) {
-        return createScimErrorResponse(400, 'invalidOperation', 
-          'Cannot delete critical department group. Please contact administrator.');
+        return createScimErrorResponse(400, 'invalidOperation', 'Cannot delete critical department group. Please contact administrator.');
       }
     }
 
@@ -351,10 +349,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     await deleteScimGroup(groupId, organizationId);
 
     return new NextResponse(null, { status: 204 });
-
   } catch (error) {
     console.error('SCIM Group DELETE error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         return createScimErrorResponse(404, 'resourceNotFound', error.message);
