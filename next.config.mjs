@@ -25,7 +25,22 @@ export default withSentryConfig(
       poweredByHeader: false,
       reactStrictMode: true,
       experimental: {
-        serverComponentsExternalPackages: ['@electric-sql/pglite'],
+        serverComponentsExternalPackages: ['@electric-sql/pglite', '@boxyhq/saml-jackson'],
+      },
+      webpack: (config, { isServer }) => {
+        if (!isServer) {
+          config.resolve.fallback = {
+            ...config.resolve.fallback,
+            fs: false,
+            net: false,
+            tls: false,
+            crypto: false,
+            path: false,
+            stream: false,
+            buffer: false,
+          };
+        }
+        return config;
       },
     }),
   ),

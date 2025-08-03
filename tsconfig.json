@@ -60,7 +60,10 @@
     "./out/**/*",
     "./node_modules/**/*",
     "**/*.spec.ts",
-    "**/*.e2e.ts"
+    "**/*.e2e.ts",
+    "./docs/**/*",
+    "./template-references/**/*",
+    "./scripts/api-templates/**/*"
   ],
   "include": [
     "next-env.d.ts",

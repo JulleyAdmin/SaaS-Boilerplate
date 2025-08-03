@@ -31,7 +31,7 @@ export default defineConfig({
     command: process.env.CI ? 'npm run start' : 'npm run dev:next',
     url: baseURL,
     timeout: 2 * 60 * 1000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true, // Changed to true to use existing server
   },
 
   // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.
