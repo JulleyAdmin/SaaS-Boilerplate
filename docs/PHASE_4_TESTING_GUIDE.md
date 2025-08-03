@@ -103,16 +103,16 @@ npm test tests/integration/mfa.test.ts
 ### Check API Keys
 ```sql
 -- Connect to your database
-SELECT id, name, organization_id, created_at, expires_at, last_used_at 
-FROM api_keys 
+SELECT id, name, organization_id, created_at, expires_at, last_used_at
+FROM api_keys
 WHERE organization_id = 'your_org_id'
 ORDER BY created_at DESC;
 ```
 
 ### Check Audit Logs
 ```sql
-SELECT action, actor_name, resource_name, created_at 
-FROM audit_logs 
+SELECT action, actor_name, resource_name, created_at
+FROM audit_logs
 WHERE organization_id = 'your_org_id'
 ORDER BY created_at DESC
 LIMIT 10;
@@ -120,8 +120,8 @@ LIMIT 10;
 
 ### Check Security Events
 ```sql
-SELECT event_type, severity, description, created_at 
-FROM security_events 
+SELECT event_type, severity, description, created_at
+FROM security_events
 WHERE organization_id = 'your_org_id'
 ORDER BY created_at DESC;
 ```

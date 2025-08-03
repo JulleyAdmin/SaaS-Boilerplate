@@ -4,7 +4,7 @@
 
 ### 1. API Key Management (from BoxyHQ)
 - **Status**: ✅ Fully Implemented
-- **Components**: 
+- **Components**:
   - API Key creation with secure generation (`sk_` prefix)
   - One-time display of full keys for security
   - List view showing only key prefixes
@@ -17,7 +17,7 @@
 - **Testing Required**: Manual testing in browser at `/dashboard/api-keys`
 
 ### 2. Multi-Factor Authentication (Clerk Integration)
-- **Status**: ✅ Fully Implemented  
+- **Status**: ✅ Fully Implemented
 - **Components**:
   - MFA settings page showing current status
   - Integration with Clerk's built-in TOTP
@@ -125,7 +125,7 @@ With the dev server running (`npm run dev`), test these routes:
 Before moving to next features:
 
 - [ ] Test API key creation and management
-- [ ] Test MFA setup and configuration  
+- [ ] Test MFA setup and configuration
 - [ ] Test team member invitations (email + link)
 - [ ] Test role management and permissions
 - [ ] Test invitation acceptance flow
@@ -137,7 +137,7 @@ Before moving to next features:
 
 The implementation is considered successful when:
 - ✅ All UI components render without errors
-- ✅ Database operations complete successfully  
+- ✅ Database operations complete successfully
 - ✅ API endpoints respond correctly
 - ✅ Role-based access control works
 - ✅ Data persists across browser sessions

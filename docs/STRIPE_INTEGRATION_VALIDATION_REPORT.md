@@ -19,7 +19,7 @@
 ### 2. Hospital-Specific Pricing ✅
 - **Three tiers implemented**:
   - 🏥 Clinic: $299/month (5 depts, 50 users, 25GB)
-  - 🏥 Hospital: $999/month (25 depts, 500 users, 250GB) 
+  - 🏥 Hospital: $999/month (25 depts, 500 users, 250GB)
   - 🏥 Enterprise: Custom pricing (unlimited)
 - **Compliance features**: HIPAA, SOC 2, audit retention per tier
 - **Metered billing**: API calls, storage, data transfer
@@ -30,7 +30,7 @@
 - **Security**: Webhook signature verification
 - **Error handling**: Comprehensive error catching
 
-### 4. Webhook Handlers ✅ 
+### 4. Webhook Handlers ✅
 - **All Stripe events covered**:
   - ✅ Checkout session completion
   - ✅ Subscription lifecycle (create/update/cancel)

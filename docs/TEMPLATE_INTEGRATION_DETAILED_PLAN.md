@@ -4,9 +4,9 @@
 
 This document provides a comprehensive, step-by-step plan for integrating the remaining 35% of template capabilities into HospitalOS. Each section includes specific file references, implementation steps, and integration strategies.
 
-**Current Status**: 65% Complete  
-**Target**: 100% Enterprise-Ready Hospital Management Platform  
-**Timeline**: 4 Weeks  
+**Current Status**: 65% Complete
+**Target**: 100% Enterprise-Ready Hospital Management Platform
+**Timeline**: 4 Weeks
 **Reference Templates**:
 - BoxyHQ: `/template-references/boxyhq/`
 - Nextacular: `/template-references/nextacular/`
@@ -43,7 +43,7 @@ FROM: /template-references/boxyhq/
 ```sql
 -- Add to /src/models/Schema.ts
 export const subscriptionEnum = pgEnum('subscription_status', [
-  'trialing', 'active', 'canceled', 'incomplete', 'incomplete_expired', 
+  'trialing', 'active', 'canceled', 'incomplete', 'incomplete_expired',
   'past_due', 'unpaid', 'paused'
 ]);
 
@@ -141,9 +141,9 @@ export const HOSPITAL_PLANS = {
 export async function POST(request: Request) {
   const sig = request.headers.get('stripe-signature');
   const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
-  
+
   const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-  
+
   switch (event.type) {
     case 'customer.subscription.created':
     case 'customer.subscription.updated':
@@ -151,7 +151,7 @@ export async function POST(request: Request) {
       // Trigger hospital onboarding workflow
       await createHospitalOnboardingTasks(event.data.object);
       break;
-      
+
     case 'customer.subscription.deleted':
       await handleSubscriptionCancellation(event.data.object);
       // Archive hospital data, revoke access
@@ -185,8 +185,8 @@ FROM: /template-references/boxyhq/
 1. **Email Service Configuration**
 ```typescript
 // /src/libs/email/client.ts
-import { Resend } from 'resend';
 import { renderAsync } from '@react-email/render';
+import { Resend } from 'resend';
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -197,7 +197,7 @@ export const sendEmail = async ({
   props
 }: EmailOptions) => {
   const html = await renderAsync(template(props));
-  
+
   return resend.emails.send({
     from: 'HospitalOS <noreply@hospitalos.com>',
     to,
@@ -224,20 +224,41 @@ export const PatientNotificationEmail = ({
 }: PatientNotificationProps) => (
   <Html>
     <Head />
-    <Preview>Your appointment at {hospitalName}</Preview>
+    <Preview>
+      Your appointment at
+      {hospitalName}
+    </Preview>
     <Body>
       <Container>
-        <Text>Dear {patientName},</Text>
         <Text>
-          Your appointment with Dr. {doctorName} in the {department} department
-          is scheduled for {appointmentDate}.
+          Dear
+          {patientName}
+          ,
+        </Text>
+        <Text>
+          Your appointment with Dr.
+          {' '}
+          {doctorName}
+          {' '}
+          in the
+          {' '}
+          {department}
+          {' '}
+          department
+          is scheduled for
+          {' '}
+          {appointmentDate}
+          .
         </Text>
         <Text>
           Please arrive 15 minutes early for registration.
         </Text>
         <Hr />
         <Text className="footer">
-          This is a HIPAA-compliant secure communication from {hospitalName}.
+          This is a HIPAA-compliant secure communication from
+          {' '}
+          {hospitalName}
+          .
           Please do not reply to this email.
         </Text>
       </Container>
@@ -305,15 +326,15 @@ export const scimGroup = pgTable('scim_group', {
 // /src/app/api/scim/v2/Users/route.ts
 export async function POST(request: Request) {
   const { schemas, userName, emails, active, ...attributes } = await request.json();
-  
+
   // Map external roles to hospital roles
   const hospitalRole = mapExternalToHospitalRole(attributes.role);
-  
+
   // Validate medical license if provided
   if (attributes.licenseNumber) {
     await validateMedicalLicense(attributes.licenseNumber);
   }
-  
+
   const user = await createScimUser({
     userName,
     email: emails[0].value,
@@ -323,7 +344,7 @@ export async function POST(request: Request) {
     licenseNumber: attributes.licenseNumber,
     specialization: attributes.specialization
   });
-  
+
   return Response.json(formatScimUser(user), { status: 201 });
 }
 ```
@@ -387,13 +408,14 @@ FROM: /template-references/supabase-template/
 1. **Storage Service Implementation**
 ```typescript
 // /src/libs/storage/client.ts
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import crypto from 'node:crypto';
+
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import crypto from 'crypto';
 
 export class MedicalDocumentStorage {
   private s3Client: S3Client;
-  
+
   constructor() {
     this.s3Client = new S3Client({
       region: env.AWS_REGION,
@@ -403,7 +425,7 @@ export class MedicalDocumentStorage {
       }
     });
   }
-  
+
   async uploadMedicalDocument({
     file,
     patientId,
@@ -412,12 +434,12 @@ export class MedicalDocumentStorage {
     encryptionRequired = true
   }: UploadOptions) {
     const fileKey = this.generateSecureKey(patientId, documentType);
-    
+
     // Encrypt sensitive medical documents
-    const processedFile = encryptionRequired 
+    const processedFile = encryptionRequired
       ? await this.encryptFile(file)
       : file;
-    
+
     const command = new PutObjectCommand({
       Bucket: env.MEDICAL_DOCUMENTS_BUCKET,
       Key: fileKey,
@@ -431,9 +453,9 @@ export class MedicalDocumentStorage {
       },
       ServerSideEncryption: 'AES256'
     });
-    
+
     await this.s3Client.send(command);
-    
+
     // Log PHI access for compliance
     await auditLog.create({
       action: 'MEDICAL_DOCUMENT_UPLOAD',
@@ -442,21 +464,21 @@ export class MedicalDocumentStorage {
       phiAccessed: true,
       metadata: { documentType, patientId }
     });
-    
+
     return fileKey;
   }
-  
+
   async getSignedDownloadUrl(fileKey: string, expiresIn = 300) {
     // Verify access permissions
     await this.verifyDocumentAccess(fileKey, userId);
-    
+
     const command = new GetObjectCommand({
       Bucket: env.MEDICAL_DOCUMENTS_BUCKET,
       Key: fileKey
     });
-    
+
     const url = await getSignedUrl(this.s3Client, command, { expiresIn });
-    
+
     // Log PHI access
     await auditLog.create({
       action: 'MEDICAL_DOCUMENT_ACCESS',
@@ -464,7 +486,7 @@ export class MedicalDocumentStorage {
       resourceId: fileKey,
       phiAccessed: true
     });
-    
+
     return url;
   }
 }
@@ -553,13 +575,13 @@ export const hospitalFacility = pgTable('hospital_facility', {
 1. **WebSocket Service**
 ```typescript
 // /src/libs/realtime/service.ts
-import { Server as SocketIOServer } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from 'ioredis';
+import { Server as SocketIOServer } from 'socket.io';
 
 export class HospitalRealtimeService {
   private io: SocketIOServer;
-  
+
   constructor(httpServer: any) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
@@ -567,16 +589,16 @@ export class HospitalRealtimeService {
         credentials: true
       }
     });
-    
+
     // Redis adapter for scaling
     const pubClient = new Redis(env.REDIS_URL);
     const subClient = pubClient.duplicate();
     this.io.adapter(createAdapter(pubClient, subClient));
-    
+
     this.setupMiddleware();
     this.setupEventHandlers();
   }
-  
+
   private setupEventHandlers() {
     this.io.on('connection', (socket) => {
       socket.on('subscribe:department', async (departmentId) => {
@@ -585,7 +607,7 @@ export class HospitalRealtimeService {
           socket.join(`department:${departmentId}`);
         }
       });
-      
+
       socket.on('subscribe:patient', async (patientId) => {
         // Verify user has access to patient data
         if (await this.canAccessPatient(socket.userId, patientId)) {
@@ -594,7 +616,7 @@ export class HospitalRealtimeService {
       });
     });
   }
-  
+
   // Emit hospital events
   async notifyBedAvailability(departmentId: string, available: number) {
     this.io.to(`department:${departmentId}`).emit('bed:availability', {
@@ -603,10 +625,10 @@ export class HospitalRealtimeService {
       timestamp: new Date()
     });
   }
-  
+
   async notifyEmergencyAlert(alert: EmergencyAlert) {
     // Notify relevant departments
-    alert.departments.forEach(dept => {
+    alert.departments.forEach((dept) => {
       this.io.to(`department:${dept}`).emit('emergency:alert', alert);
     });
   }
@@ -632,13 +654,13 @@ export const createRateLimiter = (tier: 'clinic' | 'hospital' | 'enterprise') =>
     url: env.UPSTASH_REDIS_URL,
     token: env.UPSTASH_REDIS_TOKEN
   });
-  
+
   const limits = {
     clinic: { requests: 1000, window: '1h' },
     hospital: { requests: 5000, window: '1h' },
     enterprise: { requests: 20000, window: '1h' }
   };
-  
+
   return new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(
@@ -652,12 +674,12 @@ export const createRateLimiter = (tier: 'clinic' | 'hospital' | 'enterprise') =>
 
 // Middleware
 export async function rateLimitMiddleware(request: Request) {
-  const identifier = request.headers.get('x-api-key') || 
-                    request.headers.get('x-forwarded-for') || 
-                    'anonymous';
-  
+  const identifier = request.headers.get('x-api-key')
+    || request.headers.get('x-forwarded-for')
+    || 'anonymous';
+
   const { success, limit, reset, remaining } = await rateLimiter.limit(identifier);
-  
+
   if (!success) {
     return new Response('Too Many Requests', {
       status: 429,
@@ -677,18 +699,18 @@ export async function rateLimitMiddleware(request: Request) {
 // /src/middleware.ts
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  
+
   // Security headers
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  
+
   // HIPAA-compliant headers
   response.headers.set('X-PHI-Protection', 'enabled');
   response.headers.set('X-Audit-Trail', 'enforced');
-  
+
   // Content Security Policy
   response.headers.set('Content-Security-Policy', `
     default-src 'self';
@@ -699,7 +721,7 @@ export function middleware(request: NextRequest) {
     connect-src 'self' https://api.stripe.com wss://*.hospitalos.com;
     frame-src 'self' https://js.stripe.com;
   `.replace(/\n/g, ' ').trim());
-  
+
   return response;
 }
 ```
@@ -717,7 +739,7 @@ import { PostHog } from 'posthog-node';
 export class HospitalAnalytics {
   private mixpanel: typeof mixpanel;
   private posthog: PostHog;
-  
+
   constructor() {
     // Initialize analytics services
     this.mixpanel = mixpanel;
@@ -727,17 +749,17 @@ export class HospitalAnalytics {
       // HIPAA compliance - no PHI in analytics
       property_blacklist: ['$email', '$name', 'patientId', 'medicalRecordNumber']
     });
-    
+
     this.posthog = new PostHog(env.POSTHOG_API_KEY, {
       host: env.POSTHOG_HOST
     });
   }
-  
+
   // Track hospital-specific events
   trackDepartmentActivity(event: string, properties: Record<string, any>) {
     // Strip any PHI before tracking
     const sanitized = this.sanitizeProperties(properties);
-    
+
     this.mixpanel.track(`department_${event}`, {
       ...sanitized,
       timestamp: new Date().toISOString(),
@@ -745,7 +767,7 @@ export class HospitalAnalytics {
       departmentType: properties.departmentType
     });
   }
-  
+
   trackClinicalWorkflow(workflow: string, metadata: WorkflowMetadata) {
     this.posthog.capture({
       distinctId: metadata.userId,
@@ -768,7 +790,7 @@ export class HospitalAnalytics {
 // /src/components/analytics/HospitalMetrics.tsx
 export const HospitalMetrics = () => {
   const { data: metrics } = useHospitalAnalytics();
-  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
@@ -777,21 +799,21 @@ export const HospitalMetrics = () => {
         change={metrics.patientFlow.changePercent}
         icon={<Users />}
       />
-      
+
       <MetricCard
         title="Bed Utilization"
         value={`${metrics.bedUtilization}%`}
         status={metrics.bedUtilization > 90 ? 'critical' : 'normal'}
         icon={<Bed />}
       />
-      
+
       <MetricCard
         title="ER Wait Time"
         value={`${metrics.avgERWaitTime} min`}
         target="< 30 min"
         icon={<Clock />}
       />
-      
+
       <MetricCard
         title="Staff Efficiency"
         value={`${metrics.staffEfficiency}%`}
@@ -821,7 +843,7 @@ export const performanceConfig = {
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
   },
-  
+
   // API response caching
   caching: {
     staticData: 3600, // 1 hour
@@ -830,7 +852,7 @@ export const performanceConfig = {
     // Never cache PHI
     medicalRecords: 0
   },
-  
+
   // Image optimization for medical imaging
   images: {
     quality: 85,
@@ -869,27 +891,37 @@ CREATE INDEX idx_medical_record_search ON medical_record USING gin(to_tsvector('
 describe('HospitalOS Platform Integration', () => {
   describe('Revenue Flow', () => {
     test('Complete billing cycle from signup to invoice');
+
     test('Subscription upgrade/downgrade with prorated billing');
+
     test('Usage-based billing for API calls and storage');
   });
-  
+
   describe('Enterprise Features', () => {
     test('SCIM user provisioning with department assignment');
+
     test('OAuth flow with PHI access controls');
+
     test('SSO login with role mapping');
   });
-  
+
   describe('Healthcare Workflows', () => {
     test('Patient admission to discharge workflow');
+
     test('Lab result upload and notification flow');
+
     test('Prescription management with audit trail');
+
     test('Emergency alert broadcast system');
   });
-  
+
   describe('Compliance', () => {
     test('HIPAA audit trail completeness');
+
     test('PHI encryption at rest and in transit');
+
     test('Access control enforcement');
+
     test('Data retention and purging');
   });
 });

@@ -38,7 +38,7 @@
    - `/src/app/api/stripe/portal/route.ts`: Creates billing portal sessions
 
 5. **Billing UI Components**
-   - `/src/components/billing/PricingPlans.tsx`: 
+   - `/src/components/billing/PricingPlans.tsx`:
      - Displays three pricing tiers
      - Shows features and compliance per plan
      - Handles plan selection and checkout

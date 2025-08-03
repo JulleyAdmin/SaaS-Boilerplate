@@ -60,13 +60,13 @@ Both features are production-ready and fully integrated with our existing archit
 ```typescript
 // Creating an API key
 const { apiKey, plainKey } = await createApiKey({
-  name: "Production API",
-  organizationId: "org_123",
-  expiresAt: new Date("2025-12-31")
+  name: 'Production API',
+  organizationId: 'org_123',
+  expiresAt: new Date('2025-12-31')
 });
 
 // Validating an API key
-const validKey = await validateApiKey("sk_abc123...");
+const validKey = await validateApiKey('sk_abc123...');
 if (validKey) {
   // Key is valid and not expired
   await updateApiKeyLastUsed(validKey.id);
