@@ -5,19 +5,20 @@ import { ApiKeysContainer } from '@/components/api-keys/ApiKeysContainer';
 export default function ApiKeysPage() {
   return (
     <div className="container mx-auto py-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">API Key Management</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="mt-2 text-gray-600">
             Create and manage API keys for programmatic access to your organization's resources.
           </p>
         </div>
-        
-        <Suspense fallback={
+
+        <Suspense fallback={(
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <div className="size-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
           </div>
-        }>
+        )}
+        >
           <ApiKeysContainer />
         </Suspense>
       </div>

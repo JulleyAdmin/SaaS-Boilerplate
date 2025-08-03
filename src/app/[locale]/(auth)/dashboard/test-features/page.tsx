@@ -1,23 +1,23 @@
 import Link from 'next/link';
 
 import { MFAStatusWidget } from '@/components/security/MFAStatusWidget';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function TestFeaturesPage() {
   return (
     <div className="container mx-auto py-6">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="mx-auto max-w-6xl space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Phase 4 - New Features Test Page</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="mt-2 text-gray-600">
             Testing API Key Management and Multi-Factor Authentication capabilities
           </p>
         </div>
 
         {/* Feature Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* API Key Management Card */}
           <Card>
             <CardHeader>
@@ -31,8 +31,8 @@ export default function TestFeaturesPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-medium text-sm">Features Implemented:</h4>
-                <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                <h4 className="text-sm font-medium">Features Implemented:</h4>
+                <ul className="ml-4 space-y-1 text-sm text-gray-600">
                   <li>✅ SHA-256 hashed key storage</li>
                   <li>✅ One-time key display on creation</li>
                   <li>✅ Organization-scoped access control</li>
@@ -62,8 +62,8 @@ export default function TestFeaturesPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-medium text-sm">Features Implemented:</h4>
-                <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                <h4 className="text-sm font-medium">Features Implemented:</h4>
+                <ul className="ml-4 space-y-1 text-sm text-gray-600">
                   <li>✅ TOTP authenticator app support</li>
                   <li>✅ SMS authentication backup</li>
                   <li>✅ Backup codes generation</li>
@@ -100,16 +100,16 @@ export default function TestFeaturesPage() {
           <CardContent className="space-y-4">
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium mb-2">API Key Management</h4>
-                <div className="bg-gray-50 p-3 rounded-lg space-y-2 font-mono text-sm">
+                <h4 className="mb-2 font-medium">API Key Management</h4>
+                <div className="space-y-2 rounded-lg bg-gray-50 p-3 font-mono text-sm">
                   <div>GET /api/organizations/[orgId]/api-keys</div>
                   <div>POST /api/organizations/[orgId]/api-keys</div>
                   <div>DELETE /api/organizations/[orgId]/api-keys/[apiKeyId]</div>
                 </div>
               </div>
               <div>
-                <h4 className="font-medium mb-2">MFA Status</h4>
-                <div className="bg-gray-50 p-3 rounded-lg space-y-2 font-mono text-sm">
+                <h4 className="mb-2 font-medium">MFA Status</h4>
+                <div className="space-y-2 rounded-lg bg-gray-50 p-3 font-mono text-sm">
                   <div>GET /api/auth/mfa/status</div>
                 </div>
               </div>
@@ -154,8 +154,8 @@ export default function TestFeaturesPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h4 className="font-medium mb-2">Testing API Keys:</h4>
-              <ol className="list-decimal list-inside text-sm text-gray-600 space-y-1">
+              <h4 className="mb-2 font-medium">Testing API Keys:</h4>
+              <ol className="list-inside list-decimal space-y-1 text-sm text-gray-600">
                 <li>Navigate to API Keys page using the button above</li>
                 <li>Create a new API key with a descriptive name</li>
                 <li>Copy the key immediately (shown only once)</li>
@@ -164,8 +164,8 @@ export default function TestFeaturesPage() {
               </ol>
             </div>
             <div>
-              <h4 className="font-medium mb-2">Testing MFA:</h4>
-              <ol className="list-decimal list-inside text-sm text-gray-600 space-y-1">
+              <h4 className="mb-2 font-medium">Testing MFA:</h4>
+              <ol className="list-inside list-decimal space-y-1 text-sm text-gray-600">
                 <li>Navigate to MFA settings using the button above</li>
                 <li>Enable two-factor authentication</li>
                 <li>Scan QR code with authenticator app</li>

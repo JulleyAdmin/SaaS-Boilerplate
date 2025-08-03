@@ -1,9 +1,10 @@
 'use client';
 
 import { useAuth, useOrganization, useUser } from '@clerk/nextjs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function DevInfoPage() {
   const { userId, orgId, sessionId } = useAuth();
@@ -21,10 +22,10 @@ export default function DevInfoPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Developer Information</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="mt-2 text-gray-600">
             IDs and information needed for development and testing
           </p>
         </div>
@@ -37,16 +38,16 @@ export default function DevInfoPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3">
               <div>
                 <p className="text-sm text-gray-600">Organization Name</p>
                 <p className="font-mono font-medium">{organization?.name || 'No organization'}</p>
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+            <div className="flex items-center justify-between rounded-lg border border-yellow-200 bg-yellow-50 p-3">
               <div>
                 <p className="text-sm text-gray-600">Organization ID</p>
-                <p className="font-mono font-medium text-lg">{orgId || 'Not in an organization'}</p>
+                <p className="font-mono text-lg font-medium">{orgId || 'Not in an organization'}</p>
               </div>
               {orgId && (
                 <Button
@@ -59,10 +60,12 @@ export default function DevInfoPage() {
               )}
             </div>
             {orgId && (
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm font-medium text-blue-900 mb-2">To seed test data:</p>
-                <code className="text-xs bg-white p-2 rounded block">
-                  ./scripts/seed-db.sh {orgId}
+              <div className="rounded-lg bg-blue-50 p-3">
+                <p className="mb-2 text-sm font-medium text-blue-900">To seed test data:</p>
+                <code className="block rounded bg-white p-2 text-xs">
+                  ./scripts/seed-db.sh
+                  {' '}
+                  {orgId}
                 </code>
               </div>
             )}
@@ -75,27 +78,31 @@ export default function DevInfoPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="rounded-lg bg-gray-50 p-3">
                 <p className="text-sm text-gray-600">User ID</p>
                 <p className="font-mono text-sm">{userId || 'Not authenticated'}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="rounded-lg bg-gray-50 p-3">
                 <p className="text-sm text-gray-600">Session ID</p>
-                <p className="font-mono text-sm truncate">{sessionId || 'No session'}</p>
+                <p className="truncate font-mono text-sm">{sessionId || 'No session'}</p>
               </div>
             </div>
-            <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-3">
               <p className="text-sm text-gray-600">Email</p>
               <p className="font-mono">{user?.primaryEmailAddress?.emailAddress || 'No email'}</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="rounded-lg bg-gray-50 p-3">
               <p className="text-sm text-gray-600">MFA Status</p>
-              <div className="flex gap-2 mt-1">
-                <span className={`text-sm px-2 py-1 rounded ${user?.totpEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-                  TOTP: {user?.totpEnabled ? 'Enabled' : 'Disabled'}
+              <div className="mt-1 flex gap-2">
+                <span className={`rounded px-2 py-1 text-sm ${user?.totpEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                  TOTP:
+                  {' '}
+                  {user?.totpEnabled ? 'Enabled' : 'Disabled'}
                 </span>
-                <span className={`text-sm px-2 py-1 rounded ${user?.backupCodeEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-                  Backup Codes: {user?.backupCodeEnabled ? 'Yes' : 'No'}
+                <span className={`rounded px-2 py-1 text-sm ${user?.backupCodeEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                  Backup Codes:
+                  {' '}
+                  {user?.backupCodeEnabled ? 'Yes' : 'No'}
                 </span>
               </div>
             </div>

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { useOrganization, useUser } from '@clerk/nextjs';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { createApiKey } from '@/hooks/useApiKeys';
 
 export default function DemoPage() {
@@ -55,7 +55,7 @@ export default function DemoPage() {
         // Small delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 500));
       }
-      
+
       setCreatedKeys(newKeys);
       toast.success('All demo API keys created successfully!');
     } catch (error) {
@@ -77,10 +77,10 @@ export default function DemoPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Demo Data Setup</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="mt-2 text-gray-600">
             Quick setup for testing Phase 4 features
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function DemoPage() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Organization ID:</span>
-              <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+              <code className="rounded bg-gray-100 px-2 py-1 text-xs">
                 {organization?.id || 'N/A'}
               </code>
             </div>
@@ -119,15 +119,18 @@ export default function DemoPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <p className="text-sm text-gray-600">This will create the following API keys:</p>
-              <ul className="text-sm text-gray-600 space-y-1 ml-4">
+              <ul className="ml-4 space-y-1 text-sm text-gray-600">
                 {demoApiKeys.map((key, index) => (
-                  <li key={index}>• {key.name}</li>
+                  <li key={index}>
+                    •
+                    {key.name}
+                  </li>
                 ))}
               </ul>
             </div>
-            
-            <Button 
-              onClick={createDemoApiKeys} 
+
+            <Button
+              onClick={createDemoApiKeys}
               disabled={isCreating || !organization}
               className="w-full"
             >
@@ -153,9 +156,9 @@ export default function DemoPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {createdKeys.map((key, index) => (
-                <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium text-sm">{key.name}</span>
+                <div key={index} className="rounded-lg bg-gray-50 p-3">
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="text-sm font-medium">{key.name}</span>
                     <Button
                       size="sm"
                       variant="outline"
@@ -164,7 +167,7 @@ export default function DemoPage() {
                       Copy
                     </Button>
                   </div>
-                  <code className="text-xs text-gray-600 break-all">
+                  <code className="break-all text-xs text-gray-600">
                     {key.key}
                   </code>
                 </div>
@@ -198,12 +201,14 @@ export default function DemoPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Phone Numbers:</span>
                 <Badge variant={user?.phoneNumbers?.length ? 'success' : 'secondary'}>
-                  {user?.phoneNumbers?.length || 0} configured
+                  {user?.phoneNumbers?.length || 0}
+                  {' '}
+                  configured
                 </Badge>
               </div>
             </div>
-            
-            <div className="pt-2 space-y-2">
+
+            <div className="space-y-2 pt-2">
               <a href="/dashboard/security/mfa">
                 <Button variant="outline" className="w-full">
                   Configure MFA Settings

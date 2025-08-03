@@ -18,7 +18,7 @@ const SecurityPage = () => {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Security Settings</h1>
-        <p className="text-gray-600 mt-1">
+        <p className="mt-1 text-gray-600">
           Manage your account security settings including multi-factor authentication
         </p>
       </div>

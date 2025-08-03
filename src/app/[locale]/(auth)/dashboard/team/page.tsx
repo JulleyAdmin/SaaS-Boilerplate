@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 
-import { TeamMembers } from '@/components/team/TeamMembers';
 import { PendingInvitations } from '@/components/team/PendingInvitations';
+import { TeamMembers } from '@/components/team/TeamMembers';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
@@ -19,7 +19,7 @@ const TeamManagementPage = () => {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Team Management</h1>
-        <p className="text-gray-600 mt-1">
+        <p className="mt-1 text-gray-600">
           Manage your team members, roles, and invitations
         </p>
       </div>

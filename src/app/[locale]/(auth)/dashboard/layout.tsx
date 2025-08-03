@@ -1,7 +1,6 @@
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
-import { DashboardHeader } from '@/features/dashboard/DashboardHeader';
+import { ModernDashboardLayout } from '@/components/layout/ModernDashboardLayout';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
@@ -16,58 +15,10 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 export default function DashboardLayout(props: { children: React.ReactNode }) {
-  const t = useTranslations('DashboardLayout');
-
   return (
-    <>
-      <div className="shadow-md">
-        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-3 py-4">
-          <DashboardHeader
-            menu={[
-              {
-                href: '/dashboard',
-                label: t('home'),
-              },
-              // PRO: Link to the /dashboard/todos page
-              {
-                href: '/dashboard/team',
-                label: t('team'),
-              },
-              {
-                href: '/dashboard/api-keys',
-                label: t('api_keys'),
-              },
-              {
-                href: '/dashboard/webhooks',
-                label: t('webhooks'),
-              },
-              {
-                href: '/dashboard/security',
-                label: t('security'),
-              },
-              {
-                href: '/dashboard/organization-profile/organization-members',
-                label: t('members'),
-              },
-              {
-                href: '/dashboard/billing',
-                label: t('billing'),
-              },
-              {
-                href: '/dashboard/organization-profile',
-                label: t('settings'),
-              },
-            ]}
-          />
-        </div>
-      </div>
-
-      <div className="min-h-[calc(100vh-72px)] bg-muted">
-        <div className="mx-auto max-w-screen-xl px-3 pb-16 pt-6">
-          {props.children}
-        </div>
-      </div>
-    </>
+    <ModernDashboardLayout>
+      {props.children}
+    </ModernDashboardLayout>
   );
 }
 
