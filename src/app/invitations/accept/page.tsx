@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,9 @@ export default function AcceptInvitationPage() {
   const token = searchParams.get('token');
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
     if (!isSignedIn) {
       // Save the invitation URL to redirect after sign in
@@ -51,7 +53,7 @@ export default function AcceptInvitationPage() {
 
       const result = await response.json();
       toast.success('Invitation accepted successfully!');
-      
+
       // Redirect to the organization's dashboard
       router.push(`/dashboard?org=${result.data.organizationId}`);
     } catch (error) {
@@ -65,7 +67,7 @@ export default function AcceptInvitationPage() {
   if (!isLoaded || !isSignedIn) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="size-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
       </div>
     );
   }
