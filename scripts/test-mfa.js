@@ -40,18 +40,18 @@ const testMFA = async () => {
 
   // Test 3: Verify MFA components exist
   console.log('\n3️⃣ Checking MFA components...');
-  const fs = require('fs');
-  const path = require('path');
-  
+  const fs = require('node:fs');
+  const path = require('node:path');
+
   const components = [
     'src/components/security/MFASettings.tsx',
     'src/components/security/MFASetupFlow.tsx',
     'src/components/security/MFAStatusWidget.tsx',
-    'src/lib/auth/mfa-enforcement.ts'
+    'src/lib/auth/mfa-enforcement.ts',
   ];
-  
+
   let allExist = true;
-  components.forEach(component => {
+  components.forEach((component) => {
     const fullPath = path.join(process.cwd(), component);
     if (fs.existsSync(fullPath)) {
       console.log(`   ✅ ${component} exists`);
@@ -60,7 +60,7 @@ const testMFA = async () => {
       allExist = false;
     }
   });
-  
+
   if (allExist) {
     console.log('   ✅ All MFA components implemented correctly');
   }

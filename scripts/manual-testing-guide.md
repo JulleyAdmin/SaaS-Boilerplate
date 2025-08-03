@@ -16,13 +16,13 @@ This guide will help you manually test the newly implemented features: API Key M
 
 #### Test Cases:
 - [ ] **Page Loads**: Verify the API Keys page loads without errors
-- [ ] **Create API Key**: 
+- [ ] **Create API Key**:
   - Click "Create API Key"
   - Fill in name and description
   - Select permissions/scopes
   - Verify key is created and shown once
   - Verify key starts with `sk_` prefix
-- [ ] **List API Keys**: 
+- [ ] **List API Keys**:
   - Verify existing keys are displayed
   - Check created date, last used, etc.
 - [ ] **Delete API Key**:
@@ -39,7 +39,7 @@ This guide will help you manually test the newly implemented features: API Key M
 
 #### Test Cases:
 - [ ] **Page Loads**: Verify the Security/MFA page loads
-- [ ] **MFA Status**: 
+- [ ] **MFA Status**:
   - Check current MFA status (enabled/disabled)
   - Verify TOTP status display
   - Verify backup codes status

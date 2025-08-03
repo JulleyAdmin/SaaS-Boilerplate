@@ -1,11 +1,11 @@
 const { chromium } = require('playwright');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 const captureScreenshots = async () => {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
-    viewport: { width: 1280, height: 720 }
+    viewport: { width: 1280, height: 720 },
   });
   const page = await context.newPage();
 
@@ -24,56 +24,56 @@ const captureScreenshots = async () => {
     console.log('1. Capturing test features page...');
     await page.goto('http://localhost:3002/en/dashboard/test-features');
     await page.waitForTimeout(2000);
-    await page.screenshot({ 
+    await page.screenshot({
       path: path.join(screenshotsDir, '01-test-features-overview.png'),
-      fullPage: true 
+      fullPage: true,
     });
     screenshots.push({
       title: 'Phase 4 Features Overview',
       file: '01-test-features-overview.png',
-      description: 'Overview of API Key Management and MFA features'
+      description: 'Overview of API Key Management and MFA features',
     });
 
     // 2. API Keys Page
     console.log('2. Capturing API Keys page...');
     await page.goto('http://localhost:3002/en/dashboard/api-keys');
     await page.waitForTimeout(2000);
-    await page.screenshot({ 
+    await page.screenshot({
       path: path.join(screenshotsDir, '02-api-keys-page.png'),
-      fullPage: true 
+      fullPage: true,
     });
     screenshots.push({
       title: 'API Key Management',
       file: '02-api-keys-page.png',
-      description: 'API key management interface'
+      description: 'API key management interface',
     });
 
     // 3. MFA Settings Page
     console.log('3. Capturing MFA settings page...');
     await page.goto('http://localhost:3002/en/dashboard/security/mfa');
     await page.waitForTimeout(2000);
-    await page.screenshot({ 
+    await page.screenshot({
       path: path.join(screenshotsDir, '03-mfa-settings.png'),
-      fullPage: true 
+      fullPage: true,
     });
     screenshots.push({
       title: 'MFA Settings',
       file: '03-mfa-settings.png',
-      description: 'Multi-factor authentication settings'
+      description: 'Multi-factor authentication settings',
     });
 
     // 4. User Profile Security Section
     console.log('4. Capturing user profile security section...');
     await page.goto('http://localhost:3002/en/dashboard/user-profile?section=security');
     await page.waitForTimeout(2000);
-    await page.screenshot({ 
+    await page.screenshot({
       path: path.join(screenshotsDir, '04-user-profile-security.png'),
-      fullPage: true 
+      fullPage: true,
     });
     screenshots.push({
       title: 'User Profile - Security',
       file: '04-user-profile-security.png',
-      description: 'Clerk user profile security settings'
+      description: 'Clerk user profile security settings',
     });
 
     // Generate HTML report
@@ -214,7 +214,6 @@ const captureScreenshots = async () => {
     fs.writeFileSync(path.join(screenshotsDir, 'index.html'), htmlReport);
     console.log('\n✅ Screenshots captured successfully!');
     console.log(`📁 View report at: ${path.join(screenshotsDir, 'index.html')}`);
-
   } catch (error) {
     console.error('❌ Error capturing screenshots:', error);
   } finally {

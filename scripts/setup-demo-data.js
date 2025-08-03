@@ -5,8 +5,8 @@
  * This script creates sample API keys and configures demo settings
  */
 
-const { createHash, randomBytes } = require('crypto');
-const path = require('path');
+const { createHash, randomBytes } = require('node:crypto');
+const path = require('node:path');
 
 // Import our database and models
 async function setupDemoData() {
@@ -16,12 +16,12 @@ async function setupDemoData() {
     // Dynamic imports for ES modules
     const { db } = await import('../src/libs/DB.js');
     const { apiKey } = await import('../src/models/Schema.js');
-    
+
     console.log('📊 Creating demo API keys...');
-    
+
     // Demo organization ID (you'll need to replace with a real one)
     const DEMO_ORG_ID = 'org_demo_123';
-    
+
     // Generate demo API keys
     const demoKeys = [
       {
@@ -60,7 +60,7 @@ async function setupDemoData() {
     for (const keyData of demoKeys) {
       const plainKey = `sk_demo_${randomBytes(24).toString('hex')}`;
       const hashedKey = createHash('sha256').update(plainKey).digest('hex');
-      
+
       await db.insert(apiKey).values({
         name: keyData.name,
         organizationId: DEMO_ORG_ID,
@@ -69,14 +69,13 @@ async function setupDemoData() {
         lastUsedAt: keyData.lastUsedAt,
         createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random date in last 30 days
       });
-      
+
       console.log(`✅ Created API key: ${keyData.name}`);
     }
 
     console.log('\n📝 Demo data setup complete!');
     console.log('\n⚠️  Note: Update DEMO_ORG_ID in the script with your actual organization ID');
     console.log('    You can find your org ID in the Clerk dashboard or browser dev tools\n');
-    
   } catch (error) {
     console.error('❌ Error setting up demo data:', error);
     console.log('\n💡 Tips:');

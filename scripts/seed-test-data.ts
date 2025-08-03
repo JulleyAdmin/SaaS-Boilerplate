@@ -1,7 +1,9 @@
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'node:crypto';
+
+import { subDays, subHours, subMinutes } from 'date-fns';
+
 import { db } from '@/libs/DB';
 import { apiKey, auditLogs, securityEvents } from '@/models/Schema';
-import { subDays, subHours, subMinutes } from 'date-fns';
 
 async function seedTestData() {
   console.log('🌱 Seeding test data for Phase 4 features...\n');
@@ -10,13 +12,13 @@ async function seedTestData() {
     // You'll need to replace this with your actual organization ID
     // You can find it in Clerk dashboard or by logging it from a component
     const organizationId = process.env.TEST_ORG_ID || 'org_test_123';
-    
+
     console.log(`Using organization ID: ${organizationId}`);
     console.log('Make sure to set TEST_ORG_ID environment variable with your actual org ID\n');
 
     // 1. Seed API Keys
     console.log('📝 Creating test API keys...');
-    
+
     const testApiKeys = [
       {
         name: 'Production API - Main Service',
@@ -59,7 +61,7 @@ async function seedTestData() {
     for (const keyData of testApiKeys) {
       const plainKey = `sk_test_${randomBytes(24).toString('hex')}`;
       const hashedKey = createHash('sha256').update(plainKey).digest('hex');
-      
+
       const [newKey] = await db.insert(apiKey).values({
         name: keyData.name,
         organizationId,
@@ -69,7 +71,7 @@ async function seedTestData() {
         createdAt: keyData.createdAt,
         updatedAt: keyData.lastUsedAt || keyData.createdAt,
       }).returning();
-      
+
       if (newKey) {
         console.log(`✅ Created API key: ${keyData.name} (ID: ${newKey.id})`);
       }
@@ -77,7 +79,7 @@ async function seedTestData() {
 
     // 2. Seed Audit Logs
     console.log('\n📋 Creating test audit logs...');
-    
+
     const auditEvents = [
       {
         action: 'api_key.create',
@@ -135,17 +137,17 @@ async function seedTestData() {
         success: event.success,
         errorMessage: event.errorMessage,
         metadata: {},
-        ipAddress: '192.168.1.' + Math.floor(Math.random() * 255),
+        ipAddress: `192.168.1.${Math.floor(Math.random() * 255)}`,
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         createdAt: event.createdAt,
       });
-      
+
       console.log(`✅ Created audit log: ${event.action} by ${event.actorName}`);
     }
 
     // 3. Seed Security Events
     console.log('\n🔒 Creating test security events...');
-    
+
     const securityEventData = [
       {
         eventType: 'failed_login',
@@ -183,13 +185,13 @@ async function seedTestData() {
         severity: eventData.severity,
         userEmail: eventData.userEmail,
         description: eventData.description,
-        ipAddress: '10.0.0.' + Math.floor(Math.random() * 255),
+        ipAddress: `10.0.0.${Math.floor(Math.random() * 255)}`,
         metadata: {},
         resolved: false,
         alertSent: eventData.severity === 'high',
         createdAt: eventData.createdAt,
       });
-      
+
       console.log(`✅ Created security event: ${eventData.eventType}`);
     }
 
@@ -199,7 +201,6 @@ async function seedTestData() {
     console.log('2. Sign in and navigate to /dashboard/api-keys');
     console.log('3. You should see the seeded API keys');
     console.log('4. Check audit logs and security events in their respective pages');
-    
   } catch (error) {
     console.error('❌ Error seeding test data:', error);
     console.log('\n💡 Troubleshooting tips:');

@@ -43,7 +43,7 @@ const testApiKeys = async () => {
   try {
     const { db } = require('../src/libs/DB');
     const { apiKey } = require('../src/models/Schema');
-    
+
     // Try to query the table (will fail if table doesn't exist)
     const result = await db.select().from(apiKey).limit(1);
     console.log('   ✅ API keys table exists in database');
@@ -65,11 +65,11 @@ const testApiKeys = async () => {
       'createApiKey',
       'fetchApiKeys',
       'deleteApiKey',
-      'validateApiKey'
+      'validateApiKey',
     ];
-    
+
     let allExist = true;
-    functions.forEach(fn => {
+    functions.forEach((fn) => {
       if (typeof apiKeyModel[fn] === 'function') {
         console.log(`   ✅ ${fn}() exists`);
       } else {
@@ -77,7 +77,7 @@ const testApiKeys = async () => {
         allExist = false;
       }
     });
-    
+
     if (allExist) {
       console.log('   ✅ All model functions implemented correctly');
     }
