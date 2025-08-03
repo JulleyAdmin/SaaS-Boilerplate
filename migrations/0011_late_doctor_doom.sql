@@ -1,1 +1,0 @@
-ALTER TYPE "public"."audit_resource" ADD VALUE 'oauth_permission';
