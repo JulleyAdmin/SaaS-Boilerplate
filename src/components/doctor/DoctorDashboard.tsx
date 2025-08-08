@@ -29,6 +29,7 @@ import {
   SkipForward
 } from 'lucide-react';
 import { format, formatDistanceToNow, isToday, parseISO } from 'date-fns';
+import CrossDepartmentDiagnosisHistory from './CrossDepartmentDiagnosisHistory';
 
 interface Patient {
   id: string;
@@ -617,6 +618,9 @@ export default function DoctorDashboard() {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Cross-Department Diagnosis History */}
+      <CrossDepartmentDiagnosisHistory />
 
       {/* Quick Actions for Emergency */}
       {appointments.some(a => a.priority === 'emergency' && a.status === 'Scheduled') && (

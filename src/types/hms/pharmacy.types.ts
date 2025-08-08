@@ -423,7 +423,6 @@ export type PrescriptionVerification = {
 
   checks: {
     patientAllergies: boolean;
-    drugInteractions: boolean;
     dosageAppropriate: boolean;
     duplicateTherapy: boolean;
     contraindicationsClear: boolean;

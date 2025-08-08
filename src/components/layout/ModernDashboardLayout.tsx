@@ -19,6 +19,7 @@ import {
   LayoutDashboard,
   Menu,
   MessageSquare,
+  Monitor,
   Package,
   Pill,
   Plus,
@@ -136,6 +137,12 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           icon: AlertCircle,
           badge: 'urgent',
         },
+        {
+          title: 'ICU Monitoring',
+          href: '/dashboard/icu',
+          icon: Monitor,
+          badge: 'live',
+        },
       ],
     },
     {
@@ -202,11 +209,6 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           title: 'Medication Dispensing',
           href: '/dashboard/pharmacy/dispense',
           icon: Package,
-        },
-        {
-          title: 'Drug Interaction Checker',
-          href: '/dashboard/pharmacy/interactions',
-          icon: Shield,
         },
         {
           title: t('Navigation.inventory'),

@@ -34,13 +34,16 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useState, useEffect } from 'react';
+import EmergencyTriageWizard from '@/components/emergency/EmergencyTriageWizard';
 
 export default function EmergencyDepartmentPage() {
   const [selectedTriage, setSelectedTriage] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [showTriageWizard, setShowTriageWizard] = useState(false);
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
@@ -241,6 +244,13 @@ export default function EmergencyDepartmentPage() {
     return matchesSearch && matchesTriage;
   });
 
+  const handleTriageComplete = (triageData: any) => {
+    console.log('Triage completed:', triageData);
+    // In production, this would send data to API
+    setShowTriageWizard(false);
+    // Add new case to emergencyCases
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -259,7 +269,7 @@ export default function EmergencyDepartmentPage() {
             <Activity className={`mr-2 size-4 ${autoRefresh ? 'animate-pulse' : ''}`} />
             {autoRefresh ? 'Live Updates ON' : 'Live Updates OFF'}
           </Button>
-          <Button>
+          <Button onClick={() => setShowTriageWizard(true)}>
             <Plus className="mr-2 size-4" />
             Register Emergency
           </Button>
@@ -501,38 +511,14 @@ export default function EmergencyDepartmentPage() {
               <CardDescription>Patients awaiting initial triage assessment</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Patient Name</Label>
-                    <Input placeholder="Enter patient name" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Age</Label>
-                    <Input type="number" placeholder="Enter age" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Chief Complaint</Label>
-                    <Textarea placeholder="Describe primary symptoms..." />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Initial Assessment</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select triage level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="critical">Critical - Immediate</SelectItem>
-                        <SelectItem value="urgent">Urgent - 15 minutes</SelectItem>
-                        <SelectItem value="standard">Standard - 60 minutes</SelectItem>
-                        <SelectItem value="minor">Minor - 120 minutes</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <Button className="w-full">
-                  <UserCheck className="size-4 mr-2" />
-                  Complete Triage Assessment
+              <div className="flex justify-center">
+                <Button 
+                  size="lg"
+                  onClick={() => setShowTriageWizard(true)}
+                  className="w-full max-w-md"
+                >
+                  <UserCheck className="size-5 mr-2" />
+                  Start New Triage Assessment
                 </Button>
               </div>
             </CardContent>
@@ -821,6 +807,13 @@ export default function EmergencyDepartmentPage() {
           <span>Emergency System Active</span>
         </div>
       </div>
+
+      {/* Triage Wizard Dialog */}
+      <Dialog open={showTriageWizard} onOpenChange={setShowTriageWizard}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0">
+          <EmergencyTriageWizard onComplete={handleTriageComplete} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

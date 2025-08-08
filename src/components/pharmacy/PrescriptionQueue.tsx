@@ -104,7 +104,6 @@ export default function PrescriptionQueue() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
   const [showDispensingModal, setShowDispensingModal] = useState(false);
-  const [showDrugInteractionCheck, setShowDrugInteractionCheck] = useState(false);
   const [filterUrgency, setFilterUrgency] = useState<string>('all');
   const [autoRefresh, setAutoRefresh] = useState(true);
 
@@ -305,26 +304,8 @@ export default function PrescriptionQueue() {
     });
   };
 
-  const checkDrugInteractions = (medications: Medication[]) => {
-    // Mock drug interaction checker
-    const interactions = [
-      {
-        drug1: 'Amoxicillin',
-        drug2: 'Warfarin',
-        severity: 'moderate',
-        description: 'May increase anticoagulant effects'
-      }
-    ];
-    return interactions;
-  };
-
   const handleStartDispensing = (prescription: Prescription) => {
-    // Check drug interactions
-    const interactions = checkDrugInteractions(prescription.medications);
-    if (interactions.length > 0) {
-      setShowDrugInteractionCheck(true);
-    }
-    
+    // Directly proceed to dispensing without drug interaction check
     setSelectedPrescription(prescription);
     setShowDispensingModal(true);
     
@@ -829,10 +810,6 @@ export default function PrescriptionQueue() {
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setShowDispensingModal(false)}>
                 Cancel
-              </Button>
-              <Button variant="outline">
-                <FileText className="h-4 w-4 mr-2" />
-                Check Interactions
               </Button>
             </div>
             <div className="flex gap-2">

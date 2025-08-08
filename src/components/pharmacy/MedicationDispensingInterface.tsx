@@ -1068,10 +1068,6 @@ export default function MedicationDispensingInterface({ prescriptionId }: { pres
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm">Drug interactions reviewed</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Dosage instructions provided</span>
                 </div>
                 <div className="flex items-center gap-2">
