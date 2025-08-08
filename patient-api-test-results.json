@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-08-04T17:31:31.139Z",
+  "results": [
+    {
+      "name": "Get Patients (no auth)",
+      "endpoint": "GET /api/patients",
+      "status": 401,
+      "statusText": "Unauthorized",
+      "expectedStatus": 401,
+      "passed": true,
+      "response": {
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Authentication required"
+        }
+      }
+    },
+    {
+      "name": "Get Patient Statistics (no auth)",
+      "endpoint": "GET /api/patients/statistics",
+      "status": 401,
+      "statusText": "Unauthorized",
+      "expectedStatus": 401,
+      "passed": true,
+      "response": {
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Authentication required"
+        }
+      }
+    },
+    {
+      "name": "Get Today Activity (no auth)",
+      "endpoint": "GET /api/analytics/today",
+      "status": 401,
+      "statusText": "Unauthorized",
+      "expectedStatus": 401,
+      "passed": true,
+      "response": {
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Authentication required"
+        }
+      }
+    },
+    {
+      "name": "Create Patient (no auth)",
+      "endpoint": "POST /api/patients",
+      "status": 401,
+      "statusText": "Unauthorized",
+      "expectedStatus": 401,
+      "passed": true,
+      "response": {
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Authentication required"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "missingEndpoints": [
+    "/api/patients/[id]",
+    "/api/patients/[id]/history",
+    "/api/patients/[id]/appointments",
+    "/api/patients/[id]/medical-records",
+    "/api/appointments",
+    "/api/consultations",
+    "/api/prescriptions",
+    "/api/lab-results",
+    "/api/departments",
+    "/api/staff"
+  ]
+}

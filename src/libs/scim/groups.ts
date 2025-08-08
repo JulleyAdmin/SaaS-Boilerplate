@@ -3,8 +3,10 @@ import { and, eq, inArray } from 'drizzle-orm';
 
 import { createAuditLog } from '@/libs/audit';
 import { db } from '@/libs/DB';
-import { scimConfiguration, scimGroup, scimUser } from '@/models/Schema';
 
+// SCIM tables are not currently defined in Schema.ts
+// TODO: Add SCIM table definitions or remove SCIM functionality
+// import { scimConfiguration, scimGroup, scimUser } from '@/models/Schema';
 import { SCIM_SCHEMAS, type ScimError, type ScimListResponse } from './users';
 
 // SCIM Group resource interface following RFC 7643

@@ -1,8 +1,9 @@
 'use client';
 
-import { AlertCircle, CreditCard, FileText, Plus, Receipt, TrendingUp } from 'lucide-react';
+import { AlertCircle, CreditCard, FileText, Plus, Receipt, TrendingUp, Users, Activity, Building, Calendar } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import Link from 'next/link';
 
 import { BillingAnalytics } from '@/components/billing/BillingAnalytics';
 import { BillingFilters } from '@/components/billing/BillingFilters';
@@ -16,46 +17,44 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useBillingReports, useInvoices } from '@/hooks/api/useBilling';
+import { Badge } from '@/components/ui/badge';
+import { usePatientBills, useBillingSummary } from '@/hooks/api/useHospitalBilling';
 import { formatCurrency } from '@/utils/format';
 
 export default function BillingPage() {
   const t = useTranslations('billing');
-  const [selectedDateRange, setSelectedDateRange] = useState({ from: undefined, to: undefined });
+  const [selectedDateRange, setSelectedDateRange] = useState<{ from?: Date; to?: Date }>({ from: undefined, to: undefined });
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+  const [selectedBillId, setSelectedBillId] = useState<string | null>(null);
 
-  const { data: invoicesData, isLoading: invoicesLoading, error: invoicesError } = useInvoices({
+  // Use hospital billing hooks
+  const { data: billsData, isLoading: billsLoading, error: billsError } = usePatientBills({
     status: selectedStatus === 'all' ? undefined : selectedStatus as any,
-    invoiceNumber: searchQuery || undefined,
-    dateFrom: selectedDateRange.from?.toISOString().split('T')[0],
-    dateTo: selectedDateRange.to?.toISOString().split('T')[0],
-    includePatient: true,
-    includeItems: true,
-    includePayments: true,
-  });
-
-  const { data: reportsData, isLoading: analyticsLoading } = useBillingReports({
-    reportType: 'revenue_summary',
+    billNumber: searchQuery || undefined,
     dateFrom: selectedDateRange.from?.toISOString().split('T')[0],
     dateTo: selectedDateRange.to?.toISOString().split('T')[0],
   });
 
-  const invoices = invoicesData?.data || [];
-  const summary = invoicesData?.summary;
-  const analytics = reportsData?.data;
+  const { data: summaryData, isLoading: summaryLoading } = useBillingSummary({
+    dateFrom: selectedDateRange.from?.toISOString().split('T')[0],
+    dateTo: selectedDateRange.to?.toISOString().split('T')[0],
+  });
 
-  const handleRecordPayment = (invoiceId: string) => {
-    setSelectedInvoiceId(invoiceId);
+  const bills = billsData?.data || [];
+  const summary = billsData?.summary;
+  const analytics = summaryData;
+
+  const handleRecordPayment = (billId: string) => {
+    setSelectedBillId(billId);
     setIsRecordPaymentOpen(true);
   };
 
-  // Calculate recent payments from all invoices
-  const recentPayments = invoices
-    .flatMap(invoice => invoice.payments || [])
+  // Calculate recent payments from all bills
+  const recentPayments = bills
+    .flatMap(bill => bill.payments || [])
     .sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime())
     .slice(0, 10);
 
@@ -63,26 +62,99 @@ export default function BillingPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('billingManagement')}</h1>
-          <p className="text-muted-foreground">{t('manageBillingDescription')}</p>
+          <h1 className="text-3xl font-bold tracking-tight">Billing & Payment Management</h1>
+          <p className="text-muted-foreground">Comprehensive hospital billing with government scheme support</p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/billing/create-hospital">
+              <FileText className="mr-2 size-4" />
+              Hospital Bill
+            </Link>
+          </Button>
           <Button onClick={() => setIsCreateInvoiceOpen(true)}>
             <Plus className="mr-2 size-4" />
-            {t('createInvoice')}
+            Quick Invoice
           </Button>
         </div>
+      </div>
+
+      {/* Hospital Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/dashboard/billing/create-hospital">
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <FileText className="size-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Create Hospital Bill</h3>
+                  <p className="text-sm text-muted-foreground">Full billing with schemes</p>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/dashboard/billing/patients">
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Users className="size-5 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Patient Bills</h3>
+                  <p className="text-sm text-muted-foreground">View patient billing</p>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/dashboard/reports/financial">
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Activity className="size-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Financial Reports</h3>
+                  <p className="text-sm text-muted-foreground">Revenue analytics</p>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <Link href="/dashboard/government-schemes">
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Building className="size-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Government Schemes</h3>
+                  <p className="text-sm text-muted-foreground">Ayushman, CGHS, ESIC</p>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
       </div>
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
             <TrendingUp className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {analyticsLoading
+            {summaryLoading
               ? (
                   <Skeleton className="h-8 w-32" />
                 )
@@ -92,10 +164,9 @@ export default function BillingPage() {
                       {formatCurrency(analytics?.totalRevenue || 0)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {analytics?.revenueChange > 0 ? '+' : ''}
-                      {analytics?.revenueChange || 0}
-                      %
-                      {t('fromLastPeriod')}
+                      <TrendingUp className="inline size-3 text-green-600" />
+                      <span className="ml-1 text-green-600">+{analytics?.revenueChange || 0}%</span>
+                      {' '}from last period
                     </p>
                   </>
                 )}
@@ -104,21 +175,20 @@ export default function BillingPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('pendingInvoices')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Pending Bills</CardTitle>
             <FileText className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {invoicesLoading
+            {billsLoading
               ? (
                   <Skeleton className="h-8 w-32" />
                 )
               : (
                   <>
-                    <div className="text-2xl font-bold">{summary?.byStatus?.pending || 0}</div>
+                    <div className="text-2xl font-bold">{summary?.byStatus?.Pending || 0}</div>
                     <p className="text-xs text-muted-foreground">
-                      {formatCurrency(summary?.revenue?.pending || 0)}
-                      {' '}
-                      {t('pending')}
+                      {formatCurrency((summary?.byStatus?.Pending || 0) * (analytics?.avgBillAmount || 0))}
+                      {' '}pending
                     </p>
                   </>
                 )}
@@ -127,21 +197,19 @@ export default function BillingPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('paidInvoices')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Paid Bills</CardTitle>
             <CreditCard className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {invoicesLoading
+            {billsLoading
               ? (
                   <Skeleton className="h-8 w-32" />
                 )
               : (
                   <>
-                    <div className="text-2xl font-bold">{summary?.byStatus?.paid || 0}</div>
+                    <div className="text-2xl font-bold">{summary?.byStatus?.Paid || 0}</div>
                     <p className="text-xs text-muted-foreground">
-                      {formatCurrency(summary?.revenue?.paid || 0)}
-                      {' '}
-                      {t('collected')}
+                      Collection Efficiency: {analytics?.collectionEfficiency?.toFixed(1) || 0}%
                     </p>
                   </>
                 )}
@@ -150,23 +218,21 @@ export default function BillingPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('overdueInvoices')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Outstanding Amount</CardTitle>
             <Receipt className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {invoicesLoading
+            {summaryLoading
               ? (
                   <Skeleton className="h-8 w-32" />
                 )
               : (
                   <>
                     <div className="text-2xl font-bold text-red-600">
-                      {summary?.byStatus?.overdue || 0}
+                      {formatCurrency(analytics?.outstandingAmount || 0)}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {formatCurrency(summary?.revenue?.overdue || 0)}
-                      {' '}
-                      {t('overdue')}
+                      {summary?.byStatus?.Overdue || 0} overdue bills
                     </p>
                   </>
                 )}
@@ -196,23 +262,98 @@ export default function BillingPage() {
         <TabsContent value="invoices">
           <Card>
             <CardHeader>
-              <CardTitle>{t('invoices')}</CardTitle>
-              <CardDescription>{t('invoicesDescription')}</CardDescription>
+              <CardTitle>Hospital Bills</CardTitle>
+              <CardDescription>All patient bills and invoices</CardDescription>
             </CardHeader>
             <CardContent>
-              {invoicesError
+              {billsError
                 ? (
                     <Alert variant="destructive">
                       <AlertCircle className="size-4" />
-                      <AlertDescription>{t('errorLoadingInvoices')}</AlertDescription>
+                      <AlertDescription>Error loading bills. Please try again.</AlertDescription>
                     </Alert>
                   )
                 : (
-                    <InvoiceList
-                      invoices={invoices}
-                      isLoading={invoicesLoading}
-                      onRecordPayment={handleRecordPayment}
-                    />
+                    <div className="space-y-4">
+                      {billsLoading ? (
+                        <div className="space-y-3">
+                          {[...Array(5)].map((_, i) => (
+                            <div key={i} className="flex items-center space-x-4">
+                              <Skeleton className="h-12 w-12" />
+                              <div className="space-y-2">
+                                <Skeleton className="h-4 w-[200px]" />
+                                <Skeleton className="h-4 w-[150px]" />
+                              </div>
+                              <Skeleton className="h-4 w-[100px] ml-auto" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : bills.length === 0 ? (
+                        <div className="text-center py-8">
+                          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+                          <h3 className="mt-2 text-sm font-semibold text-muted-foreground">No bills found</h3>
+                          <p className="mt-1 text-sm text-muted-foreground">Create your first hospital bill to get started.</p>
+                          <div className="mt-6">
+                            <Button asChild>
+                              <Link href="/dashboard/billing/create-hospital">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create Bill
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {bills.map(bill => (
+                            <div key={bill.billId} className="flex items-center justify-between p-4 border rounded-lg">
+                              <div className="flex items-center space-x-4">
+                                <div className="p-2 bg-blue-100 rounded-lg">
+                                  <FileText className="size-5 text-blue-600" />
+                                </div>
+                                <div>
+                                  <div className="flex items-center space-x-2">
+                                    <h4 className="font-medium">{bill.billNumber}</h4>
+                                    <Badge 
+                                      variant={
+                                        bill.billStatus === 'Paid' ? 'default' : 
+                                        bill.billStatus === 'Pending' ? 'secondary' : 
+                                        bill.billStatus === 'Overdue' ? 'destructive' : 'outline'
+                                      }
+                                    >
+                                      {bill.billStatus}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">
+                                    {bill.patientName} • {bill.billType} • {new Date(bill.billDate).toLocaleDateString()}
+                                  </p>
+                                  {bill.schemeName && (
+                                    <p className="text-xs text-blue-600">
+                                      {bill.schemeName} Coverage: {formatCurrency(bill.schemeCoverageAmount)}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold">{formatCurrency(bill.patientAmount)}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Total: {formatCurrency(bill.netAmount)}
+                                </p>
+                                {bill.billStatus !== 'Paid' && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    className="mt-2"
+                                    onClick={() => handleRecordPayment(bill.billId)}
+                                  >
+                                    Record Payment
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   )}
             </CardContent>
           </Card>
@@ -227,7 +368,7 @@ export default function BillingPage() {
             <CardContent>
               <PaymentList
                 payments={recentPayments}
-                isLoading={invoicesLoading}
+                isLoading={billsLoading}
               />
             </CardContent>
           </Card>
@@ -236,7 +377,7 @@ export default function BillingPage() {
         <TabsContent value="analytics">
           <BillingAnalytics
             dateRange={selectedDateRange}
-            isLoading={analyticsLoading}
+            isLoading={summaryLoading}
           />
         </TabsContent>
 
@@ -254,7 +395,7 @@ export default function BillingPage() {
       <RecordPaymentDialog
         open={isRecordPaymentOpen}
         onOpenChange={setIsRecordPaymentOpen}
-        invoiceId={selectedInvoiceId}
+        invoiceId={selectedBillId}
       />
     </div>
   );

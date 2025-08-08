@@ -1,0 +1,32 @@
+
+> saas-boilerplate@1.7.6 dev
+> next dev
+
+  ▲ Next.js 14.2.31
+  - Local:        http://localhost:3001
+  - Environments: .env.local, .env
+  - Experiments (use with caution):
+    · instrumentationHook
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1225ms (1005 modules)
+ ✓ Ready in 2.7s
+ ✓ Compiled /src/middleware in 264ms (637 modules)
+ ○ Compiling /[locale]/sign-in/[[...sign-in]] ...
+ ✓ Compiled /[locale]/sign-in/[[...sign-in]] in 2.8s (4076 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /sign-in 200 in 4162ms
+ GET /sign-in/SignIn_clerk_catchall_check_1754499151120 200 in 28ms
+ GET /sign-in 200 in 27ms
+ GET /sign-in/SignIn_clerk_catchall_check_1754499153649 200 in 34ms
+ GET /sign-in 200 in 31ms
+ GET /sign-in/SignIn_clerk_catchall_check_1754499156317 200 in 30ms
+[?25h

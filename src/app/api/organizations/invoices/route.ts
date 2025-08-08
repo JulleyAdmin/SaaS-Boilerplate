@@ -39,7 +39,7 @@ export async function GET() {
     // If we have invoices in DB, return them
     if (dbInvoices.length > 0) {
       return NextResponse.json(
-        dbInvoices.map(inv => ({
+        dbInvoices.map((inv: any) => ({
           id: inv.stripeInvoiceId,
           status: inv.status,
           amountPaid: inv.amountPaid,

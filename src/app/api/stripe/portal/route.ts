@@ -55,7 +55,7 @@ export async function POST() {
       actorName: 'User',
       action: 'billing.portal.accessed',
       crud: 'read',
-      resource: 'billing_portal',
+      resource: 'billing',
       resourceId: session.id,
       metadata: {
         customerId: organization.stripeCustomerId,

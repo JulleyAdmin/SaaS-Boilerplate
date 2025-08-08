@@ -1,9 +1,6 @@
 // Patient Management Components
-export { PatientDetailModal } from './patient-detail-modal';
-export { PatientEditModal } from './patient-edit-modal';
 export { PatientManagement } from './patient-management';
-export { PatientRegistrationModal } from './patient-registration-modal';
-export { PatientStatusModal } from './patient-status-modal';
+export { default as PatientHistory } from './PatientHistory';
 
 // Quick Action Components
 export {

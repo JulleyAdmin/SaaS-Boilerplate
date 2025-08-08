@@ -3,10 +3,11 @@ import { createHmac, randomBytes } from 'node:crypto';
 import { and, desc, eq, lte } from 'drizzle-orm';
 
 import { db } from '@/libs/DB';
-import { webhookDelivery, webhookEndpoint, webhookEvent } from '@/models/Schema';
+import { webhookDeliveries, webhookEndpoints, webhookEvents } from '@/models/Schema';
 
 // Re-export types from the types file for backward compatibility with server-side code
 export type { WebhookDelivery, WebhookEndpoint, WebhookEvent, WebhookEventType, WebhookStatus } from '@/types/webhook';
+export { webhookEventTypes } from '@/types/webhook';
 
 // Generate a secure webhook secret
 export const generateWebhookSecret = (): string => {
@@ -43,7 +44,7 @@ export const createWebhookEndpoint = async (params: {
   const secret = generateWebhookSecret();
 
   const [endpoint] = await db
-    .insert(webhookEndpoint)
+    .insert(webhookEndpoints)
     .values({
       organizationId: params.organizationId,
       name: params.name,
@@ -67,9 +68,9 @@ export const getWebhookEndpoints = async (
 ): Promise<WebhookEndpoint[]> => {
   return db
     .select()
-    .from(webhookEndpoint)
-    .where(eq(webhookEndpoint.organizationId, organizationId))
-    .orderBy(desc(webhookEndpoint.createdAt));
+    .from(webhookEndpoints)
+    .where(eq(webhookEndpoints.organizationId, organizationId))
+    .orderBy(desc(webhookEndpoints.createdAt));
 };
 
 // Get webhook endpoint by ID
@@ -79,11 +80,11 @@ export const getWebhookEndpoint = async (
 ): Promise<WebhookEndpoint | null> => {
   const [endpoint] = await db
     .select()
-    .from(webhookEndpoint)
+    .from(webhookEndpoints)
     .where(
       and(
-        eq(webhookEndpoint.id, endpointId),
-        eq(webhookEndpoint.organizationId, organizationId),
+        eq(webhookEndpoints.id, endpointId),
+        eq(webhookEndpoints.organizationId, organizationId),
       ),
     )
     .limit(1);
@@ -107,12 +108,12 @@ export const updateWebhookEndpoint = async (
   }>,
 ): Promise<WebhookEndpoint | null> => {
   const [updated] = await db
-    .update(webhookEndpoint)
+    .update(webhookEndpoints)
     .set(updates)
     .where(
       and(
-        eq(webhookEndpoint.id, endpointId),
-        eq(webhookEndpoint.organizationId, organizationId),
+        eq(webhookEndpoints.id, endpointId),
+        eq(webhookEndpoints.organizationId, organizationId),
       ),
     )
     .returning();
@@ -126,11 +127,11 @@ export const deleteWebhookEndpoint = async (
   endpointId: string,
 ): Promise<boolean> => {
   const result = await db
-    .delete(webhookEndpoint)
+    .delete(webhookEndpoints)
     .where(
       and(
-        eq(webhookEndpoint.id, endpointId),
-        eq(webhookEndpoint.organizationId, organizationId),
+        eq(webhookEndpoints.id, endpointId),
+        eq(webhookEndpoints.organizationId, organizationId),
       ),
     );
 
@@ -146,7 +147,7 @@ export const createWebhookEvent = async (params: {
   payload: Record<string, any>;
 }): Promise<WebhookEvent> => {
   const [event] = await db
-    .insert(webhookEvent)
+    .insert(webhookEvents)
     .values({
       organizationId: params.organizationId,
       eventType: params.eventType,
@@ -165,35 +166,35 @@ export const getUnprocessedWebhookEvents = async (
 ): Promise<WebhookEvent[]> => {
   return db
     .select()
-    .from(webhookEvent)
-    .where(eq(webhookEvent.processed, false))
-    .orderBy(webhookEvent.createdAt)
+    .from(webhookEvents)
+    .where(eq(webhookEvents.processed, false))
+    .orderBy(webhookEvents.createdAt)
     .limit(limit);
 };
 
 // Mark webhook event as processed
 export const markWebhookEventProcessed = async (eventId: string): Promise<void> => {
   await db
-    .update(webhookEvent)
+    .update(webhookEvents)
     .set({
       processed: true,
       processedAt: new Date(),
     })
-    .where(eq(webhookEvent.id, eventId));
+    .where(eq(webhookEvents.id, eventId));
 };
 
 // Create webhook delivery record
 export const createWebhookDelivery = async (params: {
-  webhookEndpointId: string;
+  webhookEndpointsId: string;
   eventType: WebhookEventType;
   eventId: string;
   payload: Record<string, any>;
   attempt?: number;
 }): Promise<WebhookDelivery> => {
   const [delivery] = await db
-    .insert(webhookDelivery)
+    .insert(webhookDeliveries)
     .values({
-      webhookEndpointId: params.webhookEndpointId,
+      webhookEndpointsId: params.webhookEndpointsId,
       eventType: params.eventType,
       eventId: params.eventId,
       payload: params.payload,
@@ -220,21 +221,21 @@ export const updateWebhookDelivery = async (
   },
 ): Promise<void> => {
   await db
-    .update(webhookDelivery)
+    .update(webhookDeliveries)
     .set(updates)
-    .where(eq(webhookDelivery.id, deliveryId));
+    .where(eq(webhookDeliveries.id, deliveryId));
 };
 
 // Get webhook deliveries for an endpoint
 export const getWebhookDeliveries = async (
-  webhookEndpointId: string,
+  webhookEndpointsId: string,
   limit = 50,
 ): Promise<WebhookDelivery[]> => {
   return db
     .select()
-    .from(webhookDelivery)
-    .where(eq(webhookDelivery.webhookEndpointId, webhookEndpointId))
-    .orderBy(desc(webhookDelivery.createdAt))
+    .from(webhookDeliveries)
+    .where(eq(webhookDeliveries.webhookEndpointsId, webhookEndpointsId))
+    .orderBy(desc(webhookDeliveries.createdAt))
     .limit(limit);
 };
 
@@ -244,14 +245,14 @@ export const getFailedDeliveriesForRetry = async (): Promise<WebhookDelivery[]> 
 
   return db
     .select()
-    .from(webhookDelivery)
+    .from(webhookDeliveries)
     .where(
       and(
-        eq(webhookDelivery.status, 'failed'),
-        lte(webhookDelivery.nextRetryAt, now),
+        eq(webhookDeliveries.status, 'failed'),
+        lte(webhookDeliveries.nextRetryAt, now),
       ),
     )
-    .orderBy(webhookDelivery.nextRetryAt);
+    .orderBy(webhookDeliveries.nextRetryAt);
 };
 
 // Get webhook endpoints that should receive an event
@@ -261,11 +262,11 @@ export const getWebhookEndpointsForEvent = async (
 ): Promise<WebhookEndpoint[]> => {
   const endpoints = await db
     .select()
-    .from(webhookEndpoint)
+    .from(webhookEndpoints)
     .where(
       and(
-        eq(webhookEndpoint.organizationId, organizationId),
-        eq(webhookEndpoint.status, 'active'),
+        eq(webhookEndpoints.organizationId, organizationId),
+        eq(webhookEndpoints.status, 'active'),
       ),
     );
 
@@ -282,8 +283,8 @@ export const updateEndpointDeliveryStats = async (
 ): Promise<void> => {
   const endpoint = await db
     .select()
-    .from(webhookEndpoint)
-    .where(eq(webhookEndpoint.id, endpointId))
+    .from(webhookEndpoints)
+    .where(eq(webhookEndpoints.id, endpointId))
     .limit(1);
 
   if (endpoint.length === 0) {
@@ -307,13 +308,13 @@ export const updateEndpointDeliveryStats = async (
   }
 
   await db
-    .update(webhookEndpoint)
+    .update(webhookEndpoints)
     .set(updates)
-    .where(eq(webhookEndpoint.id, endpointId));
+    .where(eq(webhookEndpoints.id, endpointId));
 };
 
 // Webhook event utilities
-export const webhookEventTypes: WebhookEventType[] = [
+export const webhookEventsTypes: WebhookEventType[] = [
   'member.created',
   'member.removed',
   'member.updated',

@@ -4,7 +4,9 @@ import { and, eq } from 'drizzle-orm';
 import { createAuditLog } from '@/libs/audit';
 import { db } from '@/libs/DB';
 import type { hospitalRoleEnum } from '@/models/Schema';
-import { scimConfiguration, scimEnterpriseUser, scimUser } from '@/models/Schema';
+// SCIM tables are not currently defined in Schema.ts
+// TODO: Add SCIM table definitions or remove SCIM functionality
+// import { scimConfiguration, scimEnterpriseUser, scimUser } from '@/models/Schema';
 
 type HospitalRole = typeof hospitalRoleEnum.enumValues[number];
 

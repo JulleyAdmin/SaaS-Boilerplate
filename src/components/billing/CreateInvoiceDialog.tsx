@@ -76,7 +76,7 @@ type CreateInvoiceDialogProps = {
 export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogProps) {
   const t = useTranslations('billing');
   const { mutate: createInvoice, isLoading } = useCreateInvoice();
-  const { data: patientsData } = usePatients();
+  const { data: patientsData } = usePatients() as { data?: { data?: any[] } };
   const { data: schemesData } = useGovernmentSchemes();
 
   const form = useForm<CreateInvoiceData>({
@@ -150,12 +150,9 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
   const totals = calculateTotals();
 
   const handleSubmit = (data: CreateInvoiceData) => {
-    createInvoice(data, {
-      onSuccess: () => {
-        form.reset();
-        onOpenChange(false);
-      },
-    });
+    createInvoice(data);
+    form.reset();
+    onOpenChange(false);
   };
 
   const addItem = () => {
@@ -205,7 +202,9 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
                       <SelectContent>
                         {patientsData?.data?.map(patient => (
                           <SelectItem key={patient.patientId} value={patient.patientId}>
-                            {patient.name}
+                            {patient.firstName}
+                            {' '}
+                            {patient.lastName}
                             {' '}
                             -
                             {patient.patientId}
@@ -395,7 +394,7 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
                       <div>
                         <Label>{t('lineTotal')}</Label>
                         <div className="mt-2 font-medium">
-                          {formatCurrency(items[index].quantity * items[index].unitPrice)}
+                          {formatCurrency((items[index]?.quantity || 0) * (items[index]?.unitPrice || 0))}
                         </div>
                       </div>
                     </div>
@@ -426,7 +425,7 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="none">{t('none')}</SelectItem>
-                        {schemesData?.data?.map(scheme => (
+                        {schemesData?.map((scheme: any) => (
                           <SelectItem key={scheme.schemeId} value={scheme.schemeId}>
                             {scheme.schemeName}
                           </SelectItem>

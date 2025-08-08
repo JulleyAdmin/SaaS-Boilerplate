@@ -433,7 +433,7 @@ export const icuAlertSeverityEnum = pgEnum('icu_alert_severity_enum', [
 
 export const icuShiftTypeEnum = pgEnum('icu_shift_type_enum', [
   'Morning',
-  'Evening', 
+  'Evening',
   'Night',
   'Extended',
 ]);
@@ -1117,19 +1117,19 @@ export const icuBeds = clinicalSchema.table('icu_beds', {
   // Bed identification
   bedNumber: varchar('bed_number', { length: 10 }).notNull(),
   bedType: icuBedTypeEnum('bed_type').default('General').notNull(),
-  
+
   // Patient assignment
   patientId: uuid('patient_id').references(() => patients.patientId),
-  
+
   // Status and availability
   status: icuBedStatusEnum('status').default('Available').notNull(),
   lastSanitized: timestamp('last_sanitized', { mode: 'date' }),
-  
+
   // Equipment and monitoring
   monitoringEquipment: jsonb('monitoring_equipment').default({}), // Equipment attached to bed
   cardiacMonitoringLevel: varchar('cardiac_monitoring_level', { length: 20 }), // basic, advanced, swan_ganz
   telemetryEnabled: boolean('telemetry_enabled').default(false),
-  
+
   // Indian healthcare compliance
   oxygenSupplyType: varchar('oxygen_supply_type', { length: 20 }).default('Central'), // Central, Cylinder, Concentrator
   backupOxygenAvailable: boolean('backup_oxygen_available').default(false),
@@ -1138,7 +1138,7 @@ export const icuBeds = clinicalSchema.table('icu_beds', {
   // Metadata
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
-}, (table) => ({
+}, table => ({
   uniqueClinicBed: uniqueIndex('unique_clinic_bed').on(table.clinicId, table.bedNumber),
 }));
 
@@ -1147,31 +1147,31 @@ export const icuNursingCarePlans = clinicalSchema.table('icu_nursing_care_plans'
   carePlanId: uuid('care_plan_id').primaryKey().defaultRandom(),
   patientId: uuid('patient_id').notNull().references(() => patients.patientId),
   icuBedId: uuid('icu_bed_id').notNull().references(() => icuBeds.icuBedId),
-  
+
   // Care assignment
   assignedNurseId: uuid('assigned_nurse_id').notNull().references(() => users.userId),
   carePlanTemplateId: uuid('care_plan_template_id'), // Future: link to care plan templates
-  
+
   // Care instructions and protocols
   careInstructions: jsonb('care_instructions').notNull(), // Structured nursing instructions
   cardiacProtocolId: uuid('cardiac_protocol_id'), // Links to cardiac care protocols
   frequencyHours: integer('frequency_hours').default(2), // How often to assess (hours)
-  
+
   // Assessment scheduling
   nextAssessmentDue: timestamp('next_assessment_due', { mode: 'date' }),
   lastAssessmentCompleted: timestamp('last_assessment_completed', { mode: 'date' }),
-  
+
   // Cardiac-specific tracking
   fluidBalanceTarget: integer('fluid_balance_target'), // Critical for cardiac patients (ml)
   cardiacMedications: jsonb('cardiac_medications').default([]), // Specialized cardiac drugs
-  
+
   // Compliance and status
   complianceStatus: carePlanStatusEnum('compliance_status').default('Active'),
   compliancePercentage: decimal('compliance_percentage', { precision: 5, scale: 2 }),
-  
+
   // ISCCM compliance tracking
   nursePatientRatio: decimal('nurse_patient_ratio', { precision: 3, scale: 1 }).default('2.0'), // 1:2 per ISCCM
-  
+
   // Metadata
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
@@ -1183,28 +1183,28 @@ export const icuCriticalAlerts = clinicalSchema.table('icu_critical_alerts', {
   alertId: uuid('alert_id').primaryKey().defaultRandom(),
   patientId: uuid('patient_id').notNull().references(() => patients.patientId),
   icuBedId: uuid('icu_bed_id').notNull().references(() => icuBeds.icuBedId),
-  
+
   // Alert details
   alertType: icuAlertTypeEnum('alert_type').notNull(),
   severity: icuAlertSeverityEnum('severity').notNull(),
   message: text('message').notNull(),
   alertData: jsonb('alert_data').default({}), // Additional alert context (vital values, etc.)
-  
+
   // Response tracking
   acknowledgedBy: uuid('acknowledged_by').references(() => users.userId),
   acknowledgedAt: timestamp('acknowledged_at', { mode: 'date' }),
   resolvedBy: uuid('resolved_by').references(() => users.userId),
   resolvedAt: timestamp('resolved_at', { mode: 'date' }),
   responseTimeMinutes: integer('response_time_minutes'),
-  
+
   // Escalation
   escalatedTo: uuid('escalated_to').references(() => users.userId),
   escalatedAt: timestamp('escalated_at', { mode: 'date' }),
-  
+
   // Indian compliance
   reportedToAuthorities: boolean('reported_to_authorities').default(false), // For serious incidents
   incidentReportNumber: varchar('incident_report_number', { length: 50 }),
-  
+
   // Metadata
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   isActive: boolean('is_active').default(true),
@@ -1215,44 +1215,44 @@ export const icuStaffShifts = coreSchema.table('icu_staff_shifts', {
   shiftId: uuid('shift_id').primaryKey().defaultRandom(),
   clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
   departmentId: uuid('department_id').notNull().references(() => departments.departmentId), // ICU department
-  
+
   // Staff assignment
   staffId: uuid('staff_id').notNull().references(() => users.userId),
   shiftType: icuShiftTypeEnum('shift_type').notNull(),
-  
+
   // Shift timing
   shiftDate: date('shift_date').notNull(),
   startTime: time('start_time').notNull(),
   endTime: time('end_time').notNull(),
   actualStartTime: timestamp('actual_start_time', { mode: 'date' }),
   actualEndTime: timestamp('actual_end_time', { mode: 'date' }),
-  
+
   // Patient assignments
   patientAssignments: jsonb('patient_assignments').default([]), // Array of patient IDs assigned
   maxPatientCapacity: integer('max_patient_capacity').default(2), // Per ISCCM guidelines
-  
+
   // Handover documentation
   handoverNotes: text('handover_notes'),
   handoverReceivedFrom: uuid('handover_received_from').references(() => users.userId),
   handoverGivenTo: uuid('handover_given_to').references(() => users.userId),
   handoverCompletedAt: timestamp('handover_completed_at', { mode: 'date' }),
-  
+
   // Shift status and compliance
   status: icuShiftStatusEnum('status').default('Scheduled'),
-  
+
   // ISCCM compliance
   minimumStaffRatioCompliance: boolean('minimum_staff_ratio_compliance').default(false),
   specialistAvailability: varchar('specialist_availability', { length: 20 }).default('Available'), // Available, On-Call, Unavailable
-  
+
   // Emergency coverage
   emergencyContactNumber: varchar('emergency_contact_number', { length: 15 }),
   backupStaffId: uuid('backup_staff_id').references(() => users.userId),
-  
+
   // Metadata
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
   createdBy: uuid('created_by').references(() => users.userId),
-}, (table) => ({
+}, table => ({
   uniqueStaffShift: uniqueIndex('unique_staff_shift').on(table.staffId, table.shiftDate, table.shiftType),
 }));
 
@@ -2011,8 +2011,208 @@ export const organizationSchema = coreSchema.table('organization', {
   stripeCustomerIdIdx: uniqueIndex('stripe_customer_id_idx').on(table.stripeCustomerId),
 }));
 
+// ============================================================================
+// HOSPITAL BILLING MANAGEMENT TABLES
+// ============================================================================
+
+// Patient Bills (Hospital-specific billing)
+export const patientBills = billingSchema.table('patient_bills', {
+  billId: uuid('bill_id').primaryKey().defaultRandom(),
+  billNumber: varchar('bill_number', { length: 50 }).unique().notNull(),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  consultationId: uuid('consultation_id').references(() => consultations.consultationId),
+  
+  // Bill Details
+  billDate: timestamp('bill_date', { mode: 'date' }).defaultNow().notNull(),
+  billType: varchar('bill_type', { length: 50 }).notNull(), // consultation, emergency, admission, lab, pharmacy
+  
+  // Financial Summary
+  grossAmount: decimal('gross_amount', { precision: 12, scale: 2 }).notNull(),
+  discountAmount: decimal('discount_amount', { precision: 12, scale: 2 }).default('0'),
+  taxAmount: decimal('tax_amount', { precision: 12, scale: 2 }).default('0'),
+  netAmount: decimal('net_amount', { precision: 12, scale: 2 }).notNull(),
+  
+  // Government Scheme Integration
+  governmentSchemeId: uuid('government_scheme_id').references(() => governmentSchemes.schemeId),
+  schemeCoverageAmount: decimal('scheme_coverage_amount', { precision: 12, scale: 2 }).default('0'),
+  patientAmount: decimal('patient_amount', { precision: 12, scale: 2 }).notNull(),
+  
+  // Status & Audit
+  billStatus: billStatusEnum('bill_status').default('Draft'),
+  createdBy: uuid('created_by').notNull().references(() => users.userId),
+  approvedBy: uuid('approved_by').references(() => users.userId),
+  approvedAt: timestamp('approved_at', { mode: 'date' }),
+  
+  // Notes
+  billNotes: text('bill_notes'),
+  internalNotes: text('internal_notes'),
+  
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  clinicPatientIdx: index('patient_bills_clinic_patient_idx').on(table.clinicId, table.patientId),
+  billDateIdx: index('patient_bills_bill_date_idx').on(table.billDate),
+  billStatusIdx: index('patient_bills_bill_status_idx').on(table.billStatus),
+}));
+
+// Bill Items (Itemized billing)
+export const billItems = billingSchema.table('bill_items', {
+  billItemId: uuid('bill_item_id').primaryKey().defaultRandom(),
+  billId: uuid('bill_id').notNull().references(() => patientBills.billId, { onDelete: 'cascade' }),
+  
+  // Service Reference
+  serviceId: uuid('service_id').references(() => departmentServices.serviceId),
+  itemDescription: varchar('item_description', { length: 500 }).notNull(),
+  itemCategory: varchar('item_category', { length: 100 }), // consultation, procedure, lab, medicine, room, equipment
+  itemCode: varchar('item_code', { length: 50 }), // Internal coding system
+  
+  // Pricing
+  quantity: integer('quantity').notNull().default(1),
+  unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(),
+  discountPercentage: decimal('discount_percentage', { precision: 5, scale: 2 }).default('0'),
+  discountAmount: decimal('discount_amount', { precision: 10, scale: 2 }).default('0'),
+  taxPercentage: decimal('tax_percentage', { precision: 5, scale: 2 }).default('0'),
+  taxAmount: decimal('tax_amount', { precision: 10, scale: 2 }).default('0'),
+  lineTotal: decimal('line_total', { precision: 10, scale: 2 }).notNull(),
+  
+  // Medical Context
+  prescribedBy: uuid('prescribed_by').references(() => users.userId),
+  serviceDate: timestamp('service_date', { mode: 'date' }),
+  departmentId: uuid('department_id').references(() => departments.departmentId),
+  
+  // Government Scheme Coverage
+  schemeCoverage: boolean('scheme_coverage').default(false),
+  schemeRate: decimal('scheme_rate', { precision: 10, scale: 2 }),
+  patientShare: decimal('patient_share', { precision: 10, scale: 2 }),
+  
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  billIdIdx: index('bill_items_bill_id_idx').on(table.billId),
+  serviceIdIdx: index('bill_items_service_id_idx').on(table.serviceId),
+  categoryIdx: index('bill_items_category_idx').on(table.itemCategory),
+}));
+
+// Payments
+export const payments = billingSchema.table('payments', {
+  paymentId: uuid('payment_id').primaryKey().defaultRandom(),
+  paymentNumber: varchar('payment_number', { length: 50 }).unique().notNull(),
+  billId: uuid('bill_id').notNull().references(() => patientBills.billId),
+  
+  // Payment Details
+  paymentDate: timestamp('payment_date', { mode: 'date' }).defaultNow().notNull(),
+  paymentMethod: paymentMethodEnum('payment_method').notNull(),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  
+  // Transaction Details
+  transactionId: varchar('transaction_id', { length: 100 }),
+  referenceNumber: varchar('reference_number', { length: 100 }),
+  gatewayResponse: jsonb('gateway_response'),
+  
+  // Collection Details
+  collectedBy: uuid('collected_by').notNull().references(() => users.userId),
+  collectionPoint: varchar('collection_point', { length: 100 }), // reception, pharmacy, cashier, online
+  
+  // Status & Reconciliation
+  paymentStatus: varchar('payment_status', { length: 50 }).default('completed'), // pending, completed, failed, refunded
+  reconciled: boolean('reconciled').default(false),
+  reconciledBy: uuid('reconciled_by').references(() => users.userId),
+  reconciledAt: timestamp('reconciled_at', { mode: 'date' }),
+  
+  // Notes
+  paymentNotes: text('payment_notes'),
+  
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  billIdIdx: index('payments_bill_id_idx').on(table.billId),
+  paymentDateIdx: index('payments_payment_date_idx').on(table.paymentDate),
+  paymentMethodIdx: index('payments_payment_method_idx').on(table.paymentMethod),
+  paymentStatusIdx: index('payments_payment_status_idx').on(table.paymentStatus),
+}));
+
+// Insurance Claims
+export const insuranceClaims = billingSchema.table('insurance_claims', {
+  claimId: uuid('claim_id').primaryKey().defaultRandom(),
+  claimNumber: varchar('claim_number', { length: 50 }).unique().notNull(),
+  billId: uuid('bill_id').notNull().references(() => patientBills.billId),
+  
+  // Insurance Details
+  insuranceProvider: varchar('insurance_provider', { length: 200 }).notNull(),
+  policyNumber: varchar('policy_number', { length: 100 }).notNull(),
+  policyHolderName: varchar('policy_holder_name', { length: 200 }).notNull(),
+  relationshipToPatient: varchar('relationship_to_patient', { length: 50 }), // self, spouse, child, parent
+  
+  // Claim Details
+  claimAmount: decimal('claim_amount', { precision: 12, scale: 2 }).notNull(),
+  claimType: varchar('claim_type', { length: 50 }).notNull(), // cashless, reimbursement
+  
+  // Processing Status
+  claimStatus: varchar('claim_status', { length: 50 }).default('submitted'), // submitted, under_review, approved, rejected, settled
+  submittedDate: timestamp('submitted_date', { mode: 'date' }).defaultNow().notNull(),
+  reviewedDate: timestamp('reviewed_date', { mode: 'date' }),
+  approvedDate: timestamp('approved_date', { mode: 'date' }),
+  settlementDate: timestamp('settlement_date', { mode: 'date' }),
+  
+  // Settlement Details
+  approvedAmount: decimal('approved_amount', { precision: 12, scale: 2 }),
+  settledAmount: decimal('settled_amount', { precision: 12, scale: 2 }),
+  deductible: decimal('deductible', { precision: 10, scale: 2 }).default('0'),
+  copay: decimal('copay', { precision: 10, scale: 2 }).default('0'),
+  
+  // Rejection/Issues
+  rejectionReason: text('rejection_reason'),
+  issuesNotes: text('issues_notes'),
+  
+  // Processing Officer
+  processedBy: uuid('processed_by').references(() => users.userId),
+  reviewedBy: varchar('reviewed_by', { length: 200 }), // Insurance company reviewer
+  
+  // Documents
+  documentsSubmitted: jsonb('documents_submitted'),
+  additionalDocumentsRequired: jsonb('additional_documents_required'),
+  
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  billIdIdx: index('insurance_claims_bill_id_idx').on(table.billId),
+  claimStatusIdx: index('insurance_claims_status_idx').on(table.claimStatus),
+  insuranceProviderIdx: index('insurance_claims_provider_idx').on(table.insuranceProvider),
+  submittedDateIdx: index('insurance_claims_submitted_date_idx').on(table.submittedDate),
+}));
+
+// Bill Audit Trail
+export const billAuditTrail = billingSchema.table('bill_audit_trail', {
+  auditId: uuid('audit_id').primaryKey().defaultRandom(),
+  billId: uuid('bill_id').notNull().references(() => patientBills.billId, { onDelete: 'cascade' }),
+  
+  // Audit Details
+  actionType: varchar('action_type', { length: 50 }).notNull(), // created, modified, approved, paid, cancelled
+  fieldChanged: varchar('field_changed', { length: 100 }), // Specific field that changed
+  oldValue: text('old_value'),
+  newValue: text('new_value'),
+  reason: text('reason'),
+  
+  // User Context
+  performedBy: uuid('performed_by').notNull().references(() => users.userId),
+  performedAt: timestamp('performed_at', { mode: 'date' }).defaultNow().notNull(),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  
+  // System Context
+  sessionId: varchar('session_id', { length: 100 }),
+  applicationModule: varchar('application_module', { length: 100 }), // billing, pharmacy, lab, etc.
+  
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  billIdIdx: index('bill_audit_trail_bill_id_idx').on(table.billId),
+  actionTypeIdx: index('bill_audit_trail_action_type_idx').on(table.actionType),
+  performedByIdx: index('bill_audit_trail_performed_by_idx').on(table.performedBy),
+  performedAtIdx: index('bill_audit_trail_performed_at_idx').on(table.performedAt),
+}));
+
 // Export main tables for use in services
-// Billing schemas
+// Legacy Billing schemas (for backward compatibility)
 export const invoice = billingSchema.table('invoice', {
   id: uuid('id').primaryKey().defaultRandom(),
   organizationId: uuid('organization_id').notNull(),
@@ -2048,6 +2248,12 @@ export {
   appointments as appointmentsTable,
   // Audit and compliance
   auditLogs as auditLogsTable,
+  // Billing and payments
+  billAuditTrail as billAuditTrailTable,
+  billItems as billItemsTable,
+  insuranceClaims as insuranceClaimsTable,
+  patientBills as patientBillsTable,
+  payments as paymentsTable,
   // Core entities
   clinics as clinicsTable,
   consultations as consultationsTable,
@@ -2058,17 +2264,16 @@ export {
   familyInsurance as familyInsuranceTable,
   familyMedicalHistory as familyMedicalHistoryTable,
   familyMembers as familyMembersTable,
-  guardianRelationships as guardianRelationshipsTable,
-  relationshipTypes as relationshipTypesTable,
-  // ICU management
-  icuBeds as icuBedsTable,
-  icuNursingCarePlans as icuNursingCarePlansTable,
-  icuCriticalAlerts as icuCriticalAlertsTable,
-  icuStaffShifts as icuStaffShiftsTable,
   // Government schemes
   governmentSchemes as governmentSchemesTable,
+  guardianRelationships as guardianRelationshipsTable,
   // Network management
   hospitalNetworks as hospitalNetworksTable,
+  // ICU management
+  icuBeds as icuBedsTable,
+  icuCriticalAlerts as icuCriticalAlertsTable,
+  icuNursingCarePlans as icuNursingCarePlansTable,
+  icuStaffShifts as icuStaffShiftsTable,
   // Pharmacy management
   medicineMaster as medicineMasterTable,
   medicineOrderItems as medicineOrderItemsTable,
@@ -2077,6 +2282,7 @@ export {
   pharmacyInventory as pharmacyInventoryTable,
   pharmacyStockMovement as pharmacyStockMovementTable,
   prescriptions as prescriptionsTable,
+  relationshipTypes as relationshipTypesTable,
   users as usersTable,
   webhookDeliveries as webhookDeliveriesTable,
   // Webhook management

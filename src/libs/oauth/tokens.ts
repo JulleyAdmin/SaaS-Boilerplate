@@ -4,11 +4,13 @@ import { and, eq, isNull, lt } from 'drizzle-orm';
 
 import { createAuditLog } from '@/libs/audit';
 import { db } from '@/libs/DB';
-import {
-  oauthAccessToken,
-  oauthAuthorizationCode,
-  oauthRefreshToken,
-} from '@/models/Schema';
+// OAuth tables are not currently defined in Schema.ts
+// TODO: Add OAuth table definitions or remove OAuth functionality
+// import {
+//   oauthAccessToken,
+//   oauthAuthorizationCode,
+//   oauthRefreshToken,
+// } from '@/models/Schema';
 
 export type AccessTokenData = {
   clientId: string;

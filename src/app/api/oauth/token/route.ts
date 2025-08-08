@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         actorName: 'OAuth Token Service',
         action: 'oauth.token.failed',
         crud: 'create',
-        resource: 'oauth_token',
+        resource: 'sso_connection',
         resourceId: params.client_id,
         metadata: {
           clientId: params.client_id,
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
       actorName: 'OAuth Token Service',
       action: 'oauth.token.issued',
       crud: 'create',
-      resource: 'oauth_token',
+      resource: 'system_setting',
       resourceId: params.client_id,
       metadata: {
         clientId: params.client_id,

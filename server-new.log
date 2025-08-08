@@ -1,0 +1,697 @@
+
+> saas-boilerplate@1.7.6 dev
+> next dev
+
+  ▲ Next.js 14.2.31
+  - Local:        http://localhost:3002
+  - Environments: .env.local, .env
+  - Experiments (use with caution):
+    · instrumentationHook
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1482ms (1005 modules)
+ ✓ Ready in 2.8s
+ ✓ Compiled /src/middleware in 220ms (637 modules)
+ ○ Compiling /[locale]/sign-in/[[...sign-in]] ...
+ ✓ Compiled /[locale]/sign-in/[[...sign-in]] in 4.8s (4090 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /sign-in 200 in 6381ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 3.1s (4094 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 3707ms
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /sign-in?_rsc=19hlm 200 in 829ms
+ GET /sign-in/SignIn_clerk_catchall_check_1754330951936 200 in 2096ms
+ POST /sign-in 200 in 34ms
+ ○ Compiling /[locale]/dashboard ...
+ ✓ Compiled /[locale]/dashboard in 1313ms (4446 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /dashboard?_rsc=1u6jz 200 in 36ms
+ GET /dashboard?_rsc=1t3m4 200 in 33ms
+ ○ Compiling /[locale]/dashboard/patients ...
+ ✓ Compiled /[locale]/dashboard/patients in 817ms (4491 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /dashboard/patients 200 in 1566ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 41ms
+ ○ Compiling /api/analytics/today ...
+ ✓ Compiled /api/analytics/today in 1513ms (3670 modules)
+ ✓ Compiled (3674 modules)
+Initializing database connection...
+Using PGLite in-memory database (Demo/Development mode)
+[DEMO-MIDDLEWARE] Checking demo data...
+Error: Cannot find module '/Users/girishpastula/Documents/Projects/hospitalos/.next/server/vendor-chunks/lib/worker.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1405:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+    at Module._load (node:internal/modules/cjs/loader:1215:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:151:5)
+    at MessagePort.<anonymous> (node:internal/main/worker_thread:212:26)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException: Error: Cannot find module '/Users/girishpastula/Documents/Projects/hospitalos/.next/server/vendor-chunks/lib/worker.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1405:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+    at Module._load (node:internal/modules/cjs/loader:1215:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:151:5)
+    at MessagePort.<anonymous> (node:internal/main/worker_thread:212:26)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException: Error: Cannot find module '/Users/girishpastula/Documents/Projects/hospitalos/.next/server/vendor-chunks/lib/worker.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1405:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+    at Module._load (node:internal/modules/cjs/loader:1215:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:151:5)
+    at MessagePort.<anonymous> (node:internal/main/worker_thread:212:26)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+Error: the worker thread exited
+    at Worker.onWorkerExit (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:201:32)
+    at Worker.emit (node:events:507:28)
+    at [kOnExit] (node:internal/worker:316:10)
+    at Worker.<computed>.onexit (node:internal/worker:230:20)
+    at Worker.callbackTrampoline (node:internal/async_hooks:130:17)
+ ⨯ uncaughtException: Error: the worker thread exited
+    at Worker.onWorkerExit (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:201:32)
+    at Worker.emit (node:events:507:28)
+    at [kOnExit] (node:internal/worker:316:10)
+    at Worker.<computed>.onexit (node:internal/worker:230:20)
+    at Worker.callbackTrampoline (node:internal/async_hooks:130:17)
+ ⨯ uncaughtException: Error: the worker thread exited
+    at Worker.onWorkerExit (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:201:32)
+    at Worker.emit (node:events:507:28)
+    at [kOnExit] (node:internal/worker:316:10)
+    at Worker.<computed>.onexit (node:internal/worker:230:20)
+    at Worker.callbackTrampoline (node:internal/async_hooks:130:17)
+PGLite database initialized and migrations completed
+Demo database initialized successfully
+[DEMO-MIDDLEWARE] Demo data incomplete, initializing...
+[DEMO] Starting demo data initialization...
+[DEMO] Creating demo clinic...
+[DEMO] Demo clinic created successfully
+[DEMO] Creating demo patients...
+[DEMO] Error initializing demo data: error: invalid input syntax for type uuid: "demo-system"
+    at ye.Ve (file:///Users/girishpastula/Documents/Projects/hospitalos/node_modules/@electric-sql/pglite/dist/chunk-EADU5A67.js:1:17602)
+    at ye.nt (file:///Users/girishpastula/Documents/Projects/hospitalos/node_modules/@electric-sql/pglite/dist/chunk-EADU5A67.js:1:14988)
+    at ye.parse (file:///Users/girishpastula/Documents/Projects/hospitalos/node_modules/@electric-sql/pglite/dist/chunk-EADU5A67.js:1:13740)
+    at pe.execProtocol (file:///Users/girishpastula/Documents/Projects/hospitalos/node_modules/@electric-sql/pglite/dist/index.js:3:239489)
+    at async pe.l (file:///Users/girishpastula/Documents/Projects/hospitalos/node_modules/@electric-sql/pglite/dist/chunk-A7RFOIQ7.js:8:1911)
+    at async file:///Users/girishpastula/Documents/Projects/hospitalos/node_modules/@electric-sql/pglite/dist/chunk-A7RFOIQ7.js:8:2407 {
+  length: 144,
+  severity: 'ERROR',
+  code: '22P02',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: "unnamed portal parameter $25 = '...'",
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'uuid.c',
+  line: '136',
+  routine: 'string_to_uuid'
+}
+ GET /api/patients?page=1&pageSize=10&isActive=true 200 in 3533ms
+ GET /api/analytics/today 200 in 3531ms
+ GET /api/patients/statistics 200 in 3532ms
+Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:139:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:146:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.end (webpack-internal:///(rsc)/./src/utils/api-logger.ts:58:24)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:147:19)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:139:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:139:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:146:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:146:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.end (webpack-internal:///(rsc)/./src/utils/api-logger.ts:58:24)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:147:19)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.end (webpack-internal:///(rsc)/./src/utils/api-logger.ts:58:24)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:147:19)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ GET /api/patients?page=1&pageSize=10&isActive=true&query=John 200 in 12ms
+Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at logApiRequest (webpack-internal:///(rsc)/./src/utils/api-logger.ts:33:12)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:109:87)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:139:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:146:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.end (webpack-internal:///(rsc)/./src/utils/api-logger.ts:58:24)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:147:19)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at logApiRequest (webpack-internal:///(rsc)/./src/utils/api-logger.ts:33:12)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:109:87)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at logApiRequest (webpack-internal:///(rsc)/./src/utils/api-logger.ts:33:12)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:109:87)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:139:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:139:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:146:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as debug] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.search (webpack-internal:///(rsc)/./src/utils/api-logger.ts:70:16)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:146:73)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.end (webpack-internal:///(rsc)/./src/utils/api-logger.ts:58:24)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:147:19)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ ⨯ uncaughtException: Error: the worker has exited
+    at ThreadStream.write (webpack-internal:///(rsc)/./node_modules/thread-stream/index.js:238:19)
+    at Pino.write (webpack-internal:///(rsc)/./node_modules/pino/lib/proto.js:219:10)
+    at Pino.LOG [as info] (webpack-internal:///(rsc)/./node_modules/pino/lib/tools.js:62:21)
+    at Object.end (webpack-internal:///(rsc)/./src/utils/api-logger.ts:58:24)
+    at GET$1 (webpack-internal:///(rsc)/./src/app/api/patients/route.ts:147:19)
+    at async eval (webpack-internal:///(rsc)/./node_modules/@sentry/nextjs/build/cjs/common/wrapRouteHandlerWithSentry.js:39:30)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57228
+    at async eT.execute (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46851)
+    at async eT.handle (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:58760)
+    at async doRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1496:28)
+    at async DevServer.renderPageComponent (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/base-server.js:818:17)
+    at async /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:179:21)
+    at async handleRequest (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:359:24)
+    at async requestHandlerImpl (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/router-server.js:383:13)
+    at async Server.requestListener (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/lib/start-server.js:141:13)
+ GET /api/analytics/today 200 in 25ms
+ GET /api/patients/statistics 200 in 17ms
+ GET /api/analytics/today 200 in 9ms
+ GET /api/analytics/today 200 in 24ms
+ ✓ Compiled in 1051ms (4638 modules)
+[?25h

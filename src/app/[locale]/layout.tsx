@@ -8,6 +8,13 @@ import { DemoBadge } from '@/components/DemoBadge';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/toaster';
 import { AllLocales } from '@/utils/AppConfig';
+import dynamic from 'next/dynamic';
+
+// Dynamic import for debug dashboard (only in development)
+const DebugDashboard = dynamic(
+  () => import('@/components/debug-dashboard').then(mod => mod.DebugDashboard),
+  { ssr: false }
+);
 
 export const metadata: Metadata = {
   icons: [
@@ -65,6 +72,7 @@ export default function RootLayout(props: {
 
             <DemoBadge />
             <Toaster />
+            {process.env.NODE_ENV === 'development' && <DebugDashboard />}
           </Providers>
         </NextIntlClientProvider>
       </body>

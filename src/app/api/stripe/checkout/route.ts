@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
       actorName: 'User',
       action: 'billing.checkout.initiated',
       crud: 'create',
-      resource: 'checkout_session',
+      resource: 'billing',
       resourceId: session.id,
       metadata: {
         planKey,

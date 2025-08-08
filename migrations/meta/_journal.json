@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1753526723814,
-      "tag": "0000_striped_risque",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1753594705078,
-      "tag": "0001_special_crystal",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1753599444985,
-      "tag": "0002_old_nomad",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1754116415234,
-      "tag": "0003_perfect_silvermane",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1754118133149,
-      "tag": "0004_familiar_bloodaxe",
+      "when": 1754329558242,
+      "tag": "0000_famous_shotgun",
       "breakpoints": true
     }
   ]

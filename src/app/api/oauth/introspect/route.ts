@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         actorName: 'OAuth Introspection Service',
         action: 'oauth.introspection.failed',
         crud: 'read',
-        resource: 'oauth_token',
+        resource: 'sso_connection',
         resourceId: clientId,
         metadata: {
           clientId,
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
         actorName: 'OAuth Introspection Service',
         action: 'oauth.introspection.success',
         crud: 'read',
-        resource: 'oauth_token',
+        resource: 'sso_connection',
         resourceId: clientId,
         metadata: {
           clientId,

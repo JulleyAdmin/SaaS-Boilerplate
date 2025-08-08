@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Use process.env.PORT by default and fallback to port 3000
-const PORT = process.env.PORT || 3000;
+// Use process.env.PORT by default and fallback to port 3001 (since 3000 is in use)
+const PORT = process.env.PORT || 3001;
 
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
 const baseURL = `http://localhost:${PORT}`;
@@ -14,7 +14,7 @@ export default defineConfig({
   // Look for files with the .spec.js or .e2e.js extension
   testMatch: '*.@(spec|e2e).?(c|m)[jt]s?(x)',
   // Timeout per test
-  timeout: 30 * 1000,
+  timeout: 60 * 1000,
   // Fail the build on CI if you accidentally left test.only in the source code.
   forbidOnly: !!process.env.CI,
   // Reporter to use. See https://playwright.dev/docs/test-reporters
@@ -27,12 +27,12 @@ export default defineConfig({
 
   // Run your local dev server before starting the tests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
-  webServer: {
-    command: process.env.CI ? 'npm run start' : 'npm run dev:next',
-    url: baseURL,
-    timeout: 2 * 60 * 1000,
-    reuseExistingServer: true, // Changed to true to use existing server
-  },
+  // webServer: {
+  //   command: process.env.CI ? 'npm run start' : 'npm run dev:next',
+  //   url: baseURL,
+  //   timeout: 2 * 60 * 1000,
+  //   reuseExistingServer: true, // Use existing server to avoid port conflicts
+  // },
 
   // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.
   use: {

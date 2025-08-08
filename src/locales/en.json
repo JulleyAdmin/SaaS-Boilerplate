@@ -13,11 +13,11 @@
     "company": "Company"
   },
   "Hero": {
-    "follow_twitter": "Follow @Ixartz on Twitter",
-    "title": "The perfect <important>Hospital Management System</important> to streamline healthcare operations.",
-    "description": "A modern hospital management platform featuring patient care, appointment scheduling, staff management, and HIPAA-compliant security.",
+    "follow_twitter": "24x7 Emergency & Casualty Services | Call 108",
+    "title": "Complete <important>Hospital Management System</important> for Indian Healthcare Providers.",
+    "description": "Modern hospital management platform designed for Indian small & medium hospitals. Features OPD management, Ayushman Bharat integration, NABH compliance, and government scheme support.",
     "primary_button": "Get Started",
-    "secondary_button": "Star on GitHub"
+    "secondary_button": "Schedule Demo"
   },
   "Sponsors": {
     "title": "Sponsored by"
@@ -61,19 +61,19 @@
     "answer": "HospitalOS is built with HIPAA compliance at its core. We implement end-to-end encryption, role-based access control, audit logging, and secure data storage. Our SSO integration ensures secure authentication while maintaining strict access controls for patient data."
   },
   "CTA": {
-    "title": "Ready to modernize your hospital?",
-    "description": "Join thousands of healthcare providers using HospitalOS to streamline operations and improve patient care.",
-    "button_text": "Get Started"
+    "title": "Ready to digitize your hospital operations?",
+    "description": "Join hundreds of Indian hospitals using Sanjeevani HMS to streamline OPD, manage Ayushman Bharat claims, and achieve NABH compliance standards.",
+    "button_text": "Schedule Demo"
   },
   "Footer": {
-    "product": "Product",
-    "docs": "Docs",
-    "blog": "Blog",
-    "community": "Community",
-    "company": "Company",
+    "product": "OPD Services",
+    "docs": "Medical Departments",
+    "blog": "Health Information",
+    "community": "Patient Support",
+    "company": "About Hospital",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
-    "designed_by": "Designed by <author></author>."
+    "designed_by": "© 2024 Sanjeevani Hospital & Medical Centre. NABH Accredited."
   },
   "ProtectFallback": {
     "not_enough_permission": "You do not have the permissions to perform this action"
@@ -86,17 +86,6 @@
     "meta_title": "Sign up",
     "meta_description": "Effortlessly create an account through our intuitive sign-up process."
   },
-  "DashboardLayout": {
-    "home": "Home",
-    "todos": "Todos",
-    "team": "Team",
-    "api_keys": "API Keys",
-    "webhooks": "Webhooks",
-    "security": "Security",
-    "members": "Members",
-    "billing": "Billing",
-    "settings": "Settings"
-  },
   "Navigation": {
     "overview": "Overview",
     "dashboard": "Dashboard",
@@ -104,27 +93,59 @@
     "patients": "Patients",
     "appointments": "Appointments",
     "medical_records": "Medical Records",
+    "family_management": "Family Management",
+    "clinical_operations": "Clinical Operations",
+    "consultations": "Consultations",
     "prescriptions": "Prescriptions",
     "lab_results": "Lab Results",
-    "clinical_operations": "Clinical Operations",
-    "diagnosis_treatment": "Diagnosis & Treatment",
     "vital_signs": "Vital Signs",
     "emergency_care": "Emergency Care",
+    "ward_management": "Ward Management",
+    "bed_management": "Bed Management",
+    "medication_admin": "Medication Administration",
+    "nursing_notes": "Nursing Notes",
+    "icu_management": "ICU Management",
+    "icu_dashboard": "ICU Dashboard",
+    "critical_care": "Critical Care",
+    "ventilator_mgmt": "Ventilator Management",
+    "pharmacy": "Pharmacy",
+    "inventory": "Inventory",
+    "prescription_queue": "Prescription Queue",
+    "purchase_orders": "Purchase Orders",
+    "laboratory": "Laboratory",
+    "test_queue": "Test Queue",
+    "results_entry": "Results Entry",
+    "lab_reports": "Lab Reports",
+    "reception": "Reception",
+    "queue_management": "Queue Management",
+    "patient_registration": "Patient Registration",
+    "token_generation": "Token Generation",
+    "billing_finance": "Billing & Finance",
+    "billing": "Billing",
+    "patient_billing": "Patient Billing",
+    "insurance_claims": "Insurance Claims",
+    "government_schemes": "Government Schemes",
+    "invoices": "Invoices",
+    "financial_reports": "Financial Reports",
     "staff_management": "Staff Management",
     "team_members": "Team Members",
     "departments": "Departments",
     "schedules": "Schedules",
-    "billing_finance": "Billing & Finance",
-    "billing": "Billing",
-    "invoices": "Invoices",
-    "financial_reports": "Financial Reports",
+    "attendance": "Attendance",
+    "reports_analytics": "Reports & Analytics",
+    "clinical_reports": "Clinical Reports",
+    "operational_reports": "Operational Reports",
+    "analytics_dashboard": "Analytics Dashboard",
+    "communication": "Communication",
+    "notifications": "Notifications",
+    "whatsapp_templates": "WhatsApp Templates",
+    "announcements": "Announcements",
     "system": "System",
     "security": "Security",
     "mfa_settings": "MFA Settings",
     "sso_management": "SSO Management",
     "api_keys": "API Keys",
     "webhooks": "Webhooks",
-    "notifications": "Notifications",
     "audit_logs": "Audit Logs",
     "settings": "Settings",
     "urgent": "Urgent"
@@ -133,7 +154,16 @@
     "meta_title": "HospitalOS Dashboard",
     "meta_description": "Manage your hospital operations, patient records, appointments, and staff from a centralized dashboard.",
     "title_bar": "Dashboard",
-    "title_bar_description": "Monitor and manage hospital operations"
+    "title_bar_description": "Monitor and manage hospital operations",
+    "welcome": "Welcome",
+    "role": "Role",
+    "General": "General Staff Dashboard",
+    "Doctor": "Doctor Dashboard",
+    "Nurse": "Nurse Dashboard",
+    "Admin": "Administrator Dashboard",
+    "Pharmacy": "Pharmacy Dashboard",
+    "Lab": "Laboratory Dashboard",
+    "Reception": "Reception Dashboard"
   },
   "team_management": {
     "meta_title": "Team Management"

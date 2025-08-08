@@ -1,0 +1,16 @@
+
+> saas-boilerplate@1.7.6 dev
+> next dev
+
+  ▲ Next.js 14.2.31
+  - Local:        http://localhost:3002
+  - Environments: .env.local, .env
+  - Experiments (use with caution):
+    · instrumentationHook
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1192ms (1005 modules)
+ ✓ Ready in 2.6s
+ ✓ Compiled /src/middleware in 280ms (637 modules)
+[?25h

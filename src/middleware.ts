@@ -41,6 +41,12 @@ export default function middleware(
 
     // For protected API routes, check authentication
     if (isProtectedRoute(request)) {
+      // Check for demo mode
+      if (process.env.DEMO_MODE === 'true') {
+        console.log('Middleware: Allowing demo mode request');
+        return NextResponse.next();
+      }
+      
       // Check for test mode headers
       const isTestMode = request.headers.get('x-test-mode') === 'true';
       const testUserId = request.headers.get('x-test-user-id');

@@ -1,12 +1,13 @@
 export const DemoBadge = () => (
-  <div className="fixed bottom-0 right-20 z-10">
-    <a
-      href="https://react-saas.com"
-    >
-      <div className="rounded-md bg-gray-900 px-3 py-2 font-semibold text-gray-100">
-        <span className="text-gray-500">Demo of</span>
-        {' SaaS Boilerplate'}
+  <div className="fixed bottom-4 right-4 z-10">
+    <div className="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white shadow-lg border border-red-700">
+      <div className="flex items-center space-x-2">
+        <span className="text-red-100">🏥</span>
+        <span>Sanjeevani HMS Demo</span>
       </div>
-    </a>
+      <div className="text-xs text-red-100 mt-1">
+        Emergency: 108 | Ambulance: 102
+      </div>
+    </div>
   </div>
 );

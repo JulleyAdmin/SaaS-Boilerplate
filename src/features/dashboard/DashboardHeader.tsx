@@ -1,99 +1,73 @@
 'use client';
 
-import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
+import { UserButton } from '@clerk/nextjs';
+import { Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { useTheme } from 'next-themes';
 
-import { ActiveLink } from '@/components/ActiveLink';
-import { LocaleSwitcher } from '@/components/LocaleSwitcher';
-import { ToggleMenuButton } from '@/components/ToggleMenuButton';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/templates/Logo';
-import { getI18nPath } from '@/utils/Helpers';
 
 export const DashboardHeader = (props: {
-  menu: {
-    href: string;
-    label: string;
-  }[];
+  hospitalInfo: {
+    name: string;
+    department: string;
+    emergency: string;
+  };
 }) => {
-  const locale = useLocale();
+  const { theme, setTheme } = useTheme();
 
   return (
-    <>
+    <div className="flex items-center justify-between w-full">
+      {/* Left side - Logo and Hospital Info */}
       <div className="flex items-center">
         <Link href="/dashboard" className="max-sm:hidden">
           <Logo />
         </Link>
 
-        <svg
-          className="size-8 stroke-muted-foreground max-sm:hidden"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" />
-          <path d="M17 5 7 19" />
-        </svg>
-
-        <OrganizationSwitcher
-          organizationProfileMode="navigation"
-          organizationProfileUrl={getI18nPath(
-            '/dashboard/organization-profile',
-            locale,
-          )}
-          afterCreateOrganizationUrl="/dashboard"
-          hidePersonal
-          skipInvitationScreen
-          appearance={{
-            elements: {
-              organizationSwitcherTrigger: 'max-w-28 sm:max-w-52',
-            },
-          }}
-        />
-
-        <nav className="ml-3 max-lg:hidden">
-          <ul className="flex flex-row items-center gap-x-3 text-lg font-medium [&_a:hover]:opacity-100 [&_a]:opacity-75">
-            {props.menu.map(item => (
-              <li key={item.href}>
-                <ActiveLink href={item.href}>{item.label}</ActiveLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="ml-6 max-lg:hidden">
+          <div className="flex items-center space-x-6 text-sm">
+            <div className="flex items-center space-x-2 text-muted-foreground">
+              <span className="font-medium">{props.hospitalInfo.name}</span>
+            </div>
+            <div className="flex items-center space-x-2 text-muted-foreground">
+              <span>Department:</span>
+              <span className="font-medium">{props.hospitalInfo.department}</span>
+            </div>
+            <div className="flex items-center space-x-2 text-red-600">
+              <span className="font-medium">Emergency: {props.hospitalInfo.emergency}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div>
+      {/* Right side - User Controls */}
+      <div className="flex items-center">
         <ul className="flex items-center gap-x-1.5 [&_li[data-fade]:hover]:opacity-100 [&_li[data-fade]]:opacity-60">
           <li data-fade>
             <div className="lg:hidden">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <ToggleMenuButton />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {props.menu.map(item => (
-                    <DropdownMenuItem key={item.href} asChild>
-                      <Link href={item.href}>{item.label}</Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                <span>{props.hospitalInfo.department}</span>
+                <span>•</span>
+                <span className="text-red-600">Emergency: {props.hospitalInfo.emergency}</span>
+              </div>
             </div>
           </li>
 
-          {/* PRO: Dark mode toggle button */}
-
+          {/* Theme Toggle */}
           <li data-fade>
-            <LocaleSwitcher />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="size-8"
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
           </li>
 
           <li>
@@ -113,6 +87,6 @@ export const DashboardHeader = (props: {
           </li>
         </ul>
       </div>
-    </>
+    </div>
   );
 };

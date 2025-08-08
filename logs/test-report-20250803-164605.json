@@ -1,0 +1,79 @@
+{
+  "config": {
+    "configFile": "/Users/girishpastula/Documents/Projects/hospitalos/playwright.ui-review.config.ts",
+    "rootDir": "/Users/girishpastula/Documents/Projects/hospitalos/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "html"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/girishpastula/Documents/Projects/hospitalos/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/girishpastula/Documents/Projects/hospitalos/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/comprehensive-ui-review.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.2",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: Invalid environment variables",
+      "stack": "Error: Invalid environment variables\n    at /Users/girishpastula/Documents/Projects/hospitalos/node_modules/@t3-oss/env-core/dist/index.js:29:15\n    at createEnv (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/@t3-oss/env-core/dist/index.js:35:16)\n    at createEnv (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/@t3-oss/env-nextjs/dist/index.js:12:12)\n    at Object.<anonymous> (/Users/girishpastula/Documents/Projects/hospitalos/src/libs/Env.ts:6:29)\n    at Object.<anonymous> (/Users/girishpastula/Documents/Projects/hospitalos/src/libs/Logger.ts:3:1)\n    at Object.<anonymous> (/Users/girishpastula/Documents/Projects/hospitalos/tests/comprehensive-ui-review.spec.ts:2:1)",
+      "location": {
+        "file": "/Users/girishpastula/Documents/Projects/hospitalos/src/libs/Env.ts",
+        "column": 29,
+        "line": 6
+      },
+      "snippet": "\u001b[90m   at \u001b[39m../src/libs/Env.ts:6\n\n  4 | const isTestMode = process.env.NODE_ENV === 'test' || process.env.E2E_TESTING === 'true' || process.env.TESTING === 'true';\n  5 |\n> 6 | export const Env = createEnv({\n    |                             ^\n  7 |   server: {\n  8 |     CLERK_SECRET_KEY: isTestMode ? z.string().optional() : z.string().min(1),\n  9 |     DATABASE_URL: z.string().optional(),"
+    },
+    {
+      "message": "Error: No tests found",
+      "stack": "Error: No tests found"
+    }
+  ],
+  "stats": {
+    "startTime": "2025-08-03T11:16:58.495Z",
+    "duration": 112.03399999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,219 @@
+
+> saas-boilerplate@1.7.6 dev
+> run-p dev:*
+
+
+> saas-boilerplate@1.7.6 dev:next
+> next dev
+
+
+> saas-boilerplate@1.7.6 dev:spotlight
+> spotlight-sidecar
+
+🔎 [Spotlight] Checking if we are already running on port 8969
+🔎 [Spotlight] Sidecar is already running on port 8969
+  ▲ Next.js 14.2.31
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+  - Experiments (use with caution):
+    · instrumentationHook
+
+ ✓ Starting...
+ ○ Compiling /instrumentation ...
+ ✓ Compiled /instrumentation in 1165ms (1005 modules)
+ ✓ Ready in 2.4s
+ ✓ Compiled /src/middleware in 261ms (638 modules)
+ ○ Compiling /[locale] ...
+ ✓ Compiled /[locale] in 2.3s (3413 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET / 200 in 3282ms
+Clerk: Refreshing the session token resulted in an infinite redirect loop. This usually means that your Clerk instance keys do not match - make sure to copy the correct publishable and secret keys from the Clerk dashboard.
+ ○ Compiling /[locale]/sign-in/[[...sign-in]] ...
+ ✓ Compiled /[locale]/sign-in/[[...sign-in]] in 3.2s (3937 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /?_rsc=ot1l6 200 in 113ms
+ GET /sign-in 200 in 4079ms
+ GET /sign-in/SignIn_clerk_catchall_check_1754241815944 307 in 56ms
+ ○ Compiling /[locale]/dashboard ...
+ ✓ Compiled /[locale]/dashboard in 1814ms (4467 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /dashboard 200 in 2647ms
+ GET /dashboard?_rsc=1u6jz 200 in 12ms
+ ✓ Compiled in 330ms (1002 modules)
+ GET /dashboard?_rsc=1t3m4 200 in 36ms
+ ✓ Compiled in 1215ms (4481 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /dashboard?_rsc=8kmpw 200 in 191ms
+ ✓ Compiled in 546ms (4481 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /dashboard?_rsc=8kmpw 200 in 110ms
+ ✓ Compiled in 1149ms (5115 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /dashboard?_rsc=8kmpw 200 in 94ms
+ ✓ Compiled in 1415ms (4478 modules)
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ GET /dashboard?_rsc=8kmpw 200 in 49ms
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (160kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (318kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1624ms (4468 modules)
+ GET /dashboard 404 in 1579ms
+
+The `locale` parameter in `getRequestConfig` is deprecated, please switch to `await requestLocale`. See https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+
+A `locale` is expected to be returned from `getRequestConfig`, but none was returned. This will be an error in the next major version of next-intl.
+
+See: https://next-intl.dev/blog/next-intl-3-22#await-request-locale
+
+ ⨯ Failed to generate static paths for /[locale]/dashboard:
+Error: Cannot find module './vendor-chunks/@clerk.js'
+Require stack:
+- /Users/girishpastula/Documents/Projects/hospitalos/.next/server/webpack-runtime.js
+- /Users/girishpastula/Documents/Projects/hospitalos/.next/server/app/[locale]/(auth)/dashboard/page.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/load-components.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/build/utils.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/static-paths-worker.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1405:15)
+    at /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+    at Function._load (node:internal/modules/cjs/loader:1215:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1491:12)
+    at mod.require (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/girishpastula/Documents/Projects/hospitalos/.next/server/webpack-runtime.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/.next/server/app/[locale]/(auth)/dashboard/page.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/load-components.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/build/utils.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ]
+}
+ GET /dashboard 200 in 349ms
+ GET /_next/static/css/app/%5Blocale%5D/layout.css?v=1754242749343 404 in 12ms
+ GET /_next/static/chunks/app/%5Blocale%5D/(auth)/dashboard/page.js 404 in 37ms
+ GET /_next/static/chunks/main-app.js?v=1754242749343 404 in 39ms
+ GET /_next/static/chunks/app/%5Blocale%5D/(auth)/layout.js 404 in 38ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 40ms
+ GET /_next/static/chunks/app/%5Blocale%5D/(auth)/dashboard/layout.js 404 in 39ms
+ GET /_next/static/chunks/app/global-error.js 404 in 42ms
+ GET /_next/static/chunks/app/%5Blocale%5D/layout.js 404 in 12ms
+ ⨯ Error: Cannot find module './vendor-chunks/@clerk.js'
+Require stack:
+- /Users/girishpastula/Documents/Projects/hospitalos/.next/server/webpack-runtime.js
+- /Users/girishpastula/Documents/Projects/hospitalos/.next/server/app/[locale]/(auth)/dashboard/page.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/load-components.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/build/utils.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/static-paths-worker.js
+- /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1405:15)
+    at /Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+    at Function._load (node:internal/modules/cjs/loader:1215:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1491:12)
+    at mod.require (/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/girishpastula/Documents/Projects/hospitalos/.next/server/webpack-runtime.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/.next/server/app/[locale]/(auth)/dashboard/page.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/require.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/load-components.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/build/utils.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/server/dev/static-paths-worker.js',
+    '/Users/girishpastula/Documents/Projects/hospitalos/node_modules/next/dist/compiled/jest-worker/processChild.js'
+  ],
+  page: '/en/dashboard'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1889ms (4961 modules)
+ GET /dashboard 500 in 2195ms
+ ✓ Compiled in 1635ms (4971 modules)
+ ✓ Compiled in 759ms (4971 modules)
+ ✓ Compiled in 685ms (4971 modules)
+ ✓ Compiled in 718ms (4971 modules)
+ ✓ Compiled in 680ms (4971 modules)
+ ✓ Compiled in 1482ms (4971 modules)
+ ✓ Compiled in 717ms (4971 modules)
+ ✓ Compiled in 1409ms (4971 modules)
+ ✓ Compiled in 744ms (4971 modules)
+ ✓ Compiled in 732ms (4971 modules)
+ ✓ Compiled in 650ms (4969 modules)
+ ✓ Compiled in 685ms (4967 modules)
+ ✓ Compiled in 701ms (4967 modules)
+ ✓ Compiled in 1200ms (4967 modules)
+ ✓ Compiled in 946ms (4967 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/girishpastula/Documents/Projects/hospitalos/.next/cache/webpack/client-development/13.pack.gz_' -> '/Users/girishpastula/Documents/Projects/hospitalos/.next/cache/webpack/client-development/13.pack.gz'
+ ✓ Compiled in 2.9s (4817 modules)
+ ✓ Compiled in 740ms (4817 modules)
+ ✓ Compiled in 842ms (4817 modules)
+ ✓ Compiled in 772ms (4823 modules)
+ ✓ Compiled in 3.4s (4823 modules)
+ ✓ Compiled in 221ms (1380 modules)
+ ✓ Compiled in 232ms (1380 modules)
+ ✓ Compiled in 201ms (1380 modules)
+ ✓ Compiled in 194ms (1380 modules)
+ ✓ Compiled in 244ms (1380 modules)

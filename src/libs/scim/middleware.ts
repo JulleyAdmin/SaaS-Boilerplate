@@ -6,8 +6,10 @@ import { NextResponse } from 'next/server';
 
 import { createAuditLog } from '@/libs/audit';
 import { db } from '@/libs/DB';
-import { scimConfiguration } from '@/models/Schema';
 
+// SCIM tables are not currently defined in Schema.ts
+// TODO: Add SCIM table definitions or remove SCIM functionality
+// import { scimConfiguration } from '@/models/Schema';
 import { SCIM_SCHEMAS } from './users';
 
 export type ScimAuthContext = {

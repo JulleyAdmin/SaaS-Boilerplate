@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 import type { Stripe } from 'stripe';
 
 import { createAuditLog } from '@/libs/audit';
-import { getDb } from '@/libs/DB';
+import { db } from '@/libs/DB';
 import { sendSystemNotification } from '@/libs/email/client';
 import { SubscriptionWelcomeEmail } from '@/libs/email/templates/SubscriptionWelcomeEmail';
 import { Env } from '@/libs/Env';
@@ -95,8 +95,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     return;
   }
 
-  const db = await getDb();
-
   // Update organization with Stripe customer ID
   await db
     .update(organizationSchema)
@@ -113,7 +111,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     actorName: 'System',
     action: 'billing.subscription.created',
     crud: 'create',
-    resource: 'subscription',
+    resource: 'billing',
     resourceId: session.subscription as string,
     metadata: {
       customerId: session.customer,
@@ -131,8 +129,6 @@ async function handleSubscriptionChange(stripeSubscription: Stripe.Subscription)
 
   const priceId = stripeSubscription.items.data[0]?.price.id;
   const plan = priceId ? getPlanByPriceId(priceId) : undefined;
-
-  const db = await getDb();
 
   // Check if subscription exists
   const existingSubscription = await db
@@ -207,7 +203,7 @@ async function handleSubscriptionChange(stripeSubscription: Stripe.Subscription)
     actorName: 'System',
     action: existingSubscription.length > 0 ? 'billing.subscription.updated' : 'billing.subscription.created',
     crud: existingSubscription.length > 0 ? 'update' : 'create',
-    resource: 'subscription',
+    resource: 'billing',
     resourceId: stripeSubscription.id,
     metadata: {
       status: stripeSubscription.status,
@@ -247,7 +243,7 @@ async function handleSubscriptionCancellation(stripeSubscription: Stripe.Subscri
     actorName: 'System',
     action: 'billing.subscription.canceled',
     crud: 'update',
-    resource: 'subscription',
+    resource: 'billing',
     resourceId: stripeSubscription.id,
     metadata: {
       canceledAt: new Date().toISOString(),
@@ -266,8 +262,6 @@ async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
     console.error('No organizationId in invoice metadata');
     return;
   }
-
-  const db = await getDb();
 
   // Create or update invoice record
   const existingInvoice = await db
@@ -309,7 +303,7 @@ async function handleInvoicePaid(stripeInvoice: Stripe.Invoice) {
     actorName: 'System',
     action: 'billing.invoice.paid',
     crud: 'update',
-    resource: 'invoice',
+    resource: 'billing',
     resourceId: stripeInvoice.id,
     metadata: {
       amountPaid: stripeInvoice.amount_paid,
@@ -325,8 +319,6 @@ async function handleInvoicePaymentFailed(stripeInvoice: Stripe.Invoice) {
   if (!organizationId) {
     return;
   }
-
-  const db = await getDb();
 
   // Update subscription status if needed
   if (stripeInvoice.subscription) {
@@ -358,7 +350,7 @@ async function handleInvoicePaymentFailed(stripeInvoice: Stripe.Invoice) {
     actorName: 'System',
     action: 'billing.payment.failed',
     crud: 'update',
-    resource: 'invoice',
+    resource: 'billing',
     resourceId: stripeInvoice.id,
     success: false,
     errorMessage: 'Payment failed',

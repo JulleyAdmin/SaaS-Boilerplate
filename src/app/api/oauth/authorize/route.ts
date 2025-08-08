@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       actorName: 'OAuth Authorization',
       action: 'oauth.authorization.granted',
       crud: 'create',
-      resource: 'oauth_authorization',
+      resource: 'sso_connection',
       resourceId: params.client_id,
       metadata: {
         clientId: params.client_id,
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
         actorName: 'OAuth Authorization',
         action: 'oauth.authorization.denied',
         crud: 'create',
-        resource: 'oauth_authorization',
+        resource: 'sso_connection',
         resourceId: body.client_id,
         metadata: {
           clientId: body.client_id,

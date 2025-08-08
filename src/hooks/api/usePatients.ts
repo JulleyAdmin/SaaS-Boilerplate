@@ -1,25 +1,46 @@
 import { useAuth } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
 
-// Types
+// Types - Updated to match backend schema
 export type Patient = {
   patientId: string;
   patientCode: string;
   firstName: string;
   lastName: string;
-  middleName?: string;
-  dateOfBirth: string;
+  middleName?: string | null;
+  dateOfBirth: Date | string;
+  age?: number | null;
   gender: 'Male' | 'Female' | 'Other';
-  phone: string;
-  email?: string;
-  address?: string;
-  emergencyContactName?: string;
-  status?: 'admitted' | 'outpatient' | 'discharged' | 'emergency';
-  bloodGroup?: string;
-  admissionDate?: string;
-  currentDepartmentId?: string;
-  createdAt: string;
-  updatedAt: string;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-' | null;
+  allergies?: string[] | null;
+  chronicConditions?: string[] | null;
+  emergencyContactName?: string | null;
+  emergencyContactPhone?: string | null;
+  emergencyContactRelation?: string | null;
+  status: 'admitted' | 'outpatient' | 'discharged' | 'emergency' | 'inactive' | 'deceased';
+  admissionDate?: Date | string | null;
+  dischargeDate?: Date | string | null;
+  currentDepartmentId?: string | null;
+  admissionReason?: string | null;
+  dischargeReason?: string | null;
+  aadhaarNumber?: string | null;
+  abhaNumber?: string | null;
+  insuranceDetails?: any;
+  governmentSchemeNumber?: string | null;
+  isActive: boolean;
+  isVip: boolean;
+  totalVisits: number;
+  lastVisitDate?: Date | string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  createdBy?: string | null;
+  updatedBy?: string | null;
 };
 
 export type PatientSearchParams = {
@@ -27,11 +48,12 @@ export type PatientSearchParams = {
   page?: number;
   pageSize?: number;
   gender?: 'Male' | 'Female' | 'Other';
-  status?: 'admitted' | 'outpatient' | 'discharged' | 'emergency';
-  bloodGroup?: string;
+  status?: 'admitted' | 'outpatient' | 'discharged' | 'emergency' | 'inactive' | 'deceased';
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   admissionDateFrom?: string;
   admissionDateTo?: string;
   departmentId?: string;
+  isActive?: boolean;
 };
 
 export type PatientSearchResponse = {
@@ -169,13 +191,15 @@ export function formatPatientForDisplay(patient: Patient) {
   };
 }
 
-// Real-time statistics types
+// Real-time statistics types - Updated to match backend
 export type PatientStatistics = {
   totalPatients: number;
   admitted: number;
   outpatient: number;
   discharged: number;
   emergency: number;
+  inactive: number;
+  deceased: number;
   todayRegistrations: number;
   todayAppointments: number;
   todayConsultations: number;
@@ -191,24 +215,24 @@ export type TodayActivity = {
 // API functions for statistics
 async function fetchPatientStatistics(): Promise<PatientStatistics> {
   const response = await fetch('/api/patients/statistics');
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error?.message || 'Failed to fetch patient statistics');
   }
-  
+
   const data = await response.json();
   return data.data || data;
 }
 
 async function fetchTodayActivity(): Promise<TodayActivity> {
   const response = await fetch('/api/analytics/today');
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error?.message || 'Failed to fetch today\'s activity');
   }
-  
+
   const data = await response.json();
   return data.data || data;
 }

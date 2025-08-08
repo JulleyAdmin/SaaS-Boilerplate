@@ -1,5 +1,5 @@
 {
-  "id": "af79aa4e-d4a5-427e-8697-5f20a61d53ca",
+  "id": "11447f80-c7c0-4c45-8bb9-301cb85e0402",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1112,6 +1112,212 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "core.department_services": {
+      "name": "department_services",
+      "schema": "core",
+      "columns": {
+        "service_id": {
+          "name": "service_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clinic_id": {
+          "name": "clinic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "service_name": {
+          "name": "service_name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "service_code": {
+          "name": "service_code",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sub_category": {
+          "name": "sub_category",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_duration": {
+          "name": "default_duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 30
+        },
+        "base_price": {
+          "name": "base_price",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'INR'"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_emergency_service": {
+          "name": "is_emergency_service",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "requires_24x7": {
+          "name": "requires_24x7",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "unique_dept_service_code": {
+          "name": "unique_dept_service_code",
+          "columns": [
+            {
+              "expression": "department_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "service_code",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "department_services_department_id_departments_department_id_fk": {
+          "name": "department_services_department_id_departments_department_id_fk",
+          "tableFrom": "department_services",
+          "tableTo": "departments",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "department_id"
+          ],
+          "columnsTo": [
+            "department_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "department_services_clinic_id_clinics_clinic_id_fk": {
+          "name": "department_services_clinic_id_clinics_clinic_id_fk",
+          "tableFrom": "department_services",
+          "tableTo": "clinics",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "clinic_id"
+          ],
+          "columnsTo": [
+            "clinic_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "department_services_created_by_users_user_id_fk": {
+          "name": "department_services_created_by_users_user_id_fk",
+          "tableFrom": "department_services",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "department_services_updated_by_users_user_id_fk": {
+          "name": "department_services_updated_by_users_user_id_fk",
+          "tableFrom": "department_services",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "core.departments": {
       "name": "departments",
       "schema": "core",
@@ -1481,6 +1687,841 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "appointments.family_appointments": {
+      "name": "family_appointments",
+      "schema": "appointments",
+      "columns": {
+        "family_appointment_id": {
+          "name": "family_appointment_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clinic_id": {
+          "name": "clinic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "appointment_date": {
+          "name": "appointment_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "appointment_time": {
+          "name": "appointment_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "appointment_type": {
+          "name": "appointment_type",
+          "type": "family_appointment_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "member_appointments": {
+          "name": "member_appointments",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "booked_by": {
+          "name": "booked_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "booked_at": {
+          "name": "booked_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "appointment_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Scheduled'"
+        },
+        "cancellation_reason": {
+          "name": "cancellation_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "family_appointments_family_id_family_groups_family_id_fk": {
+          "name": "family_appointments_family_id_family_groups_family_id_fk",
+          "tableFrom": "family_appointments",
+          "tableTo": "family_groups",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "columnsTo": [
+            "family_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "family_appointments_clinic_id_clinics_clinic_id_fk": {
+          "name": "family_appointments_clinic_id_clinics_clinic_id_fk",
+          "tableFrom": "family_appointments",
+          "tableTo": "clinics",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "clinic_id"
+          ],
+          "columnsTo": [
+            "clinic_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "family_appointments_booked_by_patients_patient_id_fk": {
+          "name": "family_appointments_booked_by_patients_patient_id_fk",
+          "tableFrom": "family_appointments",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "booked_by"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "core.family_groups": {
+      "name": "family_groups",
+      "schema": "core",
+      "columns": {
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "family_code": {
+          "name": "family_code",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "family_name": {
+          "name": "family_name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "primary_member_id": {
+          "name": "primary_member_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address_line1": {
+          "name": "address_line1",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address_line2": {
+          "name": "address_line2",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pincode": {
+          "name": "pincode",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "primary_phone": {
+          "name": "primary_phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_phone": {
+          "name": "secondary_phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "ration_card_number": {
+          "name": "ration_card_number",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "family_income_category": {
+          "name": "family_income_category",
+          "type": "family_income_category_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "family_groups_primary_member_id_patients_patient_id_fk": {
+          "name": "family_groups_primary_member_id_patients_patient_id_fk",
+          "tableFrom": "family_groups",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "primary_member_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "family_groups_created_by_users_user_id_fk": {
+          "name": "family_groups_created_by_users_user_id_fk",
+          "tableFrom": "family_groups",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "family_groups_family_code_unique": {
+          "name": "family_groups_family_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "family_code"
+          ]
+        }
+      },
+      "checkConstraints": {}
+    },
+    "insurance.family_insurance": {
+      "name": "family_insurance",
+      "schema": "insurance",
+      "columns": {
+        "family_insurance_id": {
+          "name": "family_insurance_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "insurance_provider": {
+          "name": "insurance_provider",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_number": {
+          "name": "policy_number",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_type": {
+          "name": "policy_type",
+          "type": "policy_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_sum_insured": {
+          "name": "total_sum_insured",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "remaining_sum_insured": {
+          "name": "remaining_sum_insured",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "covered_members": {
+          "name": "covered_members",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "primary_member_id": {
+          "name": "primary_member_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "policy_start_date": {
+          "name": "policy_start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_end_date": {
+          "name": "policy_end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "family_insurance_family_id_family_groups_family_id_fk": {
+          "name": "family_insurance_family_id_family_groups_family_id_fk",
+          "tableFrom": "family_insurance",
+          "tableTo": "family_groups",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "columnsTo": [
+            "family_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "family_insurance_primary_member_id_patients_patient_id_fk": {
+          "name": "family_insurance_primary_member_id_patients_patient_id_fk",
+          "tableFrom": "family_insurance",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "primary_member_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "family_insurance_policy_number_unique": {
+          "name": "family_insurance_policy_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "policy_number"
+          ]
+        }
+      },
+      "checkConstraints": {}
+    },
+    "clinical.family_medical_history": {
+      "name": "family_medical_history",
+      "schema": "clinical",
+      "columns": {
+        "history_id": {
+          "name": "history_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "condition_name": {
+          "name": "condition_name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icd10_code": {
+          "name": "icd10_code",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "affected_relationship": {
+          "name": "affected_relationship",
+          "type": "family_relationship_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "affected_count": {
+          "name": "affected_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
+        },
+        "age_of_onset": {
+          "name": "age_of_onset",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "severity": {
+          "name": "severity",
+          "type": "condition_severity_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_hereditary": {
+          "name": "is_hereditary",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reported_by": {
+          "name": "reported_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reported_date": {
+          "name": "reported_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "verified_by": {
+          "name": "verified_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verification_date": {
+          "name": "verification_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "family_medical_history_family_id_family_groups_family_id_fk": {
+          "name": "family_medical_history_family_id_family_groups_family_id_fk",
+          "tableFrom": "family_medical_history",
+          "tableTo": "family_groups",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "columnsTo": [
+            "family_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "family_medical_history_patient_id_patients_patient_id_fk": {
+          "name": "family_medical_history_patient_id_patients_patient_id_fk",
+          "tableFrom": "family_medical_history",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "family_medical_history_reported_by_patients_patient_id_fk": {
+          "name": "family_medical_history_reported_by_patients_patient_id_fk",
+          "tableFrom": "family_medical_history",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "reported_by"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "family_medical_history_verified_by_users_user_id_fk": {
+          "name": "family_medical_history_verified_by_users_user_id_fk",
+          "tableFrom": "family_medical_history",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "verified_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "core.family_members": {
+      "name": "family_members",
+      "schema": "core",
+      "columns": {
+        "member_id": {
+          "name": "member_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relationship_to_primary": {
+          "name": "relationship_to_primary",
+          "type": "family_relationship_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "relationship_details": {
+          "name": "relationship_details",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_primary_member": {
+          "name": "is_primary_member",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_earning_member": {
+          "name": "is_earning_member",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_dependent": {
+          "name": "is_dependent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "share_medical_history": {
+          "name": "share_medical_history",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "share_insurance": {
+          "name": "share_insurance",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "share_billing": {
+          "name": "share_billing",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "consent_date": {
+          "name": "consent_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_by": {
+          "name": "consent_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "join_date": {
+          "name": "join_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "leave_date": {
+          "name": "leave_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "family_member_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Active'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "unique_family_patient": {
+          "name": "unique_family_patient",
+          "columns": [
+            {
+              "expression": "family_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "family_members_family_id_family_groups_family_id_fk": {
+          "name": "family_members_family_id_family_groups_family_id_fk",
+          "tableFrom": "family_members",
+          "tableTo": "family_groups",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "columnsTo": [
+            "family_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "family_members_patient_id_patients_patient_id_fk": {
+          "name": "family_members_patient_id_patients_patient_id_fk",
+          "tableFrom": "family_members",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "family_members_consent_by_users_user_id_fk": {
+          "name": "family_members_consent_by_users_user_id_fk",
+          "tableFrom": "family_members",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "consent_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "family_members_created_by_users_user_id_fk": {
+          "name": "family_members_created_by_users_user_id_fk",
+          "tableFrom": "family_members",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "billing.government_schemes": {
       "name": "government_schemes",
       "schema": "billing",
@@ -1624,6 +2665,185 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "core.guardian_relationships": {
+      "name": "guardian_relationships",
+      "schema": "core",
+      "columns": {
+        "guardian_id": {
+          "name": "guardian_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guardian_patient_id": {
+          "name": "guardian_patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relationship_type": {
+          "name": "relationship_type",
+          "type": "family_relationship_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_primary_guardian": {
+          "name": "is_primary_guardian",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "legal_document_type": {
+          "name": "legal_document_type",
+          "type": "legal_document_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "document_number": {
+          "name": "document_number",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "document_copy": {
+          "name": "document_copy",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "can_consent_medical": {
+          "name": "can_consent_medical",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "can_access_records": {
+          "name": "can_access_records",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "can_approve_procedures": {
+          "name": "can_approve_procedures",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "effective_from": {
+          "name": "effective_from",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "effective_until": {
+          "name": "effective_until",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verified_by": {
+          "name": "verified_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verification_date": {
+          "name": "verification_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "guardian_relationships_patient_id_patients_patient_id_fk": {
+          "name": "guardian_relationships_patient_id_patients_patient_id_fk",
+          "tableFrom": "guardian_relationships",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "guardian_relationships_guardian_patient_id_patients_patient_id_fk": {
+          "name": "guardian_relationships_guardian_patient_id_patients_patient_id_fk",
+          "tableFrom": "guardian_relationships",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "guardian_patient_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "guardian_relationships_created_by_users_user_id_fk": {
+          "name": "guardian_relationships_created_by_users_user_id_fk",
+          "tableFrom": "guardian_relationships",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "guardian_relationships_verified_by_users_user_id_fk": {
+          "name": "guardian_relationships_verified_by_users_user_id_fk",
+          "tableFrom": "guardian_relationships",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "verified_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "core.hospital_networks": {
       "name": "hospital_networks",
       "schema": "core",
@@ -1740,6 +2960,863 @@
           ]
         }
       },
+      "checkConstraints": {}
+    },
+    "clinical.icu_beds": {
+      "name": "icu_beds",
+      "schema": "clinical",
+      "columns": {
+        "icu_bed_id": {
+          "name": "icu_bed_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "clinic_id": {
+          "name": "clinic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bed_number": {
+          "name": "bed_number",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bed_type": {
+          "name": "bed_type",
+          "type": "icu_bed_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'General'"
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "icu_bed_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Available'"
+        },
+        "last_sanitized": {
+          "name": "last_sanitized",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "monitoring_equipment": {
+          "name": "monitoring_equipment",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "cardiac_monitoring_level": {
+          "name": "cardiac_monitoring_level",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telemetry_enabled": {
+          "name": "telemetry_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "oxygen_supply_type": {
+          "name": "oxygen_supply_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Central'"
+        },
+        "backup_oxygen_available": {
+          "name": "backup_oxygen_available",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "isolation_capable": {
+          "name": "isolation_capable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "unique_clinic_bed": {
+          "name": "unique_clinic_bed",
+          "columns": [
+            {
+              "expression": "clinic_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "bed_number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "icu_beds_clinic_id_clinics_clinic_id_fk": {
+          "name": "icu_beds_clinic_id_clinics_clinic_id_fk",
+          "tableFrom": "icu_beds",
+          "tableTo": "clinics",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "clinic_id"
+          ],
+          "columnsTo": [
+            "clinic_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_beds_department_id_departments_department_id_fk": {
+          "name": "icu_beds_department_id_departments_department_id_fk",
+          "tableFrom": "icu_beds",
+          "tableTo": "departments",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "department_id"
+          ],
+          "columnsTo": [
+            "department_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_beds_patient_id_patients_patient_id_fk": {
+          "name": "icu_beds_patient_id_patients_patient_id_fk",
+          "tableFrom": "icu_beds",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "clinical.icu_critical_alerts": {
+      "name": "icu_critical_alerts",
+      "schema": "clinical",
+      "columns": {
+        "alert_id": {
+          "name": "alert_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icu_bed_id": {
+          "name": "icu_bed_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alert_type": {
+          "name": "alert_type",
+          "type": "icu_alert_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "severity": {
+          "name": "severity",
+          "type": "icu_alert_severity_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alert_data": {
+          "name": "alert_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "acknowledged_by": {
+          "name": "acknowledged_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acknowledged_at": {
+          "name": "acknowledged_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolved_by": {
+          "name": "resolved_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolved_at": {
+          "name": "resolved_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "response_time_minutes": {
+          "name": "response_time_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "escalated_to": {
+          "name": "escalated_to",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "escalated_at": {
+          "name": "escalated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reported_to_authorities": {
+          "name": "reported_to_authorities",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "incident_report_number": {
+          "name": "incident_report_number",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "icu_critical_alerts_patient_id_patients_patient_id_fk": {
+          "name": "icu_critical_alerts_patient_id_patients_patient_id_fk",
+          "tableFrom": "icu_critical_alerts",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_critical_alerts_icu_bed_id_icu_beds_icu_bed_id_fk": {
+          "name": "icu_critical_alerts_icu_bed_id_icu_beds_icu_bed_id_fk",
+          "tableFrom": "icu_critical_alerts",
+          "tableTo": "icu_beds",
+          "schemaTo": "clinical",
+          "columnsFrom": [
+            "icu_bed_id"
+          ],
+          "columnsTo": [
+            "icu_bed_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_critical_alerts_acknowledged_by_users_user_id_fk": {
+          "name": "icu_critical_alerts_acknowledged_by_users_user_id_fk",
+          "tableFrom": "icu_critical_alerts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "acknowledged_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_critical_alerts_resolved_by_users_user_id_fk": {
+          "name": "icu_critical_alerts_resolved_by_users_user_id_fk",
+          "tableFrom": "icu_critical_alerts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "resolved_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_critical_alerts_escalated_to_users_user_id_fk": {
+          "name": "icu_critical_alerts_escalated_to_users_user_id_fk",
+          "tableFrom": "icu_critical_alerts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "escalated_to"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "clinical.icu_nursing_care_plans": {
+      "name": "icu_nursing_care_plans",
+      "schema": "clinical",
+      "columns": {
+        "care_plan_id": {
+          "name": "care_plan_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icu_bed_id": {
+          "name": "icu_bed_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigned_nurse_id": {
+          "name": "assigned_nurse_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "care_plan_template_id": {
+          "name": "care_plan_template_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care_instructions": {
+          "name": "care_instructions",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cardiac_protocol_id": {
+          "name": "cardiac_protocol_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "frequency_hours": {
+          "name": "frequency_hours",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 2
+        },
+        "next_assessment_due": {
+          "name": "next_assessment_due",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_assessment_completed": {
+          "name": "last_assessment_completed",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fluid_balance_target": {
+          "name": "fluid_balance_target",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cardiac_medications": {
+          "name": "cardiac_medications",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "compliance_status": {
+          "name": "compliance_status",
+          "type": "care_plan_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Active'"
+        },
+        "compliance_percentage": {
+          "name": "compliance_percentage",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nurse_patient_ratio": {
+          "name": "nurse_patient_ratio",
+          "type": "numeric(3, 1)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'2.0'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "icu_nursing_care_plans_patient_id_patients_patient_id_fk": {
+          "name": "icu_nursing_care_plans_patient_id_patients_patient_id_fk",
+          "tableFrom": "icu_nursing_care_plans",
+          "tableTo": "patients",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "patient_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_nursing_care_plans_icu_bed_id_icu_beds_icu_bed_id_fk": {
+          "name": "icu_nursing_care_plans_icu_bed_id_icu_beds_icu_bed_id_fk",
+          "tableFrom": "icu_nursing_care_plans",
+          "tableTo": "icu_beds",
+          "schemaTo": "clinical",
+          "columnsFrom": [
+            "icu_bed_id"
+          ],
+          "columnsTo": [
+            "icu_bed_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_nursing_care_plans_assigned_nurse_id_users_user_id_fk": {
+          "name": "icu_nursing_care_plans_assigned_nurse_id_users_user_id_fk",
+          "tableFrom": "icu_nursing_care_plans",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "assigned_nurse_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_nursing_care_plans_created_by_users_user_id_fk": {
+          "name": "icu_nursing_care_plans_created_by_users_user_id_fk",
+          "tableFrom": "icu_nursing_care_plans",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "core.icu_staff_shifts": {
+      "name": "icu_staff_shifts",
+      "schema": "core",
+      "columns": {
+        "shift_id": {
+          "name": "shift_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "clinic_id": {
+          "name": "clinic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shift_type": {
+          "name": "shift_type",
+          "type": "icu_shift_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shift_date": {
+          "name": "shift_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_time": {
+          "name": "start_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_time": {
+          "name": "end_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actual_start_time": {
+          "name": "actual_start_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "actual_end_time": {
+          "name": "actual_end_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_assignments": {
+          "name": "patient_assignments",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "max_patient_capacity": {
+          "name": "max_patient_capacity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 2
+        },
+        "handover_notes": {
+          "name": "handover_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "handover_received_from": {
+          "name": "handover_received_from",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "handover_given_to": {
+          "name": "handover_given_to",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "handover_completed_at": {
+          "name": "handover_completed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "icu_shift_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Scheduled'"
+        },
+        "minimum_staff_ratio_compliance": {
+          "name": "minimum_staff_ratio_compliance",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "specialist_availability": {
+          "name": "specialist_availability",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Available'"
+        },
+        "emergency_contact_number": {
+          "name": "emergency_contact_number",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "backup_staff_id": {
+          "name": "backup_staff_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "unique_staff_shift": {
+          "name": "unique_staff_shift",
+          "columns": [
+            {
+              "expression": "staff_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "shift_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "shift_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "icu_staff_shifts_clinic_id_clinics_clinic_id_fk": {
+          "name": "icu_staff_shifts_clinic_id_clinics_clinic_id_fk",
+          "tableFrom": "icu_staff_shifts",
+          "tableTo": "clinics",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "clinic_id"
+          ],
+          "columnsTo": [
+            "clinic_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_staff_shifts_department_id_departments_department_id_fk": {
+          "name": "icu_staff_shifts_department_id_departments_department_id_fk",
+          "tableFrom": "icu_staff_shifts",
+          "tableTo": "departments",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "department_id"
+          ],
+          "columnsTo": [
+            "department_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_staff_shifts_staff_id_users_user_id_fk": {
+          "name": "icu_staff_shifts_staff_id_users_user_id_fk",
+          "tableFrom": "icu_staff_shifts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_staff_shifts_handover_received_from_users_user_id_fk": {
+          "name": "icu_staff_shifts_handover_received_from_users_user_id_fk",
+          "tableFrom": "icu_staff_shifts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "handover_received_from"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_staff_shifts_handover_given_to_users_user_id_fk": {
+          "name": "icu_staff_shifts_handover_given_to_users_user_id_fk",
+          "tableFrom": "icu_staff_shifts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "handover_given_to"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_staff_shifts_backup_staff_id_users_user_id_fk": {
+          "name": "icu_staff_shifts_backup_staff_id_users_user_id_fk",
+          "tableFrom": "icu_staff_shifts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "backup_staff_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "icu_staff_shifts_created_by_users_user_id_fk": {
+          "name": "icu_staff_shifts_created_by_users_user_id_fk",
+          "tableFrom": "icu_staff_shifts",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "core.invitations": {
@@ -1903,6 +3980,62 @@
           ]
         }
       },
+      "checkConstraints": {}
+    },
+    "billing.invoice": {
+      "name": "invoice",
+      "schema": "billing",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_invoice_id": {
+          "name": "stripe_invoice_id",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "core.medicine_master": {
@@ -2475,6 +4608,119 @@
           ]
         }
       },
+      "checkConstraints": {}
+    },
+    "security.oauth_client": {
+      "name": "oauth_client",
+      "schema": "security",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_secret": {
+          "name": "client_secret",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "redirect_uris": {
+          "name": "redirect_uris",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "grants": {
+          "name": "grants",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "oauth_client_client_id_unique": {
+          "name": "oauth_client_client_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "client_id"
+          ]
+        }
+      },
+      "checkConstraints": {}
+    },
+    "security.oauth_client_permission": {
+      "name": "oauth_client_permission",
+      "schema": "security",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scope": {
+          "name": "scope",
+          "type": "varchar(191)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "core.organization": {
@@ -3904,6 +6150,309 @@
           "schemaTo": "core",
           "columnsFrom": [
             "doctor_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "core.relationship_types": {
+      "name": "relationship_types",
+      "schema": "core",
+      "columns": {
+        "relationship_id": {
+          "name": "relationship_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "relationship_types_relationship_id_seq",
+            "schema": "core",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "relationship_code": {
+          "name": "relationship_code",
+          "type": "family_relationship_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relationship_name": {
+          "name": "relationship_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relationship_name_hindi": {
+          "name": "relationship_name_hindi",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "relationship_name_local": {
+          "name": "relationship_name_local",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reverse_relationship": {
+          "name": "reverse_relationship",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "relationship_category_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_blood_relation": {
+          "name": "is_blood_relation",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_legal_guardian": {
+          "name": "is_legal_guardian",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "display_order": {
+          "name": "display_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "relationship_types_relationship_code_unique": {
+          "name": "relationship_types_relationship_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "relationship_code"
+          ]
+        }
+      },
+      "checkConstraints": {}
+    },
+    "core.schedule_exceptions": {
+      "name": "schedule_exceptions",
+      "schema": "core",
+      "columns": {
+        "exception_id": {
+          "name": "exception_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "doctor_id": {
+          "name": "doctor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clinic_id": {
+          "name": "clinic_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_type": {
+          "name": "exception_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Leave'"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_time": {
+          "name": "start_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_time": {
+          "name": "end_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "approved_by": {
+          "name": "approved_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approved_at": {
+          "name": "approved_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_recurring": {
+          "name": "is_recurring",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "recurrence_pattern": {
+          "name": "recurrence_pattern",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "schedule_exceptions_doctor_id_users_user_id_fk": {
+          "name": "schedule_exceptions_doctor_id_users_user_id_fk",
+          "tableFrom": "schedule_exceptions",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "doctor_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "schedule_exceptions_clinic_id_clinics_clinic_id_fk": {
+          "name": "schedule_exceptions_clinic_id_clinics_clinic_id_fk",
+          "tableFrom": "schedule_exceptions",
+          "tableTo": "clinics",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "clinic_id"
+          ],
+          "columnsTo": [
+            "clinic_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "schedule_exceptions_approved_by_users_user_id_fk": {
+          "name": "schedule_exceptions_approved_by_users_user_id_fk",
+          "tableFrom": "schedule_exceptions",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "approved_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "schedule_exceptions_created_by_users_user_id_fk": {
+          "name": "schedule_exceptions_created_by_users_user_id_fk",
+          "tableFrom": "schedule_exceptions",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "schedule_exceptions_updated_by_users_user_id_fk": {
+          "name": "schedule_exceptions_updated_by_users_user_id_fk",
+          "tableFrom": "schedule_exceptions",
+          "tableTo": "users",
+          "schemaTo": "core",
+          "columnsFrom": [
+            "updated_by"
           ],
           "columnsTo": [
             "user_id"
@@ -5627,6 +8176,17 @@
         "O-"
       ]
     },
+    "public.care_plan_status_enum": {
+      "name": "care_plan_status_enum",
+      "schema": "public",
+      "values": [
+        "Active",
+        "Completed",
+        "Overdue",
+        "Cancelled",
+        "On-Hold"
+      ]
+    },
     "public.communication_type_enum": {
       "name": "communication_type_enum",
       "schema": "public",
@@ -5636,6 +8196,16 @@
         "email",
         "voice_call",
         "push_notification"
+      ]
+    },
+    "public.condition_severity_enum": {
+      "name": "condition_severity_enum",
+      "schema": "public",
+      "values": [
+        "Mild",
+        "Moderate",
+        "Severe",
+        "Fatal"
       ]
     },
     "public.employment_type_enum": {
@@ -5651,6 +8221,94 @@
         "Volunteer",
         "Consultant",
         "Temporary"
+      ]
+    },
+    "public.equipment_status_enum": {
+      "name": "equipment_status_enum",
+      "schema": "public",
+      "values": [
+        "Functional",
+        "Maintenance-Required",
+        "Critical-Failure",
+        "Calibration-Due",
+        "Out-of-Service"
+      ]
+    },
+    "public.equipment_type_enum": {
+      "name": "equipment_type_enum",
+      "schema": "public",
+      "values": [
+        "Ventilator",
+        "Cardiac-Monitor",
+        "Infusion-Pump",
+        "Defibrillator",
+        "Oxygen-Concentrator",
+        "IABP",
+        "ECMO",
+        "Dialysis-Machine"
+      ]
+    },
+    "public.family_appointment_type_enum": {
+      "name": "family_appointment_type_enum",
+      "schema": "public",
+      "values": [
+        "Family-Checkup",
+        "Vaccination",
+        "Consultation",
+        "Health-Camp",
+        "Other"
+      ]
+    },
+    "public.family_income_category_enum": {
+      "name": "family_income_category_enum",
+      "schema": "public",
+      "values": [
+        "BPL",
+        "APL",
+        "AAY",
+        "Others"
+      ]
+    },
+    "public.family_member_status_enum": {
+      "name": "family_member_status_enum",
+      "schema": "public",
+      "values": [
+        "Active",
+        "Inactive",
+        "Deceased"
+      ]
+    },
+    "public.family_relationship_enum": {
+      "name": "family_relationship_enum",
+      "schema": "public",
+      "values": [
+        "SELF",
+        "SPOUSE",
+        "FATHER",
+        "MOTHER",
+        "SON",
+        "DAUGHTER",
+        "BROTHER",
+        "SISTER",
+        "GRANDFATHER",
+        "GRANDMOTHER",
+        "GRANDSON",
+        "GRANDDAUGHTER",
+        "UNCLE",
+        "AUNT",
+        "NEPHEW",
+        "NIECE",
+        "COUSIN",
+        "FATHER_IN_LAW",
+        "MOTHER_IN_LAW",
+        "SON_IN_LAW",
+        "DAUGHTER_IN_LAW",
+        "BROTHER_IN_LAW",
+        "SISTER_IN_LAW",
+        "GUARDIAN",
+        "CARETAKER",
+        "FRIEND",
+        "OTHER"
       ]
     },
     "public.gender_enum": {
@@ -5675,6 +8333,84 @@
         "Jan-Aushadhi",
         "Pradhan-Mantri-Suraksha-Bima",
         "Rashtriya-Swasthya-Bima"
+      ]
+    },
+    "public.icu_alert_severity_enum": {
+      "name": "icu_alert_severity_enum",
+      "schema": "public",
+      "values": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical",
+        "Emergency"
+      ]
+    },
+    "public.icu_alert_type_enum": {
+      "name": "icu_alert_type_enum",
+      "schema": "public",
+      "values": [
+        "Vital-Critical",
+        "Equipment-Failure",
+        "Medication-Due",
+        "Protocol-Violation",
+        "Emergency-Response",
+        "Staff-Required"
+      ]
+    },
+    "public.icu_bed_status_enum": {
+      "name": "icu_bed_status_enum",
+      "schema": "public",
+      "values": [
+        "Available",
+        "Occupied",
+        "Maintenance",
+        "Isolation",
+        "Reserved",
+        "Out-of-Service"
+      ]
+    },
+    "public.icu_bed_type_enum": {
+      "name": "icu_bed_type_enum",
+      "schema": "public",
+      "values": [
+        "General",
+        "Isolation",
+        "Cardiac",
+        "Neurological",
+        "Pediatric",
+        "Neonatal"
+      ]
+    },
+    "public.icu_shift_status_enum": {
+      "name": "icu_shift_status_enum",
+      "schema": "public",
+      "values": [
+        "Scheduled",
+        "Active",
+        "Completed",
+        "Missed",
+        "Cancelled"
+      ]
+    },
+    "public.icu_shift_type_enum": {
+      "name": "icu_shift_type_enum",
+      "schema": "public",
+      "values": [
+        "Morning",
+        "Evening",
+        "Night",
+        "Extended"
+      ]
+    },
+    "public.legal_document_type_enum": {
+      "name": "legal_document_type_enum",
+      "schema": "public",
+      "values": [
+        "Birth-Certificate",
+        "Court-Order",
+        "Notarized-Letter",
+        "Other"
       ]
     },
     "public.medication_route_enum": {
@@ -5747,6 +8483,15 @@
         "Insurance"
       ]
     },
+    "public.policy_type_enum": {
+      "name": "policy_type_enum",
+      "schema": "public",
+      "values": [
+        "Family-Floater",
+        "Individual-Sum-Insured",
+        "Group-Cover"
+      ]
+    },
     "public.queue_status_enum": {
       "name": "queue_status_enum",
       "schema": "public",
@@ -5756,6 +8501,16 @@
         "In-Progress",
         "Completed",
         "Skipped"
+      ]
+    },
+    "public.relationship_category_enum": {
+      "name": "relationship_category_enum",
+      "schema": "public",
+      "values": [
+        "Immediate",
+        "Extended",
+        "Guardian",
+        "Other"
       ]
     },
     "public.severity_enum": {

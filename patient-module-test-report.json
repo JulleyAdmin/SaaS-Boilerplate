@@ -1,0 +1,796 @@
+{
+  "loginIssues": [
+    "Could not find email input field",
+    "Could not find password input field",
+    "Login failed - not redirected to dashboard"
+  ],
+  "patientPageIssues": [],
+  "appointmentIssues": [],
+  "familyPageIssues": [],
+  "serverErrors": [
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:18:55.056Z"
+    },
+    {
+      "type": "console",
+      "message": "Sidecar connection error: Event",
+      "timestamp": "2025-08-03T17:18:55.062Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:18:55.065Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:18:55.292Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:18:55.292Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:18:56.599Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:18:56.599Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:18:57.846Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:18:57.846Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:18:59.090Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:18:59.090Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:00.324Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:00.324Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:01.563Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:01.564Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:02.803Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:02.803Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:04.053Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:04.053Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:05.285Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:05.285Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:06.522Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:06.522Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:07.771Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:07.771Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:09.013Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:09.013Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:10.247Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:10.247Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:11.482Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:11.482Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:12.717Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:12.717Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:13.970Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:13.971Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:15.202Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:15.202Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:16.432Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:16.432Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:17.663Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:17.663Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:18.904Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:18.904Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:20.145Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:20.145Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:21.381Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:21.381Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:22.618Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:22.618Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:23.858Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:23.858Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:25.103Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:25.103Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:26.338Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:26.338Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:27.568Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:27.568Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:28.808Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:28.808Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:30.053Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:30.053Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:31.286Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:31.286Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:32.519Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:32.519Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:33.761Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:33.761Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:35.006Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:35.006Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:36.245Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:36.245Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:37.477Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:37.477Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:38.721Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:38.721Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:39.956Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:39.956Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:41.192Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:41.192Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:42.426Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:42.426Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:43.656Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:43.656Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:44.896Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:44.896Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:46.138Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:46.138Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:47.374Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:47.374Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:48.591Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:48.591Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:49.822Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:49.823Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:51.065Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:51.065Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:52.299Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:52.299Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:53.519Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:53.519Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:54.754Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:54.754Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:55.974Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:55.974Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:57.208Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:57.208Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:58.426Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:58.426Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:19:59.646Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:19:59.646Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:00.878Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:00.878Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:02.096Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:02.096Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:03.322Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:03.322Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:04.549Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:04.549Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:05.769Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:05.769Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:07.008Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:07.008Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:08.272Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:08.272Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:08.501Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:08.508Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:08.737Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:08.737Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:09.964Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:09.964Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:11.207Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:11.207Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:12.461Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:12.461Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:13.684Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:13.684Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:14.901Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:14.901Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:16.141Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:16.141Z"
+    },
+    {
+      "type": "network",
+      "url": "http://localhost:3000/sign-in",
+      "status": 404,
+      "timestamp": "2025-08-03T17:20:17.371Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-08-03T17:20:17.371Z"
+    },
+    {
+      "type": "fatal",
+      "message": "page.waitForLoadState: Timeout 10000ms exceeded.",
+      "stack": "page.waitForLoadState: Timeout 10000ms exceeded.\n    at navigateToPatients (/Users/girishpastula/Documents/Projects/hospitalos/test-patient-module-simple.js:339:14)\n    at async testPatientModule (/Users/girishpastula/Documents/Projects/hospitalos/test-patient-module-simple.js:159:31)"
+    }
+  ],
+  "performanceIssues": [
+    "Login took 50448ms (target: <3000ms)"
+  ],
+  "uiIssues": []
+}

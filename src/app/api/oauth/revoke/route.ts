@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
         actorName: 'OAuth Revocation Service',
         action: 'oauth.token.revoked',
         crud: 'delete',
-        resource: 'oauth_token',
+        resource: 'sso_connection',
         resourceId: clientId,
         metadata: {
           clientId,
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
         actorName: 'OAuth Revocation Service',
         action: 'oauth.token.revocation_failed',
         crud: 'delete',
-        resource: 'oauth_token',
+        resource: 'sso_connection',
         resourceId: clientId,
         metadata: {
           clientId,

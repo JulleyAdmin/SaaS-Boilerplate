@@ -3,7 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from '@sentry/nextjs';
-import * as Spotlight from '@spotlightjs/spotlight';
+// import * as Spotlight from '@spotlightjs/spotlight'; // Disabled for demo
 
 Sentry.init({
   // Sentry DSN
@@ -31,6 +31,7 @@ Sentry.init({
   ],
 });
 
-if (process.env.NODE_ENV === 'development') {
-  Spotlight.init();
-}
+// Spotlight disabled for cleaner demo experience
+// if (process.env.NODE_ENV === 'development') {
+//   Spotlight.init();
+// }
