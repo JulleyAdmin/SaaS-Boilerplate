@@ -6,7 +6,7 @@ export const DemoBadge = () => (
         <span>Hospital OS Demo</span>
       </div>
       <div className="text-xs text-blue-100 mt-1">
-        UI Demo Mode - No Backend Required
+        Demo Mode
       </div>
     </div>
   </div>
