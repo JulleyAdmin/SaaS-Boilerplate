@@ -1,0 +1,27 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "name": "hospitalos-demo",
+  "env": {
+    "NEXT_PUBLIC_DEMO_MODE": "true",
+    "NEXT_PUBLIC_BYPASS_AUTH": "true",
+    "DEMO_MODE": "true",
+    "SKIP_ENV_VALIDATION": "true",
+    "CLERK_SECRET_KEY": "sk_test_demo",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_demo",
+    "DATABASE_URL": "memory://demo",
+    "USE_MOCK_DATA": "true",
+    "ENABLE_MOCK_API": "true",
+    "SHOW_DEMO_BANNER": "true",
+    "NEXT_PUBLIC_DEMO_HOSPITAL": "Demo General Hospital",
+    "NEXT_PUBLIC_CLERK_SIGN_IN_URL": "/sign-in",
+    "NEXT_PUBLIC_CLERK_SIGN_UP_URL": "/sign-up",
+    "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL": "/dashboard",
+    "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL": "/dashboard",
+    "NODE_ENV": "production"
+  },
+  "regions": ["iad1"],
+  "public": true
+}
