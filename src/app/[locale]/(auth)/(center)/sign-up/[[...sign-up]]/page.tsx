@@ -1,27 +1,36 @@
+'use client';
+
 import { SignUp } from '@clerk/nextjs';
-import { getTranslations } from 'next-intl/server';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 import { getI18nPath } from '@/utils/Helpers';
 
-export async function generateMetadata(props: { params: { locale: string } }) {
-  const t = await getTranslations({
-    locale: props.params.locale,
-    namespace: 'SignUp',
-  });
-
-  return {
-    title: t('meta_title'),
-    description: t('meta_description'),
-  };
-}
-
 const SignUpPage = (props: { params: { locale: string } }) => {
-  // In demo mode, redirect directly to dashboard
+  const router = useRouter();
+
+  useEffect(() => {
+    // In demo mode, redirect directly to dashboard
+    const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || process.env.DEMO_MODE === 'true';
+    
+    if (isDemoMode) {
+      router.replace(getI18nPath('/dashboard', props.params.locale));
+      return;
+    }
+  }, [router, props.params.locale]);
+
+  // In demo mode, show loading instead of Clerk component
   const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || process.env.DEMO_MODE === 'true';
   
   if (isDemoMode) {
-    redirect(getI18nPath('/dashboard', props.params.locale));
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Redirecting to demo...</p>
+        </div>
+      </div>
+    );
   }
 
   return <SignUp path={getI18nPath('/sign-up', props.params.locale)} />;
