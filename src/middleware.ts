@@ -32,6 +32,17 @@ export default function middleware(
   request: NextRequest,
   event: NextFetchEvent,
 ) {
+  // Check for demo mode early - skip all authentication in demo mode
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || process.env.DEMO_MODE === 'true';
+  
+  if (isDemoMode) {
+    // In demo mode, always allow all requests and use intl middleware for localization
+    if (request.nextUrl.pathname.startsWith('/api/')) {
+      return NextResponse.next();
+    }
+    return intlMiddleware(request);
+  }
+
   // Skip i18n for API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
     // For public API routes, allow without authentication
@@ -41,12 +52,6 @@ export default function middleware(
 
     // For protected API routes, check authentication
     if (isProtectedRoute(request)) {
-      // Check for demo mode
-      if (process.env.DEMO_MODE === 'true') {
-        console.log('Middleware: Allowing demo mode request');
-        return NextResponse.next();
-      }
-      
       // Check for test mode headers
       const isTestMode = request.headers.get('x-test-mode') === 'true';
       const testUserId = request.headers.get('x-test-user-id');
@@ -54,7 +59,6 @@ export default function middleware(
 
       // If test mode is enabled with valid test headers, bypass Clerk auth
       if (isTestMode && testUserId && testOrgId) {
-        console.log('Middleware: Allowing test mode request:', { testUserId, testOrgId });
         return NextResponse.next();
       }
 
@@ -78,6 +82,7 @@ export default function middleware(
     return intlMiddleware(request);
   }
 
+  // For non-demo mode, handle authentication normally
   if (
     request.nextUrl.pathname.includes('/sign-in')
     || request.nextUrl.pathname.includes('/sign-up')
