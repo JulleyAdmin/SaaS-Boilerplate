@@ -13,34 +13,20 @@ import {
   Pill,
   TestTube,
   AlertCircle,
-  BarChart3,
-  LineChart,
-  PieChart,
   RefreshCw,
   Download,
-  Filter,
   ChevronUp,
   ChevronDown,
   IndianRupee,
-  Building,
   UserCheck,
-  Timer,
-  Target,
   Shield,
-  Zap,
-  MessageSquare,
-  TrendingUpIcon,
   Home,
   Ambulance,
-  ThermometerSun,
-  Droplet,
   Brain,
   Baby,
   Eye,
   Bone,
-  ShieldCheck,
-  FileCheck,
-  Hospital
+  ShieldCheck
 } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,7 +55,7 @@ export default function AnalyticsPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [showExportDialog, setShowExportDialog] = useState(false);
-  const [selectedMetric, setSelectedMetric] = useState<any>(null);
+  const [, setSelectedMetric] = useState<any>(null);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
