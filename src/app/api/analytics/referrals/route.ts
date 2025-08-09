@@ -164,56 +164,44 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/analytics/referrals/incentive
+// Handle different POST operations based on action parameter
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { referrerId, amount, type = 'payment' } = body;
+    const { action } = body;
 
-    if (!referrerId || !amount) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing required fields: referrerId and amount' 
-        },
-        { status: 400 }
-      );
+    // Handle incentive processing
+    if (action === 'process-incentive') {
+      const { referrerId, amount, type = 'payment' } = body;
+
+      if (!referrerId || !amount) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Missing required fields: referrerId and amount' 
+          },
+          { status: 400 }
+        );
+      }
+
+      // Simulate incentive processing
+      const transactionId = `txn-${Date.now()}`;
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          transactionId,
+          referrerId,
+          amount,
+          type,
+          status: 'processing',
+          message: `Incentive payment of ₹${amount} initiated for referrer ${referrerId}`,
+          estimatedCompletion: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        }
+      });
     }
 
-    // Simulate incentive processing
-    const transactionId = `txn-${Date.now()}`;
-    
-    const response = {
-      success: true,
-      data: {
-        transactionId,
-        referrerId,
-        amount,
-        type,
-        status: 'processing',
-        message: `Incentive payment of ₹${amount} initiated for referrer ${referrerId}`,
-        estimatedCompletion: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-      }
-    };
-
-    return NextResponse.json(response);
-  } catch (error) {
-    console.error('Error processing incentive:', error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to process incentive',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/analytics/referrals/roi-calculation
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
+    // Handle ROI calculation (default action)
     const {
       referrerType = 'Doctor',
       incentiveAmount = 500,
@@ -271,11 +259,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Error calculating ROI:', error);
+    console.error('Error processing request:', error);
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Failed to calculate ROI',
+        error: 'Failed to process request',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
