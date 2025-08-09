@@ -355,7 +355,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 // GET /api/network/transfers/bed-availability - Check bed availability at destination
-export async function getBedAvailability(request: NextRequest) {
+async function getBedAvailability(request: NextRequest) {
   try {
     const { userId, orgId } = await auth();
     if (!userId || !orgId) {
