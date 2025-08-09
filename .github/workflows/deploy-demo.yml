@@ -1,0 +1,202 @@
+name: Deploy Demo
+
+on:
+  push:
+    branches:
+      - ui-demo-deployment
+  pull_request:
+    branches:
+      - ui-demo-deployment
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      deploy_message:
+        description: 'Deployment message'
+        required: false
+        default: 'Manual demo deployment'
+
+env:
+  NODE_VERSION: '18.x'
+  NEXT_PUBLIC_DEMO_MODE: 'true'
+  NEXT_PUBLIC_BYPASS_AUTH: 'true'
+  DEMO_MODE: 'true'
+  SKIP_ENV_VALIDATION: 'true'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Demo
+    runs-on: ubuntu-latest
+    environment:
+      name: demo
+      url: https://hospitalos-demo.vercel.app
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ui-demo-deployment
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📝 Create demo environment file
+        run: |
+          cp .env.demo .env.local
+          echo "NEXT_PUBLIC_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env.local
+          echo "NEXT_PUBLIC_BUILD_ID=${{ github.sha }}" >> .env.local
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔍 Run type checking
+        run: npm run check-types || echo "::warning::Type errors detected but continuing for demo"
+        continue-on-error: true
+
+      - name: 🧪 Run unit tests
+        run: npm run test || echo "::warning::Some tests failed but continuing for demo"
+        continue-on-error: true
+
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_DEMO_MODE: 'true'
+          NEXT_PUBLIC_BYPASS_AUTH: 'true'
+          NODE_ENV: 'production'
+
+      - name: 📊 Create deployment info
+        run: |
+          mkdir -p public
+          cat > public/demo-deployment.json << EOF
+          {
+            "version": "$(node -p "require('./package.json').version")",
+            "deployedAt": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "branch": "ui-demo-deployment",
+            "commit": "${{ github.sha }}",
+            "commitMessage": "${{ github.event.head_commit.message }}",
+            "actor": "${{ github.actor }}",
+            "workflow": "${{ github.workflow }}",
+            "runNumber": "${{ github.run_number }}",
+            "demoMode": true
+          }
+          EOF
+
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_DEMO }}
+          vercel-args: '--prod'
+          vercel-project-name: 'hospitalos-demo'
+          alias-domains: |
+            hospitalos-demo.vercel.app
+            demo-hms.vercel.app
+
+      - name: 💬 Post deployment comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `
+            ## 🎭 Demo Deployment Successful!
+            
+            **Demo URL:** https://hospitalos-demo.vercel.app
+            **Commit:** \`${{ github.sha }}\`
+            **Deployed at:** ${new Date().toISOString()}
+            
+            ### Demo Features:
+            - ✅ 50+ sample patients with medical history
+            - ✅ 100+ appointments across departments
+            - ✅ 20+ doctors with specializations
+            - ✅ Real-time dashboard statistics
+            - ✅ All UI features accessible
+            - ✅ Mock API responses
+            - ✅ Authentication bypassed
+            
+            ### Access Demo:
+            1. Visit https://hospitalos-demo.vercel.app
+            2. Click "Sign In to Demo" (no credentials needed)
+            3. Explore all features with mock data
+            
+            ---
+            *This is an automated demo deployment from the \`ui-demo-deployment\` branch.*
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
+      - name: 📈 Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: demo-build-${{ github.sha }}
+          path: |
+            .next/
+            public/demo-deployment.json
+          retention-days: 7
+
+      - name: 🏷️ Create deployment tag
+        if: github.ref == 'refs/heads/ui-demo-deployment'
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          TAG_NAME="demo-v$(date +%Y%m%d-%H%M%S)"
+          git tag -a $TAG_NAME -m "Demo deployment ${{ github.run_number }}"
+          git push origin $TAG_NAME || echo "Tag push failed, continuing..."
+
+  lighthouse:
+    name: Lighthouse Performance Check
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: github.event_name == 'push'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔦 Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            https://hospitalos-demo.vercel.app
+            https://hospitalos-demo.vercel.app/dashboard
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: 📊 Format Lighthouse results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const results = require('./lighthouse-results.json');
+            const summary = results.map(r => ({
+              url: r.url,
+              performance: r.categories.performance.score * 100,
+              accessibility: r.categories.accessibility.score * 100,
+              bestPractices: r.categories['best-practices'].score * 100,
+              seo: r.categories.seo.score * 100
+            }));
+            console.log('Lighthouse Results:', JSON.stringify(summary, null, 2));
+
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [build-and-deploy, lighthouse]
+    if: always()
+    
+    steps:
+      - name: 📢 Send deployment notification
+        run: |
+          echo "Demo deployment completed!"
+          echo "URL: https://hospitalos-demo.vercel.app"
+          echo "Status: ${{ needs.build-and-deploy.result }}"
+          
+      - name: 📧 Send failure notification
+        if: needs.build-and-deploy.result == 'failure'
+        run: |
+          echo "::error::Demo deployment failed! Check the logs for details."

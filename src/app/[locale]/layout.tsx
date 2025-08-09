@@ -8,6 +8,7 @@ import { DemoBadge } from '@/components/DemoBadge';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/toaster';
 import { AllLocales } from '@/utils/AppConfig';
+import { DemoProvider } from '@/app/demo-provider';
 import dynamic from 'next/dynamic';
 
 // Dynamic import for debug dashboard (only in development)
@@ -67,13 +68,15 @@ export default function RootLayout(props: {
           locale={props.params.locale}
           messages={messages}
         >
-          <Providers>
-            {props.children}
+          <DemoProvider>
+            <Providers>
+              {props.children}
 
-            <DemoBadge />
-            <Toaster />
-            {process.env.NODE_ENV === 'development' && <DebugDashboard />}
-          </Providers>
+              <DemoBadge />
+              <Toaster />
+              {process.env.NODE_ENV === 'development' && <DebugDashboard />}
+            </Providers>
+          </DemoProvider>
         </NextIntlClientProvider>
       </body>
     </html>

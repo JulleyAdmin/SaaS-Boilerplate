@@ -5,6 +5,9 @@
 /* Import the comprehensive design system */
 @import './design-system.css';
 
+/* Import telemedicine-specific styles */
+@import './telemedicine.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -4,6 +4,7 @@ import { useUser } from '@clerk/nextjs';
 import {
   Activity,
   AlertCircle,
+  ArrowRightLeft,
   BarChart3,
   Bed,
   Building,
@@ -21,15 +22,19 @@ import {
   Menu,
   MessageSquare,
   Monitor,
+  Network,
   Package,
   Pill,
   Plus,
+  Send,
   Settings,
+  Share2,
   Shield,
   Stethoscope,
   Target,
   TestTube,
   TrendingUp,
+  Truck,
   UserCog,
   UserPlus,
   Users,
@@ -37,6 +42,9 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Video,
+  Phone,
+  Tablet,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -90,6 +98,14 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
       icon: Home,
     },
     
+    // Hospital OS Overview - New showcase page
+    {
+      title: 'Hospital OS',
+      href: '/dashboard/hospital-os',
+      icon: Hospital,
+      badge: 'New',
+    },
+    
     // 2. Reception & Registration - First patient touchpoint
     {
       title: t('Navigation.reception'),
@@ -133,7 +149,75 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
       ],
     },
     
-    // 4. Patient Management - Core patient data
+    // 4. Telemedicine & Digital Health - Virtual care delivery
+    {
+      title: 'Telemedicine & Digital Health',
+      icon: Video,
+      children: [
+        {
+          title: 'Telemedicine Dashboard',
+          href: '/dashboard/telemedicine',
+          icon: Video,
+          badge: 'new',
+        },
+        {
+          title: 'Video Consultations',
+          href: '/dashboard/telemedicine/consultations',
+          icon: Video,
+        },
+        {
+          title: 'Digital Prescriptions',
+          href: '/dashboard/prescriptions?type=digital',
+          icon: FileText,
+        },
+        {
+          title: 'Remote Monitoring',
+          href: '/dashboard/telemedicine/monitoring',
+          icon: Tablet,
+        },
+        {
+          title: 'Telemedicine Billing',
+          href: '/dashboard/billing?type=telemedicine',
+          icon: CreditCard,
+        },
+      ],
+    },
+    
+    // 5. Network & Collaboration - Multi-hospital coordination
+    {
+      title: 'Network & Collaboration',
+      icon: Network,
+      children: [
+        {
+          title: 'Network Dashboard',
+          href: '/dashboard/network',
+          icon: Network,
+          badge: 'new',
+        },
+        {
+          title: 'Referral Management',
+          href: '/dashboard/network/referrals',
+          icon: ArrowRightLeft,
+        },
+        {
+          title: 'Patient Transfers',
+          href: '/dashboard/network/transfers',
+          icon: Send,
+        },
+        {
+          title: 'Network Doctors',
+          href: '/dashboard/network/doctors',
+          icon: Users,
+        },
+        {
+          title: 'Shared Resources',
+          href: '/dashboard/network/resources',
+          icon: Share2,
+        },
+      ],
+    },
+    
+    // 6. Patient Management - Core patient data
     {
       title: 'Patient Management',
       icon: Users,
@@ -161,7 +245,7 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
       ],
     },
     
-    // 5. Clinical Services - Doctor/consultation workflow
+    // 7. Clinical Services - Doctor/consultation workflow
     {
       title: 'Clinical Services',
       icon: Stethoscope,
@@ -626,9 +710,10 @@ export function ModernDashboardLayout({ children }: { children: React.ReactNode 
 
   // Hospital-specific header info for Indian healthcare context
   const hospitalInfo = {
-    name: "Sanjeevani Hospital & Medical Centre",
+    name: "Demo Hospital & Medical Centre",
     department: userRole.replace('-', ' '),
     emergency: "108", // Indian emergency medical services number
+    subtitle: "Powered by Julley Online"
   };
 
   return (
@@ -670,7 +755,7 @@ export function ModernDashboardLayout({ children }: { children: React.ReactNode 
                 {!sidebarCollapsed && (
                   <div className="flex flex-col">
                     <span className="font-bold text-sm">HospitalOS</span>
-                    <span className="text-xs text-muted-foreground">Healthcare Suite</span>
+                    <span className="text-xs text-muted-foreground">by Julley Online</span>
                   </div>
                 )}
               </Link>
@@ -747,9 +832,9 @@ export function ModernDashboardLayout({ children }: { children: React.ReactNode 
             <div className="container mx-auto py-4 px-6">
               <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-muted-foreground">
                 <div className="flex items-center space-x-4">
-                  <span>© 2024 Sanjeevani Hospital & Medical Centre</span>
+                  <span>© 2025 Hospital OS by Julley Online Pvt Ltd</span>
                   <span>•</span>
-                  <span>NABH Accredited</span>
+                  <span>T-Hub Incubated</span>
                 </div>
                 <div className="flex items-center space-x-4 mt-2 sm:mt-0">
                   <span className="flex items-center space-x-1">

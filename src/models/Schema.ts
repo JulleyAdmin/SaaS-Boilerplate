@@ -55,6 +55,7 @@ export const collaborationSchema = pgSchema('collaboration');
 export const engagementSchema = pgSchema('engagement');
 export const csrSchema = pgSchema('csr');
 export const crmSchema = pgSchema('crm');
+export const telemedicineSchema = pgSchema('telemedicine');
 
 // ============================================================================
 // ENHANCED ENUM TYPES (95+ Roles)
@@ -238,7 +239,7 @@ export const genderEnum = pgEnum('gender_enum', ['Male', 'Female', 'Other']);
 export const bloodGroupEnum = pgEnum('blood_group_enum', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']);
 export const userStatusEnum = pgEnum('user_status_enum', ['Active', 'Inactive', 'Suspended', 'Terminated']);
 export const patientStatusEnum = pgEnum('patient_status_enum', ['admitted', 'outpatient', 'discharged', 'emergency', 'inactive', 'deceased']);
-export const appointmentStatusEnum = pgEnum('appointment_status_enum', ['Scheduled', 'Confirmed', 'In-Progress', 'Completed', 'Cancelled', 'No-Show', 'Rescheduled']);
+export const appointmentStatusEnum = pgEnum('appointment_status_enum', ['Scheduled', 'Confirmed', 'In-Progress', 'Completed', 'Cancelled', 'No-Show', 'Rescheduled', 'Telemedicine-Scheduled', 'Video-In-Progress', 'Video-Completed']);
 export const queueStatusEnum = pgEnum('queue_status_enum', ['Waiting', 'Called', 'In-Progress', 'Completed', 'Skipped']);
 export const bedStatusEnum = pgEnum('bed_status_enum', ['Available', 'Occupied', 'Under-Maintenance', 'Blocked', 'Dirty']);
 export const billStatusEnum = pgEnum('bill_status_enum', ['Draft', 'Pending', 'Partially-Paid', 'Paid', 'Overdue', 'Cancelled']);
@@ -298,6 +299,16 @@ export const severityEnum = pgEnum('severity_enum', ['low', 'medium', 'high', 'c
 // Communication enums
 export const messageStatusEnum = pgEnum('message_status_enum', ['pending', 'sent', 'delivered', 'failed', 'read']);
 export const communicationTypeEnum = pgEnum('communication_type_enum', ['sms', 'whatsapp', 'email', 'voice_call', 'push_notification']);
+
+// Telemedicine enums
+export const consultationModeEnum = pgEnum('consultation_mode_enum', ['In-Person', 'Video', 'Audio', 'Chat', 'Phone']);
+export const videoSessionStatusEnum = pgEnum('video_session_status_enum', ['Scheduled', 'Starting', 'In-Progress', 'Completed', 'Failed', 'Cancelled', 'No-Show']);
+export const recordingStatusEnum = pgEnum('recording_status_enum', ['Not-Recorded', 'Recording', 'Recorded', 'Processing', 'Available', 'Failed']);
+export const prescriptionStatusEnum = pgEnum('prescription_status_enum', ['Draft', 'Active', 'Dispensed', 'Expired', 'Cancelled']);
+export const digitalPrescriptionTypeEnum = pgEnum('digital_prescription_type_enum', ['E-Prescription', 'Digital-Signature', 'SMS-Prescription', 'WhatsApp-Prescription']);
+export const telemedicineComplianceEnum = pgEnum('telemedicine_compliance_enum', ['MCI-Compliant', 'Teleconsultation-Guidelines', 'NABH-Digital', 'Ayushman-Bharat-Digital']);
+export const deviceTypeEnum = pgEnum('device_type_enum', ['Desktop', 'Laptop', 'Mobile', 'Tablet']);
+export const connectionQualityEnum = pgEnum('connection_quality_enum', ['Excellent', 'Good', 'Fair', 'Poor', 'Failed']);
 
 // Government schemes enum
 export const governmentSchemeEnum = pgEnum('government_scheme_enum', [
@@ -1317,6 +1328,7 @@ export const appointments = appointmentsSchema.table('appointments', {
   appointmentEndTime: time('appointment_end_time'),
   appointmentType: varchar('appointment_type', { length: 50 }).default('Consultation'),
   visitType: varchar('visit_type', { length: 20 }).default('First-Visit'),
+  consultationMode: consultationModeEnum('consultation_mode').default('In-Person'),
 
   // Status tracking
   status: appointmentStatusEnum('status').default('Scheduled'),
@@ -2859,7 +2871,629 @@ export {
   leads as leadsTable,
   automationRules as automationRulesTable,
   patientSegments as patientSegmentsTable,
+  // Network collaboration tables
+  patientTransfers as patientTransfersTable,
+  referralManagement as referralManagementTable,
+  networkDoctors as networkDoctorsTable,
+  collaborationAgreements as collaborationAgreementsTable,
+  sharedServices as sharedServicesTable,
+  networkResources as networkResourcesTable,
+  // Telemedicine tables
+  videoSessions as videoSessionsTable,
+  digitalPrescriptions as digitalPrescriptionsTable,
+  patientRemoteMonitoring as patientRemoteMonitoringTable,
+  telemedicineBilling as telemedicineBillingTable,
 };
+
+// ============================================================================
+// NETWORK COLLABORATION TABLES
+// ============================================================================
+
+// Patient Transfers Table - For inter-hospital patient movements
+export const patientTransfers = networkSchema.table('patient_transfers', {
+  transferId: uuid('transfer_id').primaryKey().defaultRandom(),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  
+  // Transfer hospitals
+  sourceClinicId: uuid('source_clinic_id').notNull().references(() => clinics.clinicId),
+  destinationClinicId: uuid('destination_clinic_id').notNull().references(() => clinics.clinicId),
+  
+  // Transfer details
+  transferType: varchar('transfer_type', { length: 50 }), // Emergency, Planned, Specialist
+  transferReason: text('transfer_reason'),
+  clinicalSummary: text('clinical_summary'),
+  
+  // Medical information
+  diagnosisAtTransfer: text('diagnosis_at_transfer').array(),
+  vitalSignsAtTransfer: jsonb('vital_signs_at_transfer'),
+  medicationsOnTransfer: jsonb('medications_on_transfer'),
+  
+  // Status workflow
+  transferStatus: varchar('transfer_status', { length: 50 }).notNull().default('Initiated'), // Initiated, Accepted, In-Transit, Completed, Cancelled
+  initiatedBy: uuid('initiated_by').references(() => users.userId),
+  initiatedAt: timestamp('initiated_at', { mode: 'date' }).defaultNow(),
+  acceptedBy: uuid('accepted_by').references(() => users.userId),
+  acceptedAt: timestamp('accepted_at', { mode: 'date' }),
+  completedAt: timestamp('completed_at', { mode: 'date' }),
+  
+  // Transportation
+  transportMode: varchar('transport_mode', { length: 50 }), // Ambulance, Air, Private
+  transportProvider: varchar('transport_provider', { length: 200 }),
+  estimatedArrival: timestamp('estimated_arrival', { mode: 'date' }),
+  actualArrival: timestamp('actual_arrival', { mode: 'date' }),
+  
+  // Documentation
+  transferDocuments: jsonb('transfer_documents'), // Array of document URLs/IDs
+  handoverNotes: text('handover_notes'),
+  receivingDoctorId: uuid('receiving_doctor_id').references(() => users.userId),
+  
+  // Bed allocation
+  requestedDepartment: varchar('requested_department', { length: 100 }),
+  allocatedBedId: uuid('allocated_bed_id'),
+  
+  // Billing
+  transferCharges: decimal('transfer_charges', { precision: 10, scale: 2 }),
+  billingStatus: varchar('billing_status', { length: 50 }),
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+// Referral Management Table - For doctor-to-doctor referrals
+export const referralManagement = networkSchema.table('referral_management', {
+  referralId: uuid('referral_id').primaryKey().defaultRandom(),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  consultationId: uuid('consultation_id').references(() => consultations.consultationId),
+  
+  // Referral parties
+  referringDoctorId: uuid('referring_doctor_id').notNull().references(() => users.userId),
+  referringClinicId: uuid('referring_clinic_id').notNull().references(() => clinics.clinicId),
+  referredToDoctorId: uuid('referred_to_doctor_id').references(() => users.userId),
+  referredToClinicId: uuid('referred_to_clinic_id').references(() => clinics.clinicId),
+  referredToDepartment: varchar('referred_to_department', { length: 100 }),
+  
+  // Referral details
+  referralType: varchar('referral_type', { length: 50 }).notNull(), // Internal, External, Emergency, Second-Opinion
+  referralPriority: varchar('referral_priority', { length: 20 }).notNull().default('Normal'), // Urgent, High, Normal, Low
+  referralReason: text('referral_reason').notNull(),
+  clinicalNotes: text('clinical_notes'),
+  
+  // Medical information
+  provisionalDiagnosis: text('provisional_diagnosis').array(),
+  icd10Codes: varchar('icd10_codes', { length: 10 }).array(),
+  investigationsDone: jsonb('investigations_done'),
+  investigationsPending: jsonb('investigations_pending'),
+  currentMedications: jsonb('current_medications'),
+  
+  // Status workflow
+  referralStatus: varchar('referral_status', { length: 50 }).notNull().default('Initiated'), // Initiated, Sent, Acknowledged, Accepted, Rejected, Completed, Expired
+  statusReason: text('status_reason'),
+  
+  // Timeline
+  initiatedAt: timestamp('initiated_at', { mode: 'date' }).defaultNow(),
+  sentAt: timestamp('sent_at', { mode: 'date' }),
+  acknowledgedAt: timestamp('acknowledged_at', { mode: 'date' }),
+  acceptedAt: timestamp('accepted_at', { mode: 'date' }),
+  appointmentDate: date('appointment_date'),
+  completedAt: timestamp('completed_at', { mode: 'date' }),
+  expiryDate: date('expiry_date'),
+  
+  // Response
+  responseNotes: text('response_notes'),
+  treatmentProvided: text('treatment_provided'),
+  followUpRequired: boolean('follow_up_required').default(false),
+  followUpWith: varchar('follow_up_with', { length: 50 }), // Referring, Referred, Both
+  
+  // Documentation
+  referralLetterUrl: text('referral_letter_url'),
+  supportingDocuments: jsonb('supporting_documents'),
+  responseLetterUrl: text('response_letter_url'),
+  
+  // Billing
+  referralFee: decimal('referral_fee', { precision: 10, scale: 2 }),
+  feeSplitPercentage: decimal('fee_split_percentage', { precision: 5, scale: 2 }),
+  billingStatus: varchar('billing_status', { length: 50 }),
+  
+  // Quality metrics
+  patientFeedbackScore: integer('patient_feedback_score'),
+  outcomeStatus: varchar('outcome_status', { length: 50 }), // Improved, Stable, Deteriorated
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+  updatedBy: uuid('updated_by').references(() => users.userId),
+});
+
+// Network Doctors Table - For multi-hospital practicing doctors
+export const networkDoctors = networkSchema.table('network_doctors', {
+  networkDoctorId: uuid('network_doctor_id').primaryKey().defaultRandom(),
+  doctorId: uuid('doctor_id').notNull().references(() => users.userId),
+  
+  // Network affiliations
+  primaryClinicId: uuid('primary_clinic_id').notNull().references(() => clinics.clinicId),
+  networkId: uuid('network_id').references(() => hospitalNetworks.networkId),
+  
+  // Multi-hospital practice
+  practicingClinics: uuid('practicing_clinics').array(), // Array of clinic IDs
+  visitingConsultantAt: uuid('visiting_consultant_at').array(), // Clinics where visiting
+  
+  // Availability
+  availabilitySchedule: jsonb('availability_schedule'), // Per clinic schedule
+  consultationModes: varchar('consultation_modes', { length: 50 }).array(), // In-Person, Video, Phone
+  
+  // Specialization across network
+  networkRole: varchar('network_role', { length: 100 }), // Network Specialist, Visiting Consultant, Locum
+  specializedServices: text('specialized_services').array(),
+  
+  // Referral preferences
+  acceptsReferrals: boolean('accepts_referrals').default(true),
+  referralSpecialties: text('referral_specialties').array(),
+  preferredReferralTypes: varchar('preferred_referral_types', { length: 50 }).array(),
+  maxReferralsPerWeek: integer('max_referrals_per_week'),
+  
+  // Network credentials
+  networkRegistrationNumber: varchar('network_registration_number', { length: 100 }),
+  networkPrivileges: text('network_privileges').array(),
+  
+  // Performance metrics
+  totalNetworkConsultations: integer('total_network_consultations').default(0),
+  totalReferralsReceived: integer('total_referrals_received').default(0),
+  totalReferralsCompleted: integer('total_referrals_completed').default(0),
+  averageResponseTimeHours: decimal('average_response_time_hours', { precision: 5, scale: 2 }),
+  patientSatisfactionScore: decimal('patient_satisfaction_score', { precision: 3, scale: 2 }),
+  
+  // Standard fields
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+// ============================================================================
+// COLLABORATION AGREEMENT TABLES
+// ============================================================================
+
+// Collaboration Agreements Table - For inter-hospital agreements
+export const collaborationAgreements = collaborationSchema.table('collaboration_agreements', {
+  agreementId: uuid('agreement_id').primaryKey().defaultRandom(),
+  
+  // Agreement parties
+  clinicAId: uuid('clinic_a_id').notNull().references(() => clinics.clinicId),
+  clinicBId: uuid('clinic_b_id').notNull().references(() => clinics.clinicId),
+  networkId: uuid('network_id').references(() => hospitalNetworks.networkId),
+  
+  // Agreement details
+  agreementType: varchar('agreement_type', { length: 100 }).notNull(), // Service-Sharing, Resource-Sharing, Referral, Training
+  agreementName: varchar('agreement_name', { length: 200 }).notNull(),
+  agreementCode: varchar('agreement_code', { length: 50 }).unique().notNull(),
+  
+  // Terms
+  effectiveFrom: date('effective_from').notNull(),
+  effectiveTo: date('effective_to'),
+  autoRenewal: boolean('auto_renewal').default(false),
+  renewalPeriodMonths: integer('renewal_period_months'),
+  
+  // Services covered
+  coveredServices: text('covered_services').array(),
+  coveredDepartments: varchar('covered_departments', { length: 100 }).array(),
+  coveredProcedures: text('covered_procedures').array(),
+  
+  // Financial terms
+  paymentTerms: varchar('payment_terms', { length: 100 }), // Per-Service, Monthly, Quarterly, Revenue-Share
+  revenueSharePercentage: decimal('revenue_share_percentage', { precision: 5, scale: 2 }),
+  minimumGuaranteedAmount: decimal('minimum_guaranteed_amount', { precision: 12, scale: 2 }),
+  billingCycleDays: integer('billing_cycle_days').default(30),
+  
+  // Service levels
+  slaResponseTimeHours: integer('sla_response_time_hours'),
+  slaBedAllocationPriority: varchar('sla_bed_allocation_priority', { length: 50 }),
+  slaReportSharing: boolean('sla_report_sharing').default(true),
+  
+  // Resource sharing
+  sharedResources: jsonb('shared_resources'), // Equipment, facilities, staff
+  resourceBookingAllowed: boolean('resource_booking_allowed').default(false),
+  advanceBookingDays: integer('advance_booking_days'),
+  
+  // Compliance
+  regulatoryApprovals: jsonb('regulatory_approvals'),
+  insuranceCoverage: jsonb('insurance_coverage'),
+  liabilityTerms: text('liability_terms'),
+  
+  // Performance tracking
+  totalServicesUtilized: integer('total_services_utilized').default(0),
+  totalRevenueGenerated: decimal('total_revenue_generated', { precision: 12, scale: 2 }).default('0'),
+  lastSettlementDate: date('last_settlement_date'),
+  
+  // Status
+  agreementStatus: varchar('agreement_status', { length: 50 }).notNull().default('Draft'), // Draft, Active, Suspended, Expired, Terminated
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  approvedBy: uuid('approved_by').references(() => users.userId),
+  approvedAt: timestamp('approved_at', { mode: 'date' }),
+});
+
+// Shared Services Table - For services available across network
+export const sharedServices = collaborationSchema.table('shared_services', {
+  sharedServiceId: uuid('shared_service_id').primaryKey().defaultRandom(),
+  networkId: uuid('network_id').references(() => hospitalNetworks.networkId),
+  
+  // Service details
+  serviceName: varchar('service_name', { length: 200 }).notNull(),
+  serviceType: varchar('service_type', { length: 100 }).notNull(), // Diagnostic, Specialist, Equipment, Facility
+  serviceCategory: varchar('service_category', { length: 100 }), // Radiology, Pathology, Cardiology, etc.
+  
+  // Location
+  hostClinicId: uuid('host_clinic_id').notNull().references(() => clinics.clinicId),
+  departmentId: uuid('department_id').references(() => departments.departmentId),
+  locationDetails: text('location_details'),
+  
+  // Availability
+  availableToClinics: uuid('available_to_clinics').array(), // Array of clinic IDs
+  availabilitySchedule: jsonb('availability_schedule'),
+  advanceBookingRequired: boolean('advance_booking_required').default(true),
+  minAdvanceBookingHours: integer('min_advance_booking_hours').default(24),
+  
+  // Capacity
+  dailyCapacity: integer('daily_capacity'),
+  currentUtilizationPercent: decimal('current_utilization_percent', { precision: 5, scale: 2 }),
+  
+  // Specialists (if applicable)
+  specialistIds: uuid('specialist_ids').array(), // Array of doctor IDs
+  specialistAvailability: jsonb('specialist_availability'),
+  
+  // Equipment (if applicable)
+  equipmentDetails: jsonb('equipment_details'),
+  maintenanceSchedule: jsonb('maintenance_schedule'),
+  
+  // Pricing
+  pricingModel: varchar('pricing_model', { length: 50 }), // Fixed, Variable, Package
+  basePrice: decimal('base_price', { precision: 10, scale: 2 }),
+  networkDiscountPercent: decimal('network_discount_percent', { precision: 5, scale: 2 }),
+  externalPrice: decimal('external_price', { precision: 10, scale: 2 }),
+  
+  // Booking management
+  bookingSystem: varchar('booking_system', { length: 50 }), // Centralized, Host-Managed, First-Come
+  maxBookingsPerClinicPerDay: integer('max_bookings_per_clinic_per_day'),
+  
+  // Quality metrics
+  averageWaitTimeDays: decimal('average_wait_time_days', { precision: 5, scale: 2 }),
+  serviceSatisfactionScore: decimal('service_satisfaction_score', { precision: 3, scale: 2 }),
+  totalServicesProvided: integer('total_services_provided').default(0),
+  
+  // Status
+  isActive: boolean('is_active').default(true),
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+// Network Resources Table - For shared equipment and facilities
+export const networkResources = collaborationSchema.table('network_resources', {
+  resourceId: uuid('resource_id').primaryKey().defaultRandom(),
+  networkId: uuid('network_id').references(() => hospitalNetworks.networkId),
+  
+  // Resource identification
+  resourceName: varchar('resource_name', { length: 200 }).notNull(),
+  resourceType: varchar('resource_type', { length: 100 }).notNull(), // Equipment, Ambulance, BloodBank, ICU-Bed
+  resourceCategory: varchar('resource_category', { length: 100 }),
+  resourceCode: varchar('resource_code', { length: 50 }).unique().notNull(),
+  
+  // Ownership
+  ownerClinicId: uuid('owner_clinic_id').notNull().references(() => clinics.clinicId),
+  managingDepartmentId: uuid('managing_department_id').references(() => departments.departmentId),
+  
+  // Specifications
+  specifications: jsonb('specifications'),
+  capacityDetails: jsonb('capacity_details'),
+  
+  // Sharing configuration
+  sharingEnabled: boolean('sharing_enabled').default(true),
+  sharingPriority: varchar('sharing_priority', { length: 50 }), // Network-First, Owner-First, Equal
+  availableToClinics: uuid('available_to_clinics').array(),
+  
+  // Availability tracking
+  currentStatus: varchar('current_status', { length: 50 }).notNull().default('Available'), // Available, In-Use, Maintenance, Reserved
+  currentUserClinicId: uuid('current_user_clinic_id').references(() => clinics.clinicId),
+  currentUserDetails: jsonb('current_user_details'),
+  
+  // Booking system
+  requiresBooking: boolean('requires_booking').default(true),
+  bookingLeadTimeHours: integer('booking_lead_time_hours').default(2),
+  maxBookingDurationHours: integer('max_booking_duration_hours'),
+  currentBookings: jsonb('current_bookings'),
+  
+  // Usage tracking
+  totalUsageHours: decimal('total_usage_hours', { precision: 10, scale: 2 }).default('0'),
+  totalBookings: integer('total_bookings').default(0),
+  utilizationRatePercent: decimal('utilization_rate_percent', { precision: 5, scale: 2 }),
+  
+  // Maintenance
+  lastMaintenanceDate: date('last_maintenance_date'),
+  nextMaintenanceDate: date('next_maintenance_date'),
+  maintenanceProvider: varchar('maintenance_provider', { length: 200 }),
+  
+  // Cost sharing
+  hourlyRate: decimal('hourly_rate', { precision: 10, scale: 2 }),
+  maintenanceCostSharing: jsonb('maintenance_cost_sharing'),
+  
+  // Standard fields
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+// ============================================================================
+// TELEMEDICINE SCHEMA TABLES
+// ============================================================================
+
+// Video Consultation Sessions - Core telemedicine table
+export const videoSessions = telemedicineSchema.table('video_sessions', {
+  sessionId: uuid('session_id').primaryKey().defaultRandom(),
+  appointmentId: uuid('appointment_id').notNull().references(() => appointments.appointmentId),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+  
+  // Participants
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  doctorId: uuid('doctor_id').notNull().references(() => users.userId),
+  attendingStaff: uuid('attending_staff').array(), // Array of staff member IDs who joined
+  
+  // Session details
+  sessionType: consultationModeEnum('session_type').notNull().default('Video'),
+  sessionStatus: videoSessionStatusEnum('session_status').notNull().default('Scheduled'),
+  platform: varchar('platform', { length: 50 }), // Zoom, Google Meet, WebRTC, Custom
+  meetingRoomId: varchar('meeting_room_id', { length: 200 }),
+  meetingPassword: varchar('meeting_password', { length: 100 }),
+  
+  // Timeline
+  scheduledStartTime: timestamp('scheduled_start_time', { mode: 'date' }).notNull(),
+  scheduledEndTime: timestamp('scheduled_end_time', { mode: 'date' }).notNull(),
+  actualStartTime: timestamp('actual_start_time', { mode: 'date' }),
+  actualEndTime: timestamp('actual_end_time', { mode: 'date' }),
+  totalDurationMinutes: integer('total_duration_minutes'),
+  
+  // Technical details
+  patientDeviceType: deviceTypeEnum('patient_device_type'),
+  doctorDeviceType: deviceTypeEnum('doctor_device_type'),
+  connectionQuality: connectionQualityEnum('connection_quality'),
+  bandwidthTestResults: jsonb('bandwidth_test_results'),
+  technicalIssues: text('technical_issues').array(),
+  
+  // Session configuration
+  recordingEnabled: boolean('recording_enabled').default(false),
+  recordingStatus: recordingStatusEnum('recording_status').default('Not-Recorded'),
+  recordingUrl: text('recording_url'),
+  recordingDurationMinutes: integer('recording_duration_minutes'),
+  
+  // Consent management
+  patientConsentForRecording: boolean('patient_consent_for_recording'),
+  patientConsentForDataSharing: boolean('patient_consent_for_data_sharing'),
+  consentTimestamp: timestamp('consent_timestamp', { mode: 'date' }),
+  consentIpAddress: varchar('consent_ip_address', { length: 45 }),
+  
+  // Telemedicine compliance
+  complianceChecklist: telemedicineComplianceEnum('compliance_checklist').array(),
+  patientIdentityVerified: boolean('patient_identity_verified').default(false),
+  emergencyContactAvailable: boolean('emergency_contact_available').default(false),
+  technicalSupportContact: varchar('technical_support_contact', { length: 50 }),
+  
+  // Session metadata
+  sessionNotes: text('session_notes'),
+  postSessionSurvey: jsonb('post_session_survey'),
+  followUpRequired: boolean('follow_up_required').default(false),
+  nextVideoSessionDate: timestamp('next_video_session_date', { mode: 'date' }),
+  
+  // Billing integration
+  telemedicineCharges: decimal('telemedicine_charges', { precision: 10, scale: 2 }),
+  platformFees: decimal('platform_fees', { precision: 10, scale: 2 }),
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+}, table => ({
+  appointmentIdIdx: index('video_sessions_appointment_id_idx').on(table.appointmentId),
+  sessionStatusIdx: index('video_sessions_status_idx').on(table.sessionStatus),
+  scheduledTimeIdx: index('video_sessions_scheduled_time_idx').on(table.scheduledStartTime),
+  patientDoctorIdx: index('video_sessions_patient_doctor_idx').on(table.patientId, table.doctorId),
+}));
+
+// Digital Prescriptions - Enhanced prescription management for telemedicine
+export const digitalPrescriptions = telemedicineSchema.table('digital_prescriptions', {
+  digitalPrescriptionId: uuid('digital_prescription_id').primaryKey().defaultRandom(),
+  consultationId: uuid('consultation_id').references(() => consultations.consultationId),
+  videoSessionId: uuid('video_session_id').references(() => videoSessions.sessionId),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+  
+  // Parties involved
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  doctorId: uuid('doctor_id').notNull().references(() => users.userId),
+  pharmacyId: uuid('pharmacy_id').references(() => clinics.clinicId), // Target pharmacy
+  
+  // Prescription details
+  prescriptionType: digitalPrescriptionTypeEnum('prescription_type').notNull().default('E-Prescription'),
+  prescriptionNumber: varchar('prescription_number', { length: 50 }).unique().notNull(),
+  prescriptionStatus: prescriptionStatusEnum('prescription_status').notNull().default('Draft'),
+  
+  // Digital signature & validation
+  doctorDigitalSignature: text('doctor_digital_signature'), // Base64 encoded signature
+  digitalCertificateId: varchar('digital_certificate_id', { length: 100 }),
+  signatureTimestamp: timestamp('signature_timestamp', { mode: 'date' }),
+  verificationCode: varchar('verification_code', { length: 20 }).unique(),
+  qrCodeData: text('qr_code_data'), // QR code for verification
+  
+  // Prescription content
+  medications: jsonb('medications'), // Detailed medication list with dosages
+  investigationsRecommended: text('investigations_recommended').array(),
+  dietaryInstructions: text('dietary_instructions'),
+  followUpInstructions: text('follow_up_instructions'),
+  warningsAndPrecautions: text('warnings_and_precautions').array(),
+  
+  // Validity
+  prescriptionDate: timestamp('prescription_date', { mode: 'date' }).defaultNow(),
+  validUntil: date('valid_until').notNull(),
+  refillsAllowed: integer('refills_allowed').default(0),
+  refillsUsed: integer('refills_used').default(0),
+  
+  // Delivery options
+  deliveryMethod: varchar('delivery_method', { length: 50 }), // SMS, Email, WhatsApp, Portal, Pharmacy-Direct
+  sentToPatientAt: timestamp('sent_to_patient_at', { mode: 'date' }),
+  sentToPharmacyAt: timestamp('sent_to_pharmacy_at', { mode: 'date' }),
+  patientViewedAt: timestamp('patient_viewed_at', { mode: 'date' }),
+  
+  // Compliance tracking
+  regulatoryCompliance: jsonb('regulatory_compliance'), // MCI, NABH compliance flags
+  auditTrail: jsonb('audit_trail'), // Track all modifications
+  emergencyPrescription: boolean('emergency_prescription').default(false),
+  
+  // Integration
+  pharmacyNotified: boolean('pharmacy_notified').default(false),
+  insuranceNotified: boolean('insurance_notified').default(false),
+  governmentPortalSynced: boolean('government_portal_synced').default(false),
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  version: integer('version').default(1),
+}, table => ({
+  prescriptionNumberIdx: uniqueIndex('digital_prescriptions_number_idx').on(table.prescriptionNumber),
+  patientDoctorIdx: index('digital_prescriptions_patient_doctor_idx').on(table.patientId, table.doctorId),
+  statusIdx: index('digital_prescriptions_status_idx').on(table.prescriptionStatus),
+  validityIdx: index('digital_prescriptions_validity_idx').on(table.validUntil),
+  verificationCodeIdx: index('digital_prescriptions_verification_idx').on(table.verificationCode),
+}));
+
+// Telemedicine Patient Monitoring - Remote monitoring capabilities
+export const patientRemoteMonitoring = telemedicineSchema.table('patient_remote_monitoring', {
+  monitoringId: uuid('monitoring_id').primaryKey().defaultRandom(),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  doctorId: uuid('doctor_id').notNull().references(() => users.userId),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+  
+  // Monitoring program
+  programName: varchar('program_name', { length: 200 }).notNull(),
+  programType: varchar('program_type', { length: 50 }), // Chronic-Care, Post-Op, Pregnancy, Elderly-Care
+  startDate: date('start_date').notNull(),
+  endDate: date('end_date'),
+  monitoringFrequency: varchar('monitoring_frequency', { length: 50 }), // Daily, Weekly, Bi-weekly, Monthly
+  
+  // Patient devices
+  connectedDevices: jsonb('connected_devices'), // BP monitor, glucometer, pulse oximeter, weighing scale
+  deviceData: jsonb('device_data'), // Latest readings from connected devices
+  lastSyncTimestamp: timestamp('last_sync_timestamp', { mode: 'date' }),
+  
+  // Vitals tracking
+  vitalsTrends: jsonb('vitals_trends'), // Historical vital signs data
+  alertThresholds: jsonb('alert_thresholds'), // Custom thresholds for alerts
+  criticalAlerts: jsonb('critical_alerts'), // Active alerts requiring immediate attention
+  
+  // Patient reported data
+  symptomReports: jsonb('symptom_reports'), // Patient-reported symptoms
+  medicationAdherence: jsonb('medication_adherence'), // Medication compliance tracking
+  dailyActivityData: jsonb('daily_activity_data'), // Steps, sleep, activity levels
+  
+  // Care team monitoring
+  assignedNurses: uuid('assigned_nurses').array(), // Monitoring nurses
+  escalationProtocol: jsonb('escalation_protocol'), // When to escalate to doctor
+  lastReviewedAt: timestamp('last_reviewed_at', { mode: 'date' }),
+  lastReviewedBy: uuid('last_reviewed_by').references(() => users.userId),
+  
+  // Communication
+  patientEngagementScore: integer('patient_engagement_score'), // 1-100 engagement rating
+  autoRemindersEnabled: boolean('auto_reminders_enabled').default(true),
+  emergencyContactProtocol: jsonb('emergency_contact_protocol'),
+  
+  // Outcomes tracking
+  healthImprovementScore: decimal('health_improvement_score', { precision: 5, scale: 2 }),
+  programCompletionPercentage: decimal('program_completion_percentage', { precision: 5, scale: 2 }),
+  satisfactionScore: integer('satisfaction_score'), // 1-5 patient satisfaction
+  
+  // Status
+  isActive: boolean('is_active').default(true),
+  pausedAt: timestamp('paused_at', { mode: 'date' }),
+  pauseReason: text('pause_reason'),
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  patientIdx: index('patient_remote_monitoring_patient_idx').on(table.patientId),
+  doctorIdx: index('patient_remote_monitoring_doctor_idx').on(table.doctorId),
+  activeIdx: index('patient_remote_monitoring_active_idx').on(table.isActive),
+  programTypeIdx: index('patient_remote_monitoring_program_type_idx').on(table.programType),
+}));
+
+// Telemedicine Billing - Specialized billing for virtual consultations
+export const telemedicineBilling = telemedicineSchema.table('telemedicine_billing', {
+  telemedicineBillId: uuid('telemedicine_bill_id').primaryKey().defaultRandom(),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+  
+  // Related entities
+  videoSessionId: uuid('video_session_id').references(() => videoSessions.sessionId),
+  digitalPrescriptionId: uuid('digital_prescription_id').references(() => digitalPrescriptions.digitalPrescriptionId),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  doctorId: uuid('doctor_id').notNull().references(() => users.userId),
+  
+  // Billing details
+  billNumber: varchar('bill_number', { length: 50 }).unique().notNull(),
+  billDate: timestamp('bill_date', { mode: 'date' }).defaultNow(),
+  serviceType: varchar('service_type', { length: 50 }), // Video-Consultation, Digital-Prescription, Remote-Monitoring
+  
+  // Charges breakdown
+  consultationCharges: decimal('consultation_charges', { precision: 10, scale: 2 }).notNull(),
+  technologyFee: decimal('technology_fee', { precision: 10, scale: 2 }).default('0'),
+  platformFee: decimal('platform_fee', { precision: 10, scale: 2 }).default('0'),
+  convenienceFee: decimal('convenience_fee', { precision: 10, scale: 2 }).default('0'),
+  prescriptionFee: decimal('prescription_fee', { precision: 10, scale: 2 }).default('0'),
+  
+  // Telemedicine specific charges
+  recordingFee: decimal('recording_fee', { precision: 10, scale: 2 }).default('0'),
+  dataStorageFee: decimal('data_storage_fee', { precision: 10, scale: 2 }).default('0'),
+  remoteMonitoringFee: decimal('remote_monitoring_fee', { precision: 10, scale: 2 }).default('0'),
+  
+  // Total amounts
+  grossAmount: decimal('gross_amount', { precision: 12, scale: 2 }).notNull(),
+  discountAmount: decimal('discount_amount', { precision: 12, scale: 2 }).default('0'),
+  taxAmount: decimal('tax_amount', { precision: 12, scale: 2 }).default('0'),
+  netAmount: decimal('net_amount', { precision: 12, scale: 2 }).notNull(),
+  
+  // Payment details
+  paymentStatus: billStatusEnum('payment_status').default('Pending'),
+  paymentMethod: paymentMethodEnum('payment_method'),
+  paymentGateway: varchar('payment_gateway', { length: 50 }), // Razorpay, PayU, Paytm
+  transactionId: varchar('transaction_id', { length: 100 }),
+  paymentTimestamp: timestamp('payment_timestamp', { mode: 'date' }),
+  
+  // Insurance and schemes
+  insuranceApplicable: boolean('insurance_applicable').default(false),
+  governmentSchemeApplicable: boolean('government_scheme_applicable').default(false),
+  schemeCoverageAmount: decimal('scheme_coverage_amount', { precision: 10, scale: 2 }).default('0'),
+  patientPayableAmount: decimal('patient_payable_amount', { precision: 10, scale: 2 }),
+  
+  // Compliance
+  telemedicineTaxCompliance: boolean('telemedicine_tax_compliance').default(true),
+  gstApplicable: boolean('gst_applicable').default(true),
+  gstNumber: varchar('gst_number', { length: 50 }),
+  
+  // Digital receipt
+  digitalReceiptUrl: text('digital_receipt_url'),
+  sentToPatientEmail: boolean('sent_to_patient_email').default(false),
+  sentToPatientSMS: boolean('sent_to_patient_sms').default(false),
+  
+  // Standard fields
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+}, table => ({
+  billNumberIdx: uniqueIndex('telemedicine_billing_bill_number_idx').on(table.billNumber),
+  patientIdx: index('telemedicine_billing_patient_idx').on(table.patientId),
+  paymentStatusIdx: index('telemedicine_billing_payment_status_idx').on(table.paymentStatus),
+  billDateIdx: index('telemedicine_billing_date_idx').on(table.billDate),
+  videoSessionIdx: index('telemedicine_billing_video_session_idx').on(table.videoSessionId),
+}));
 
 // ============================================================================
 // RE-EXPORT SCHEMA EXTENSIONS

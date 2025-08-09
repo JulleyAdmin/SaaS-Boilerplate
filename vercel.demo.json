@@ -1,0 +1,82 @@
+{
+  "name": "hospitalos-demo",
+  "version": 2,
+  "public": true,
+  "github": {
+    "enabled": true,
+    "autoAlias": true
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_DEMO_MODE": "true",
+    "NEXT_PUBLIC_BYPASS_AUTH": "true",
+    "NEXT_PUBLIC_APP_ENV": "demo",
+    "DEMO_MODE": "true",
+    "NODE_ENV": "production",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_demo_only",
+    "CLERK_SECRET_KEY": "sk_test_demo_only",
+    "DATABASE_URL": "memory://demo",
+    "USE_MOCK_DATA": "true",
+    "ENABLE_MOCK_API": "true",
+    "SHOW_DEMO_BANNER": "true",
+    "NEXT_PUBLIC_SITE_URL": "https://demo-hospitalos.vercel.app",
+    "NEXT_PUBLIC_DEMO_HOSPITAL": "Demo General Hospital",
+    "SKIP_ENV_VALIDATION": "true"
+  },
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "outputDirectory": ".next",
+  "regions": ["iad1"],
+  "functions": {
+    "app/api/[...route].ts": {
+      "maxDuration": 10
+    },
+    "app/[locale]/[...route].tsx": {
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Demo-Mode",
+          "value": "true"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/demo/:path*"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/dashboard",
+      "permanent": false
+    }
+  ]
+}

@@ -43,7 +43,10 @@
     "demo:health": "curl -s http://localhost:3001/api/health | jq .",
     "demo:reset": "rm -rf .pglite && cp .env.demo .env.local",
     "demo:logs": "tail -f logs/demo-server-*.log",
-    "demo:validate": "./scripts/validate-demo.sh"
+    "demo:validate": "./scripts/validate-demo.sh",
+    "demo:deploy": "./scripts/deploy-demo.sh",
+    "demo:build": "NEXT_PUBLIC_DEMO_MODE=true npm run build",
+    "demo:dev": "NEXT_PUBLIC_DEMO_MODE=true npm run dev"
   },
   "dependencies": {
     "@boxyhq/saml-jackson": "^1.51.0",

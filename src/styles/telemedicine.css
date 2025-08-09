@@ -1,0 +1,257 @@
+/* Telemedicine Custom Styles */
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Video call controls */
+.video-controls {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Connection status indicators */
+.connection-excellent {
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.connection-good {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.connection-fair {
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.connection-poor {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Video grid layouts */
+.video-grid-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.video-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.video-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.video-grid-3 > :first-child {
+  grid-column: span 2;
+}
+
+.video-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Waiting room animation */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* Session timer */
+.session-timer {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+/* Remote monitoring device status */
+.device-online::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.device-offline::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+}
+
+/* Digital prescription signature */
+.signature-pad {
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+  min-height: 150px;
+  position: relative;
+}
+
+.signature-pad.signed {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+/* Chat message bubbles */
+.chat-bubble-sent {
+  background: #3b82f6;
+  color: white;
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  padding: 0.5rem 1rem;
+  max-width: 70%;
+  margin-left: auto;
+}
+
+.chat-bubble-received {
+  background: #f3f4f6;
+  color: #111827;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  padding: 0.5rem 1rem;
+  max-width: 70%;
+}
+
+/* File upload area */
+.upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.upload-area:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.upload-area.dragging {
+  border-color: #3b82f6;
+  background: #dbeafe;
+}
+
+/* Quick action buttons */
+.quick-action-btn {
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.quick-action-btn:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+/* Prescription QR code */
+.qr-code-container {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  display: inline-block;
+}
+
+/* Remote monitoring charts */
+.monitoring-chart {
+  height: 200px;
+  position: relative;
+  background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+/* Telemedicine session recording indicator */
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: #dc2626;
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.recording-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+/* Network quality bars */
+.network-bars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 16px;
+}
+
+.network-bar {
+  width: 3px;
+  background: #d1d5db;
+  transition: all 0.2s;
+}
+
+.network-bar:nth-child(1) { height: 25%; }
+.network-bar:nth-child(2) { height: 50%; }
+.network-bar:nth-child(3) { height: 75%; }
+.network-bar:nth-child(4) { height: 100%; }
+
+.network-bars.excellent .network-bar { background: #10b981; }
+.network-bars.good .network-bar:nth-child(1),
+.network-bars.good .network-bar:nth-child(2),
+.network-bars.good .network-bar:nth-child(3) { background: #3b82f6; }
+.network-bars.fair .network-bar:nth-child(1),
+.network-bars.fair .network-bar:nth-child(2) { background: #f59e0b; }
+.network-bars.poor .network-bar:nth-child(1) { background: #ef4444; }
