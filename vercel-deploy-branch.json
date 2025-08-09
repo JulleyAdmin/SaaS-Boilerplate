@@ -1,0 +1,13 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "ui-demo-deployment": true,
+      "main": false
+    }
+  },
+  "github": {
+    "enabled": true,
+    "autoAlias": false
+  }
+}
+EOF < /dev/null

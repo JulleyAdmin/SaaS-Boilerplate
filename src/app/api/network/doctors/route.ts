@@ -338,7 +338,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 // GET /api/network/doctors/availability - Get doctor availability across clinics
-export async function getAvailability(request: NextRequest) {
+async function getAvailability(request: NextRequest) {
   try {
     const { userId, orgId } = await auth();
     if (!userId || !orgId) {

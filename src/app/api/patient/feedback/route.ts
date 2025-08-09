@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { eq, and, desc, sql, gte, lte } from 'drizzle-orm';
 import { db } from '@/libs/DB';
 import { patientFeedback, patients, departments, consultations } from '@/models/Schema';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { mockPatientFeedback } from '@/data/mock-engagement';
 
 // Request validation schemas

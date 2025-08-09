@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { mockPatientSegments } from '@/data/mock-crm';
 
 // GET /api/crm/segments - Get patient segments

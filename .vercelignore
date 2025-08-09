@@ -1,0 +1,10 @@
+# Vercel ignore file
+.git
+node_modules
+.next
+.env.local
+.env.production
+template-references
+tests
+*.log
+.DS_Store

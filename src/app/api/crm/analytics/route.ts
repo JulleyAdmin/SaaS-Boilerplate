@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { mockCRMAnalytics } from '@/data/mock-crm';
 import { realisticHospitalLeads, leadStatistics } from '@/data/mock-hospital-leads';
 

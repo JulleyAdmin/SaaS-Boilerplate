@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { eq, and, desc, sql, gte, lte, avg, count } from 'drizzle-orm';
 import { db } from '@/libs/DB';
 import { patientFeedback, departments } from '@/models/Schema';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { mockFeedbackAnalytics } from '@/data/mock-engagement';
 
 // GET /api/patient/feedback/analytics - Get feedback analytics
