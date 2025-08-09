@@ -10,7 +10,8 @@ export const AppConfig = {
       id: 'en',
       name: 'English',
     },
-    { id: 'hi', name: 'हिन्दी' }, // Hindi support for Indian users
+    // Hindi support temporarily disabled for demo deployment
+    // { id: 'hi', name: 'हिन्दी' },
   ],
   defaultLocale: 'en',
   localePrefix,

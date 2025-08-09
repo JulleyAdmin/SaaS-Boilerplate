@@ -36,6 +36,8 @@ export default withSentryConfig(
         serverComponentsExternalPackages: ['@electric-sql/pglite', '@boxyhq/saml-jackson'],
         missingSuspenseWithCSRBailout: false,
       },
+      trailingSlash: false,
+      distDir: '.next',
       webpack: (config, { isServer }) => {
         if (!isServer) {
           config.resolve.fallback = {
