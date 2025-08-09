@@ -1,6 +1,8 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import type { NextRequest } from 'next/server';
 
+
+
 export async function GET(_request: NextRequest) {
   try {
     const { userId } = await auth();

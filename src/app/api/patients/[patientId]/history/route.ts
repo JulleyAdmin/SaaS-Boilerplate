@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server';
 
 import { getPatientHistory } from '@/models/patient';
 
+
+
 // GET /api/patients/[patientId]/history - Get patient history
 export async function GET(
   request: NextRequest,

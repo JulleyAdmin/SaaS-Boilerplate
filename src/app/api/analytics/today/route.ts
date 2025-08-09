@@ -5,6 +5,7 @@ import { getTodayActivity } from '@/models/patient';
 import { getDemoClinicId } from '@/libs/init-demo-data';
 import { ensureDemoData } from '@/middleware/demo-middleware';
 
+
 // GET /api/analytics/today - Get today's activity statistics
 export async function GET(request: NextRequest) {
   try {

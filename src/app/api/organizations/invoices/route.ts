@@ -6,6 +6,8 @@ import { db } from '@/libs/DB';
 import { listInvoices } from '@/libs/Stripe';
 import { invoice, organizationSchema } from '@/models/Schema';
 
+
+
 export async function GET() {
   try {
     const { userId, orgId } = await auth();

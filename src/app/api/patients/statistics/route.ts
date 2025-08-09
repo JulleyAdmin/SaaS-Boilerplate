@@ -5,6 +5,8 @@ import { getPatientStatistics } from '@/models/patient';
 import { getDemoClinicId } from '@/libs/init-demo-data';
 import { ensureDemoData } from '@/middleware/demo-middleware';
 
+
+
 // GET /api/patients/statistics - Get patient statistics
 export async function GET(request: NextRequest) {
   try {

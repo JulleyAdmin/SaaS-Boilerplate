@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { realisticHospitalLeads } from '@/data/mock-hospital-leads';
 
+
+
 // GET /api/crm/leads - Get leads
 export async function GET(request: NextRequest) {
   try {

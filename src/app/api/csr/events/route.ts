@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { mockCSREvents } from '@/data/mock-csr';
 
+
+
 // GET /api/csr/events - Get CSR events
 export async function GET(request: NextRequest) {
   try {

@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 
 import { getSSOMetadata } from '@/lib/sso/utils';
 
+
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: { orgId: string } },

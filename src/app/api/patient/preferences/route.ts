@@ -6,6 +6,8 @@ import { patientPreferences, patients } from '@/models/Schema';
 import { auth } from '@clerk/nextjs/server';
 import { mockPatientPreferences } from '@/data/mock-engagement';
 
+
+
 // Request validation schemas
 const createPreferencesSchema = z.object({
   patientId: z.string().uuid(),

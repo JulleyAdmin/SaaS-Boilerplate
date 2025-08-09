@@ -49,10 +49,16 @@ async function withRetry<T>(operation: () => Promise<T>, maxRetries = 3): Promis
 }
 
 async function initializeDatabase() {
+  // Skip database initialization during build time
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD || process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+    console.log('Skipping database initialization during build');
+    return null;
+  }
+
   console.log('Initializing database connection...');
   
   try {
-    if (process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD && Env.DATABASE_URL && !isDemoMode) {
+    if (Env.DATABASE_URL && !isDemoMode) {
       console.log('Using PostgreSQL database');
       
       const client = new Client({
@@ -123,6 +129,11 @@ async function initializeDatabase() {
 
 // Enhanced database getter with health monitoring
 export async function getDb() {
+  // Return null during build time to prevent initialization
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD || process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+    return null;
+  }
+
   if (!dbInstance || !connectionHealthy) {
     if (!initPromise) {
       initPromise = initializeDatabase();

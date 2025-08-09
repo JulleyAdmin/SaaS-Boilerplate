@@ -11,6 +11,8 @@ import {
 } from '@/models/Schema';
 import { eq, and, or, desc, sql, inArray } from 'drizzle-orm';
 
+
+
 // Validation schemas
 const networkDoctorSchema = z.object({
   doctorId: z.string().uuid().optional(),

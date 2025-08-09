@@ -7,6 +7,8 @@ import { getSubscriptionDetails } from '@/libs/Stripe';
 import { organizationSchema, subscription } from '@/models/Schema';
 import { getPlanByPriceId } from '@/utils/pricing';
 
+
+
 export async function GET() {
   try {
     const { userId, orgId } = await auth();

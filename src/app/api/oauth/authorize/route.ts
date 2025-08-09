@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
 import { createAuditLog } from '@/libs/audit';
 import { type AuthorizeParams, oauthServer } from '@/libs/oauth/server';
 
+
+
 /**
  * OAuth 2.0 Authorization Endpoint
  * Handles authorization requests and user consent

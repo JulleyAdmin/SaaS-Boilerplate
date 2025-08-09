@@ -3,11 +3,15 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+
 import type { CreateSSOConnectionParams } from '@/lib/sso/types';
 import {
   createSSOConnection,
   getSSOConnections,
 } from '@/lib/sso/utils';
+
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
 
 const createConnectionSchema = z.object({
   name: z.string().min(1, 'Name is required'),

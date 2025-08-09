@@ -4,6 +4,8 @@ import { z } from 'zod';
 
 import { acceptInvitation } from '@/models/invitation';
 
+
+
 const acceptInvitationSchema = z.object({
   token: z.string().min(1),
 });

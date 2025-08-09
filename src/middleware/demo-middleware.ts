@@ -5,6 +5,11 @@ let demoInitialized = false;
 let initializationPromise: Promise<boolean> | null = null;
 
 export async function ensureDemoData() {
+  // Skip during build time
+  if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+    return true;
+  }
+  
   // Only run in demo mode
   if (process.env.DEMO_MODE !== 'true') {
     return true;

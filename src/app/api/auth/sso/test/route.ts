@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 
 import { getJacksonControllers } from '@/lib/sso/jackson';
 
+
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

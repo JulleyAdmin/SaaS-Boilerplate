@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 import { getJacksonControllers } from '@/lib/sso/jackson';
 import { sanitizeTenant } from '@/lib/sso/utils';
 
+
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

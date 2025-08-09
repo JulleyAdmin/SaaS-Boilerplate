@@ -7,6 +7,8 @@ import { logApiRequest, PatientApiLogger, logPerformance } from '@/utils/api-log
 import { getDemoClinicId, checkDemoData, initializeDemoData } from '@/libs/init-demo-data';
 import { ensureDemoData } from '@/middleware/demo-middleware';
 
+
+
 // Validation schemas
 const searchParamsSchema = z.object({
   query: z.string().optional(),

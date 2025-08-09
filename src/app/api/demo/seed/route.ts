@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import { initializeDemoData, checkDemoData } from '@/libs/init-demo-data';
 
+
+
 // POST /api/demo/seed - Manually seed demo data
 export async function POST(request: NextRequest) {
   try {

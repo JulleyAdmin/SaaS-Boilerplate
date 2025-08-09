@@ -4,6 +4,8 @@ import type { NextRequest } from 'next/server';
 import { canManageWebhooks, getUserRole } from '@/models/team';
 import { getWebhookDeliveries, getWebhookEndpoint } from '@/models/webhook';
 
+
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { orgId: string; webhookId: string } },

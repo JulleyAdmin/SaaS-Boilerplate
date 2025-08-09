@@ -6,6 +6,8 @@ import { getPatientById, updatePatient, deletePatient } from '@/models/patient';
 import { getDemoClinicId } from '@/libs/init-demo-data';
 import { ensureDemoData } from '@/middleware/demo-middleware';
 
+
+
 const updatePatientSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),

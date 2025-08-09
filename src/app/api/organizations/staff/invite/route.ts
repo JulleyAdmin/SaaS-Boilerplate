@@ -13,6 +13,8 @@ import { StaffInvitationEmail } from '@/libs/email/templates/StaffInvitationEmai
 import { Env } from '@/libs/Env';
 import { organizationSchema } from '@/models/Schema';
 
+
+
 const inviteStaffSchema = z.object({
   email: z.string().email('Invalid email address'),
   name: z.string().min(1, 'Name is required'),

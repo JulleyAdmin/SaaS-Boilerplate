@@ -6,6 +6,8 @@ import { healthGoals, patients, users } from '@/models/Schema';
 import { auth } from '@clerk/nextjs/server';
 import { mockHealthGoals } from '@/data/mock-engagement';
 
+
+
 // Request validation schemas
 const createGoalSchema = z.object({
   patientId: z.string().uuid(),

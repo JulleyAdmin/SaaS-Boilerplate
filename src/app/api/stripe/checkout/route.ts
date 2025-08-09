@@ -10,6 +10,8 @@ import { createCheckoutSession, createStripeCustomer } from '@/libs/Stripe';
 import { organizationSchema } from '@/models/Schema';
 import { HOSPITAL_PLANS, TRIAL_PERIOD_DAYS } from '@/utils/pricing';
 
+
+
 export async function POST(request: NextRequest) {
   try {
     const { userId, orgId } = await auth();

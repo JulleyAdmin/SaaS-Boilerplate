@@ -25,6 +25,10 @@ export default withSentryConfig(
       typescript: {
         ignoreBuildErrors: true,
       },
+      generateBuildId: async () => {
+        // For demo builds, use a simple build ID
+        return process.env.DEMO_MODE === 'true' ? 'demo-build' : null;
+      },
       poweredByHeader: false,
       reactStrictMode: true,
       skipTrailingSlashRedirect: true,

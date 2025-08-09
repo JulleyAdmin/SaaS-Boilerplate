@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { mockHealthGoals } from '@/data/mock-engagement';
 
+
+
 // GET /api/demo/health-goals - Get demo health goals (no auth required)
 export async function GET(request: NextRequest) {
   try {
