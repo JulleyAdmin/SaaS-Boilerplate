@@ -8,7 +8,7 @@ import { DemoBadge } from '@/components/DemoBadge';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/toaster';
 import { AllLocales } from '@/utils/AppConfig';
-import { DemoProvider } from '@/app/demo-provider';
+import { DemoProvider } from '../demo-provider';
 import dynamic from 'next/dynamic';
 
 // Dynamic import for debug dashboard (only in development)

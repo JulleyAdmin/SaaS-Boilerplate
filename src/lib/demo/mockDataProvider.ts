@@ -1,4 +1,5 @@
 // Mock Data Provider for UI Demo
+// @ts-expect-error - faker is available in devDependencies
 import { faker } from '@faker-js/faker';
 
 // Types
@@ -142,7 +143,7 @@ class MockDataProvider {
     const patients: MockPatient[] = [];
     const departments = ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Emergency', 'ICU', 'General Medicine'];
     const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
-    const statuses: MockPatient['status'][] = ['active', 'inactive', 'critical'];
+    const _statuses: MockPatient['status'][] = ['active', 'inactive', 'critical'];
 
     for (let i = 0; i < count; i++) {
       const patient: MockPatient = {
@@ -163,7 +164,7 @@ class MockDataProvider {
         currentMedications: faker.helpers.maybe(() => faker.helpers.arrayElements(['Metformin', 'Lisinopril', 'Aspirin', 'Atorvastatin'], { min: 1, max: 3 })),
         lastVisit: faker.date.recent({ days: 30 }),
         nextAppointment: faker.helpers.maybe(() => faker.date.soon({ days: 30 })),
-        status: faker.helpers.arrayElement(statuses),
+        status: faker.helpers.arrayElement(_statuses),
         department: faker.helpers.maybe(() => faker.helpers.arrayElement(departments)),
         assignedDoctor: faker.helpers.maybe(() => `Dr. ${faker.person.fullName()}`),
         vitalSigns: {
@@ -249,7 +250,7 @@ class MockDataProvider {
       { name: 'Radiologist', dept: 'Radiology' }
     ];
     const qualifications = ['MBBS', 'MD', 'MS', 'MCh', 'DM', 'DNB', 'FRCS', 'MRCP'];
-    const statuses: MockDoctor['status'][] = ['available', 'busy', 'on-leave'];
+    const _statuses: MockDoctor['status'][] = ['available', 'busy', 'on-leave'];
 
     for (let i = 0; i < count; i++) {
       const spec = faker.helpers.arrayElement(specializations);
@@ -267,9 +268,9 @@ class MockDataProvider {
         patientsToday: faker.number.int({ min: 5, max: 25 }),
         nextAvailable: faker.date.soon({ days: 7 }),
         status: faker.helpers.weightedArrayElement([
-          { value: 'available', weight: 5 },
-          { value: 'busy', weight: 3 },
-          { value: 'on-leave', weight: 1 }
+          { value: 'available' as const, weight: 5 },
+          { value: 'busy' as const, weight: 3 },
+          { value: 'on-leave' as const, weight: 1 }
         ])
       };
       doctors.push(doctor);

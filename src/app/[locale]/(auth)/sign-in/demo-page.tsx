@@ -1,8 +1,8 @@
 // Demo Sign-In Page
 'use client';
 
-import { DemoSignIn } from '@/lib/demo/authProvider';
-import { useDemoMode } from '@/app/demo-provider';
+import { DemoSignIn } from '../../../../lib/demo/authProvider';
+import { useDemoMode } from '../../../../lib/demo/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 
