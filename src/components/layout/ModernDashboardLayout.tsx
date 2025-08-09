@@ -13,6 +13,7 @@ import {
   CreditCard,
   FileText,
   FlaskConical,
+  Globe,
   Heart,
   Home,
   Hospital,
@@ -418,6 +419,24 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           icon: Activity,
         },
         {
+          title: 'Patient Location Analytics',
+          href: '/dashboard/analytics/geographical',
+          icon: Globe,
+          badge: 'new',
+        },
+        {
+          title: 'Referral Analytics',
+          href: '/dashboard/analytics/referrals',
+          icon: Share2,
+          badge: 'new',
+        },
+        {
+          title: 'Marketing Intelligence',
+          href: '/dashboard/analytics/marketing',
+          icon: TrendingUp,
+          badge: 'new',
+        },
+        {
           title: t('Navigation.financial_reports'),
           href: '/dashboard/reports/financial',
           icon: BarChart3,
@@ -435,7 +454,58 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
       ],
     },
     
-    // 11. HR & Administration - Staff management
+    // 11. Patient Engagement - Patient-centered care
+    {
+      title: 'Patient Engagement',
+      icon: Heart,
+      children: [
+        {
+          title: 'Patient Portal',
+          href: '/dashboard/patient-portal',
+          icon: Home,
+          badge: 'new',
+        },
+        {
+          title: 'Campaigns',
+          href: '/dashboard/campaigns',
+          icon: Megaphone,
+          badge: 'new',
+        },
+        {
+          title: 'Engagement Analytics',
+          href: '/dashboard/engagement-analytics',
+          icon: TrendingUp,
+        },
+        {
+          title: 'Preventive Care',
+          href: '/dashboard/preventive-care',
+          icon: Shield,
+        },
+        {
+          title: 'Health Goals',
+          href: '/dashboard/health-goals',
+          icon: Target,
+        },
+        {
+          title: 'Patient Feedback',
+          href: '/dashboard/feedback',
+          icon: MessageSquare,
+        },
+        {
+          title: 'Patient Preferences',
+          href: '/dashboard/preferences',
+          icon: Settings,
+        },
+        {
+          title: 'Community Health',
+          href: '/dashboard/community-health',
+          icon: Globe,
+          badge: 'new',
+        },
+      ],
+    },
+    
+    // 12. HR & Administration - Staff management
     {
       title: 'HR & Administration',
       icon: UserCog,
@@ -463,7 +533,7 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
       ],
     },
     
-    // 12. CRM & Marketing - Patient acquisition
+    // 13. CRM & Marketing - Patient acquisition
     {
       title: 'CRM & Marketing',
       icon: Megaphone,

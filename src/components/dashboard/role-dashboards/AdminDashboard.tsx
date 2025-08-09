@@ -8,7 +8,9 @@ import {
   Database,
   DollarSign,
   FileText,
+  MapPin,
   Settings,
+  Share2,
   Shield,
   TrendingUp,
   UserCog,
@@ -210,6 +212,40 @@ export function AdminDashboard() {
                 <Link href="/dashboard/system-settings">
                   <Settings className="mr-2 size-4" />
                   System Settings
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Analytics Navigation */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Analytics & Insights</CardTitle>
+              <CardDescription>Marketing and operational analytics</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-2">
+              <Button className="justify-start" variant="outline" asChild>
+                <Link href="/dashboard/analytics/geographical">
+                  <MapPin className="mr-2 size-4" />
+                  Patient Location Analytics
+                </Link>
+              </Button>
+              <Button className="justify-start" variant="outline" asChild>
+                <Link href="/dashboard/analytics/referrals">
+                  <Share2 className="mr-2 size-4" />
+                  Referral Analytics
+                </Link>
+              </Button>
+              <Button className="justify-start" variant="outline" asChild>
+                <Link href="/dashboard/analytics/marketing">
+                  <TrendingUp className="mr-2 size-4" />
+                  Marketing Intelligence
+                </Link>
+              </Button>
+              <Button className="justify-start" variant="outline" asChild>
+                <Link href="/dashboard/analytics/operational">
+                  <BarChart3 className="mr-2 size-4" />
+                  Operational Metrics
                 </Link>
               </Button>
             </CardContent>

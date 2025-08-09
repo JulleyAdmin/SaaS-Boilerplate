@@ -461,7 +461,7 @@ const modules: Module[] = [
   {
     id: 'security-compliance',
     name: 'Security & Compliance',
-    description: 'Advanced security with blockchain, biometrics, and HIPAA/GDPR compliance',
+    description: 'Advanced security with encryption, biometrics, and HIPAA/GDPR compliance',
     icon: Shield,
     status: 'live',
     completion: 90,

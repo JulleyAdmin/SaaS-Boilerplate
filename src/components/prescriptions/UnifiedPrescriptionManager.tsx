@@ -106,7 +106,6 @@ interface Prescription {
   requiresApproval?: boolean;
   approvalStatus?: 'pending' | 'approved' | 'rejected';
   qrCode?: string; // For digital verification
-  blockchainHash?: string; // For tamper-proof digital prescriptions
   syncStatus?: 'synced' | 'pending' | 'offline';
 }
 
@@ -222,7 +221,6 @@ const UnifiedPrescriptionManager: React.FC = () => {
       validUntil: '2024-01-22',
       isControlled: false,
       qrCode: 'QR-RX-DIG-2024-001',
-      blockchainHash: '0x1234567890abcdef',
       syncStatus: 'synced',
     },
     {
@@ -492,11 +490,11 @@ const UnifiedPrescriptionManager: React.FC = () => {
               subtitle="Secure verification"
             />
             <StandardMetricCard
-              label="Blockchain Secured"
+              label="Digitally Secured"
               value={23}
               icon={Lock}
               color="info"
-              subtitle="Tamper-proof"
+              subtitle="Encrypted & signed"
             />
             <StandardMetricCard
               label="Avg Processing"
