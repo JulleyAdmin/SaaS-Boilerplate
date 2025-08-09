@@ -24,5 +24,19 @@
     "NODE_ENV": "production"
   },
   "regions": ["iad1"],
-  "public": true
+  "public": true,
+  "github": {
+    "silent": true
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    }
+  ]
 }
