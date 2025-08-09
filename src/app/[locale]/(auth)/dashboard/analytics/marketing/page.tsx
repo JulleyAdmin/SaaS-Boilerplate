@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import MarketingIntelligenceDashboard from '@/components/analytics/marketing/MarketingIntelligenceDashboard';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
-  const t = await getTranslations({
+  await getTranslations({
     locale: props.params.locale,
     namespace: 'Analytics',
   });

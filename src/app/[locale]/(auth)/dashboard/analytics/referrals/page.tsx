@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import ReferralAnalyticsDashboard from '@/components/analytics/referrals/ReferralAnalyticsDashboard';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
-  const t = await getTranslations({
+  await getTranslations({
     locale: props.params.locale,
     namespace: 'Analytics',
   });
