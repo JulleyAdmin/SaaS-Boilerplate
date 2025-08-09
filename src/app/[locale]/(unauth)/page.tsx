@@ -1,23 +1,43 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SimpleLandingPage() {
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // In demo mode, redirect directly to hospital-os dashboard
-    const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || process.env.DEMO_MODE === 'true';
+    // Set that we're on the client
+    setIsClient(true);
+    
+    // Check demo mode only on client side to avoid hydration mismatch
+    const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
     
     if (isDemoMode) {
-      router.replace('/dashboard/hospital-os');
-      return;
+      // Small delay to ensure proper hydration
+      const timer = setTimeout(() => {
+        router.replace('/dashboard/hospital-os');
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [router]);
 
-  // In demo mode, show loading instead of landing page
-  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || process.env.DEMO_MODE === 'true';
+  // Always show the same content initially to avoid hydration mismatch
+  if (!isClient) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-xl text-gray-600 mb-2">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // After hydration, check if we're in demo mode
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
   
   if (isDemoMode) {
     return (
