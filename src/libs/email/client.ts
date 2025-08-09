@@ -4,8 +4,27 @@ import { Resend } from 'resend';
 import { createAuditLog } from '@/libs/audit';
 import { Env } from '@/libs/Env';
 
-// Initialize Resend client
-const resend = new Resend(Env.RESEND_API_KEY);
+// Check if we're in demo mode or building
+const isDemoMode = process.env.DEMO_MODE === 'true' || process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
+// Lazy initialization of Resend client
+let resend: Resend | null = null;
+const getResendClient = () => {
+  if (isDemoMode) {
+    // Return a mock client for demo mode
+    return {
+      emails: {
+        send: async () => ({ data: { id: 'demo-email-id' }, error: null }),
+      },
+    } as any;
+  }
+  
+  if (!resend && Env.RESEND_API_KEY) {
+    resend = new Resend(Env.RESEND_API_KEY);
+  }
+  
+  return resend;
+};
 
 export type EmailOptions = {
   to: string | string[];
@@ -62,7 +81,11 @@ export const sendEmail = async (options: EmailOptions): Promise<{ success: boole
     };
 
     // Send email via Resend
-    const response = await resend.emails.send(emailData);
+    const client = getResendClient();
+    if (!client) {
+      throw new Error('Email service not configured');
+    }
+    const response = await client.emails.send(emailData);
 
     if (response.error) {
       throw new Error(`Resend API error: ${response.error.message}`);
