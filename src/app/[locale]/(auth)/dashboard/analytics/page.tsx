@@ -69,6 +69,7 @@ export default function AnalyticsPage() {
       }, 30000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoRefresh]);
 
   // Key Performance Indicators with Indian healthcare context
@@ -977,7 +978,7 @@ export default function AnalyticsPage() {
                           </p>
                         </div>
                         <span className="text-sm font-medium">
-                          ₹{((insurance.claims || insurance.amount) / 100000).toFixed(1)}L
+                          ₹{((insurance.claims || insurance.amount || 0) / 100000).toFixed(1)}L
                         </span>
                       </div>
                       <Progress 

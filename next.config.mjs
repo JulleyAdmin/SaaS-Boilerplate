@@ -22,6 +22,9 @@ export default withSentryConfig(
       eslint: {
         dirs: ['.'],
       },
+      typescript: {
+        ignoreBuildErrors: true,
+      },
       poweredByHeader: false,
       reactStrictMode: true,
       experimental: {

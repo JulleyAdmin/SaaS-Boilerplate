@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bed, User, Clock, Search, Filter, AlertCircle, CheckCircle, UserPlus, Activity } from 'lucide-react';
+import { Bed, User, Clock, Search, AlertCircle, CheckCircle, UserPlus, Activity } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
