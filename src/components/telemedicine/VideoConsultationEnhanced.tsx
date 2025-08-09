@@ -57,6 +57,7 @@ import {
   Loader2,
   RefreshCw,
   Zap,
+  Wifi,
 } from 'lucide-react';
 import {
   StandardButton,
