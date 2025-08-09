@@ -1,4 +1,13 @@
+import { redirect } from 'next/navigation';
+
 export default function SimpleLandingPage() {
+  // In demo mode, redirect directly to hospital-os dashboard
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || process.env.DEMO_MODE === 'true';
+  
+  if (isDemoMode) {
+    redirect('/dashboard/hospital-os');
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
       <div className="text-center">
