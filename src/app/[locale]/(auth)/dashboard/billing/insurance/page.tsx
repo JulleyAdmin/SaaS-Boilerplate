@@ -27,12 +27,32 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/use-toast';
+import { Separator } from '@/components/ui/separator';
 
 export default function InsuranceClaimsPage() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [providerFilter, setProviderFilter] = useState('all');
   const [schemeFilter, setSchemeFilter] = useState('all');
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [showNewClaimDialog, setShowNewClaimDialog] = useState(false);
+  const [selectedClaim, setSelectedClaim] = useState<any>(null);
+  const [newClaimData, setNewClaimData] = useState({
+    patientId: '',
+    patientName: '',
+    provider: '',
+    policyNumber: '',
+    claimType: '',
+    treatmentType: '',
+    amount: '',
+    diagnosis: '',
+    admissionDate: '',
+    dischargeDate: '',
+    documents: [] as string[]
+  });
 
   // Enhanced claims data with Indian insurance context
   const claims = [
@@ -215,7 +235,7 @@ export default function InsuranceClaimsPage() {
             <Upload className="mr-2 size-4" />
             Upload Documents
           </Button>
-          <Button>
+          <Button onClick={() => setShowNewClaimDialog(true)}>
             <Plus className="mr-2 size-4" />
             Submit New Claim
           </Button>
@@ -442,11 +462,27 @@ export default function InsuranceClaimsPage() {
                         )}
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedClaim(claim);
+                            setShowDetailsDialog(true);
+                          }}
+                        >
                           <Eye className="size-4 mr-1" />
                           View Details
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            toast({
+                              title: "Downloading Claim",
+                              description: `Downloading claim documents for ${claim.claimId}...`,
+                            });
+                          }}
+                        >
                           <Download className="size-4 mr-1" />
                           Download
                         </Button>
@@ -616,6 +652,549 @@ export default function InsuranceClaimsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Claim Details Dialog */}
+      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Insurance Claim Details</DialogTitle>
+            <DialogDescription>
+              Complete information for claim {selectedClaim?.claimId}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedClaim && (
+            <div className="space-y-6">
+              {/* Claim Status and Type */}
+              <div className="flex items-center gap-2">
+                {getStatusBadge(selectedClaim.status)}
+                {getClaimTypeBadge(selectedClaim.claimType)}
+                {selectedClaim.isGovernmentScheme && (
+                  <Badge variant="outline" className="bg-orange-50">
+                    <Building className="size-3 mr-1" />
+                    Government Scheme
+                  </Badge>
+                )}
+              </div>
+
+              {/* Basic Information */}
+              <div>
+                <h3 className="font-semibold mb-3">Basic Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Claim ID</p>
+                    <p className="font-medium">{selectedClaim.claimId}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Submitted Date</p>
+                    <p className="font-medium">{selectedClaim.submittedDate}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Patient Name</p>
+                    <p className="font-medium">{selectedClaim.patientName}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Patient ID</p>
+                    <p className="font-medium">{selectedClaim.patientId}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Insurance Information */}
+              <div>
+                <h3 className="font-semibold mb-3">Insurance Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Provider</p>
+                    <p className="font-medium">{selectedClaim.provider}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Policy Number</p>
+                    <p className="font-medium">{selectedClaim.policyNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">TPA Name</p>
+                    <p className="font-medium">{selectedClaim.tpaName}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Claim Type</p>
+                    <p className="font-medium">{selectedClaim.claimType}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Treatment Information */}
+              <div>
+                <h3 className="font-semibold mb-3">Treatment Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Treatment Type</p>
+                    <p className="font-medium">{selectedClaim.treatmentType}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Treatment Date</p>
+                    <p className="font-medium">{selectedClaim.submittedDate}</p>
+                  </div>
+                  {selectedClaim.diagnosis && (
+                    <div className="col-span-2">
+                      <p className="text-muted-foreground">Diagnosis</p>
+                      <p className="font-medium">{selectedClaim.diagnosis || 'Not specified'}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Financial Information */}
+              <div>
+                <h3 className="font-semibold mb-3">Financial Details</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between p-2 bg-gray-50 rounded">
+                    <span className="text-sm">Claim Amount</span>
+                    <span className="font-medium">₹{selectedClaim.amount.toLocaleString()}</span>
+                  </div>
+                  {selectedClaim.approvedAmount > 0 && (
+                    <div className="flex justify-between p-2 bg-green-50 rounded">
+                      <span className="text-sm">Approved Amount</span>
+                      <span className="font-medium text-green-600">₹{selectedClaim.approvedAmount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {selectedClaim.approvedAmount > 0 && selectedClaim.approvedAmount < selectedClaim.amount && (
+                    <div className="flex justify-between p-2 bg-orange-50 rounded">
+                      <span className="text-sm">Deduction</span>
+                      <span className="font-medium text-orange-600">₹{(selectedClaim.amount - selectedClaim.approvedAmount).toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Remarks */}
+              {selectedClaim.remarks && (
+                <>
+                  <Separator />
+                  <div>
+                    <h3 className="font-semibold mb-3">Remarks</h3>
+                    <div className="p-3 bg-muted rounded">
+                      <p className="text-sm">{selectedClaim.remarks}</p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Documents */}
+              {selectedClaim.documents && selectedClaim.documents.length > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <h3 className="font-semibold mb-3">Uploaded Documents</h3>
+                    <div className="space-y-2">
+                      {selectedClaim.documents.map((doc: string, index: number) => (
+                        <div key={index} className="flex items-center justify-between p-2 border rounded">
+                          <div className="flex items-center gap-2">
+                            <FileText className="size-4" />
+                            <span className="text-sm">{doc}</span>
+                          </div>
+                          <Button size="sm" variant="ghost">
+                            <Download className="size-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Timeline */}
+              <Separator />
+              <div>
+                <h3 className="font-semibold mb-3">Claim Timeline</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 size-2 rounded-full bg-blue-500"></div>
+                    <div>
+                      <p className="font-medium text-sm">Claim Submitted</p>
+                      <p className="text-xs text-muted-foreground">{selectedClaim.submittedDate}</p>
+                    </div>
+                  </div>
+                  {selectedClaim.status === 'processing' && (
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 size-2 rounded-full bg-yellow-500"></div>
+                      <div>
+                        <p className="font-medium text-sm">Under Review</p>
+                        <p className="text-xs text-muted-foreground">Processing by TPA</p>
+                      </div>
+                    </div>
+                  )}
+                  {selectedClaim.status === 'approved' && (
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 size-2 rounded-full bg-green-500"></div>
+                      <div>
+                        <p className="font-medium text-sm">Claim Approved</p>
+                        <p className="text-xs text-muted-foreground">Amount: ₹{selectedClaim.approvedAmount.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  )}
+                  {selectedClaim.status === 'rejected' && (
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 size-2 rounded-full bg-red-500"></div>
+                      <div>
+                        <p className="font-medium text-sm">Claim Rejected</p>
+                        <p className="text-xs text-muted-foreground">{selectedClaim.remarks}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDetailsDialog(false)}>
+              Close
+            </Button>
+            {selectedClaim?.status === 'pending' && (
+              <Button onClick={() => {
+                toast({
+                  title: "Following Up",
+                  description: `Following up on claim ${selectedClaim.claimId} with ${selectedClaim.tpaName}`,
+                });
+                setShowDetailsDialog(false);
+              }}>
+                Follow Up
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Claim Submission Dialog */}
+      <Dialog open={showNewClaimDialog} onOpenChange={setShowNewClaimDialog}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Submit New Insurance Claim</DialogTitle>
+            <DialogDescription>
+              File a new insurance claim for patient treatment
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Patient Information */}
+            <div>
+              <h3 className="font-semibold mb-3">Patient Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="patientId">Patient ID *</Label>
+                  <Input
+                    id="patientId"
+                    value={newClaimData.patientId}
+                    onChange={(e) => setNewClaimData({...newClaimData, patientId: e.target.value})}
+                    placeholder="Enter patient ID"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="patientName">Patient Name *</Label>
+                  <Input
+                    id="patientName"
+                    value={newClaimData.patientName}
+                    onChange={(e) => setNewClaimData({...newClaimData, patientName: e.target.value})}
+                    placeholder="Enter patient name"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Insurance Information */}
+            <div>
+              <h3 className="font-semibold mb-3">Insurance Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="provider">Insurance Provider *</Label>
+                  <Select 
+                    value={newClaimData.provider} 
+                    onValueChange={(value) => setNewClaimData({...newClaimData, provider: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Star Health Insurance">Star Health Insurance</SelectItem>
+                      <SelectItem value="ICICI Lombard">ICICI Lombard</SelectItem>
+                      <SelectItem value="HDFC ERGO">HDFC ERGO</SelectItem>
+                      <SelectItem value="Bajaj Allianz">Bajaj Allianz</SelectItem>
+                      <SelectItem value="New India Assurance">New India Assurance</SelectItem>
+                      <SelectItem value="United India Insurance">United India Insurance</SelectItem>
+                      <SelectItem value="National Insurance">National Insurance</SelectItem>
+                      <SelectItem value="Oriental Insurance">Oriental Insurance</SelectItem>
+                      <SelectItem value="PMJAY">Ayushman Bharat (PM-JAY)</SelectItem>
+                      <SelectItem value="CGHS">CGHS</SelectItem>
+                      <SelectItem value="ESIC">ESIC</SelectItem>
+                      <SelectItem value="State Scheme">State Government Scheme</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="policyNumber">Policy/Card Number *</Label>
+                  <Input
+                    id="policyNumber"
+                    value={newClaimData.policyNumber}
+                    onChange={(e) => setNewClaimData({...newClaimData, policyNumber: e.target.value})}
+                    placeholder="Enter policy or card number"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="claimType">Claim Type *</Label>
+                  <Select 
+                    value={newClaimData.claimType} 
+                    onValueChange={(value) => setNewClaimData({...newClaimData, claimType: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select claim type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Cashless">Cashless</SelectItem>
+                      <SelectItem value="Reimbursement">Reimbursement</SelectItem>
+                      <SelectItem value="Government Scheme">Government Scheme</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="amount">Claim Amount (₹) *</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    value={newClaimData.amount}
+                    onChange={(e) => setNewClaimData({...newClaimData, amount: e.target.value})}
+                    placeholder="Enter claim amount"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Treatment Information */}
+            <div>
+              <h3 className="font-semibold mb-3">Treatment Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="treatmentType">Treatment Type *</Label>
+                  <Select 
+                    value={newClaimData.treatmentType} 
+                    onValueChange={(value) => setNewClaimData({...newClaimData, treatmentType: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select treatment type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="OPD Consultation">OPD Consultation</SelectItem>
+                      <SelectItem value="Emergency Care">Emergency Care</SelectItem>
+                      <SelectItem value="General Surgery">General Surgery</SelectItem>
+                      <SelectItem value="Cardiac Surgery">Cardiac Surgery</SelectItem>
+                      <SelectItem value="Orthopedic Treatment">Orthopedic Treatment</SelectItem>
+                      <SelectItem value="Maternity Care">Maternity Care</SelectItem>
+                      <SelectItem value="ICU Admission">ICU Admission</SelectItem>
+                      <SelectItem value="Dialysis">Dialysis</SelectItem>
+                      <SelectItem value="Chemotherapy">Chemotherapy</SelectItem>
+                      <SelectItem value="Diagnostic Tests">Diagnostic Tests</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="diagnosis">Diagnosis/ICD Code</Label>
+                  <Input
+                    id="diagnosis"
+                    value={newClaimData.diagnosis}
+                    onChange={(e) => setNewClaimData({...newClaimData, diagnosis: e.target.value})}
+                    placeholder="Enter diagnosis or ICD code"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="admissionDate">Admission Date *</Label>
+                  <Input
+                    id="admissionDate"
+                    type="date"
+                    value={newClaimData.admissionDate}
+                    onChange={(e) => setNewClaimData({...newClaimData, admissionDate: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="dischargeDate">Discharge Date</Label>
+                  <Input
+                    id="dischargeDate"
+                    type="date"
+                    value={newClaimData.dischargeDate}
+                    onChange={(e) => setNewClaimData({...newClaimData, dischargeDate: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Document Upload */}
+            <div>
+              <h3 className="font-semibold mb-3">Required Documents</h3>
+              <Alert className="mb-4">
+                <AlertCircle className="size-4" />
+                <AlertDescription>
+                  Please ensure all documents are clear and legible. Required documents vary by insurance provider.
+                </AlertDescription>
+              </Alert>
+              
+              <div className="space-y-3">
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" />
+                  <span className="text-sm">Discharge Summary</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" />
+                  <span className="text-sm">Hospital Bills (Original)</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" />
+                  <span className="text-sm">Prescription & Pharmacy Bills</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" />
+                  <span className="text-sm">Investigation Reports (Lab/Radiology)</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" />
+                  <span className="text-sm">Doctor's Certificate</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" />
+                  <span className="text-sm">Insurance Card/Policy Copy</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input type="checkbox" />
+                  <span className="text-sm">Government ID (Aadhar/PAN)</span>
+                </label>
+                {(newClaimData.provider === 'PMJAY' || newClaimData.provider === 'CGHS' || newClaimData.provider === 'ESIC') && (
+                  <>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" />
+                      <span className="text-sm">ABHA Card / Health ID</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" />
+                      <span className="text-sm">Income Certificate (if applicable)</span>
+                    </label>
+                  </>
+                )}
+              </div>
+
+              <div className="mt-4 border-2 border-dashed rounded-lg p-6 text-center">
+                <Upload className="size-10 mx-auto text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground mb-2">
+                  Drag and drop files here or click to browse
+                </p>
+                <Button variant="outline" size="sm">
+                  <Upload className="size-4 mr-2" />
+                  Choose Files
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Supported: PDF, JPG, PNG (Max 5MB per file)
+                </p>
+              </div>
+            </div>
+
+            {/* Additional Notes */}
+            <div>
+              <Label htmlFor="notes">Additional Notes</Label>
+              <Textarea
+                id="notes"
+                placeholder="Enter any additional information or special instructions..."
+                rows={3}
+              />
+            </div>
+
+            {/* Pre-Authorization Alert for Cashless Claims */}
+            {newClaimData.claimType === 'Cashless' && (
+              <Alert className="border-blue-200 bg-blue-50">
+                <AlertCircle className="size-4" />
+                <AlertDescription>
+                  <strong>Pre-Authorization Required:</strong> For cashless claims, pre-authorization must be obtained from the TPA before treatment. 
+                  Ensure pre-auth form is submitted at least 48 hours before planned procedures.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowNewClaimDialog(false);
+                setNewClaimData({
+                  patientId: '',
+                  patientName: '',
+                  provider: '',
+                  policyNumber: '',
+                  claimType: '',
+                  treatmentType: '',
+                  amount: '',
+                  diagnosis: '',
+                  admissionDate: '',
+                  dischargeDate: '',
+                  documents: []
+                });
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                // Validate required fields
+                if (!newClaimData.patientId || !newClaimData.patientName || !newClaimData.provider || 
+                    !newClaimData.policyNumber || !newClaimData.claimType || !newClaimData.treatmentType || 
+                    !newClaimData.amount || !newClaimData.admissionDate) {
+                  toast({
+                    title: "Missing Information",
+                    description: "Please fill in all required fields",
+                    variant: "destructive"
+                  });
+                  return;
+                }
+
+                // Generate claim ID
+                const claimId = `INS-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+                
+                toast({
+                  title: "Claim Submitted Successfully",
+                  description: `Claim ${claimId} has been submitted for processing. You will receive updates via SMS and email.`,
+                });
+                
+                setShowNewClaimDialog(false);
+                setNewClaimData({
+                  patientId: '',
+                  patientName: '',
+                  provider: '',
+                  policyNumber: '',
+                  claimType: '',
+                  treatmentType: '',
+                  amount: '',
+                  diagnosis: '',
+                  admissionDate: '',
+                  dischargeDate: '',
+                  documents: []
+                });
+              }}
+            >
+              <Shield className="mr-2 size-4" />
+              Submit Claim
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

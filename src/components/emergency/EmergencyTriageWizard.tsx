@@ -102,13 +102,6 @@ export default function EmergencyTriageWizard({ onComplete }: { onComplete: (dat
     }
   };
 
-  const handleComplete = () => {
-    // Calculate triage level based on vital signs and symptoms
-    const calculatedTriageLevel = calculateTriageLevel(triageData);
-    const finalData = { ...triageData, triageLevel: calculatedTriageLevel } as TriageData;
-    onComplete(finalData);
-  };
-
   const calculateTriageLevel = (data: Partial<TriageData>): string => {
     // Simple triage algorithm based on vital signs and symptoms
     const bp = data.bloodPressure?.split('/').map(Number) || [120, 80];
@@ -135,6 +128,13 @@ export default function EmergencyTriageWizard({ onComplete }: { onComplete: (dat
       return 'standard';
     }
     return 'minor';
+  };
+
+  const handleComplete = () => {
+    // Calculate triage level based on vital signs and symptoms
+    const calculatedTriageLevel = calculateTriageLevel(triageData);
+    const finalData = { ...triageData, triageLevel: calculatedTriageLevel } as TriageData;
+    onComplete(finalData);
   };
 
   const getTriageBadge = (level: string) => {

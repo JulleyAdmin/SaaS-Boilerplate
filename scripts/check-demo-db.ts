@@ -39,7 +39,7 @@ async function checkDemoDatabase() {
     
     if (demoPatients.length > 0) {
       console.log('\nPatient list:');
-      demoPatients.forEach((patient, index) => {
+      demoPatients.forEach((patient: any, index: number) => {
         console.log(`${index + 1}. ${patient.firstName} ${patient.lastName} (${patient.patientCode})`);
       });
     }

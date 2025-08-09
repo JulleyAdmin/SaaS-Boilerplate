@@ -1,5 +1,5 @@
-import DoctorDashboard from '@/components/doctor/DoctorDashboard';
+import DoctorDashboardRedesigned from '@/components/doctor/DoctorDashboardRedesigned';
 
 export default function DoctorDashboardPage() {
-  return <DoctorDashboard />;
+  return <DoctorDashboardRedesigned />;
 }

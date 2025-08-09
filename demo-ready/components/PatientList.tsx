@@ -8,7 +8,7 @@ import { Search, Filter, Plus, Download, Trash2, Edit, Eye, Users, UserCheck, Cl
 import { usePatients } from '@/hooks/api/usePatients';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';

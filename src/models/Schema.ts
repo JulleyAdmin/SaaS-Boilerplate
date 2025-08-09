@@ -52,6 +52,9 @@ export const programsSchema = pgSchema('programs');
 export const configSchema = pgSchema('config');
 export const networkSchema = pgSchema('network');
 export const collaborationSchema = pgSchema('collaboration');
+export const engagementSchema = pgSchema('engagement');
+export const csrSchema = pgSchema('csr');
+export const crmSchema = pgSchema('crm');
 
 // ============================================================================
 // ENHANCED ENUM TYPES (95+ Roles)
@@ -471,6 +474,43 @@ export const equipmentTypeEnum = pgEnum('equipment_type_enum', [
   'IABP',
   'ECMO',
   'Dialysis-Machine',
+]);
+
+// ============================================================================
+// ENGAGEMENT, CSR & CRM ENUM TYPES
+// ============================================================================
+
+// Patient engagement enums
+export const engagementLevelEnum = pgEnum('engagement_level_enum', ['cold', 'warm', 'hot', 'active', 'loyal']);
+export const journeyStageEnum = pgEnum('journey_stage_enum', ['awareness', 'consideration', 'active', 'loyal', 'at_risk', 'churned']);
+export const goalStatusEnum = pgEnum('goal_status_enum', ['active', 'paused', 'achieved', 'abandoned']);
+export const goalTypeEnum = pgEnum('goal_type_enum', [
+  'weight_loss', 'weight_gain', 'bp_control', 'diabetes_management', 
+  'cholesterol_control', 'fitness_improvement', 'quit_smoking', 'mental_health'
+]);
+export const feedbackTypeEnum = pgEnum('feedback_type_enum', ['consultation', 'service', 'facility', 'staff', 'overall']);
+
+// CSR and community health enums
+export const programTypeEnum = pgEnum('program_type_enum', [
+  'health_camp', 'vaccination_drive', 'screening_program', 'health_education',
+  'blood_donation', 'mental_health_awareness', 'nutrition_program', 'fitness_program'
+]);
+export const programStatusEnum = pgEnum('program_status_enum', ['planned', 'approved', 'active', 'completed', 'cancelled']);
+export const eventStatusEnum = pgEnum('event_status_enum', ['scheduled', 'in_progress', 'completed', 'cancelled']);
+export const volunteerStatusEnum = pgEnum('volunteer_status_enum', ['active', 'inactive', 'training', 'suspended']);
+export const venueTypeEnum = pgEnum('venue_type_enum', ['hospital', 'community_center', 'school', 'mobile_van', 'outdoor']);
+
+// CRM and marketing enums
+export const leadStatusEnum = pgEnum('lead_status_enum', ['new', 'contacted', 'qualified', 'converted', 'lost']);
+export const leadSourceEnum = pgEnum('lead_source_enum', [
+  'website', 'referral', 'event', 'campaign', 'walk_in', 'social_media', 'phone_inquiry'
+]);
+export const campaignTypeEnum = pgEnum('campaign_type_enum', ['awareness', 'acquisition', 'retention', 'reactivation']);
+export const campaignStatusEnum = pgEnum('campaign_status_enum', ['draft', 'scheduled', 'active', 'paused', 'completed']);
+export const segmentTypeEnum = pgEnum('segment_type_enum', ['static', 'dynamic']);
+export const automationTriggerEnum = pgEnum('automation_trigger_enum', [
+  'patient_registered', 'appointment_booked', 'consultation_completed', 
+  'prescription_issued', 'bill_generated', 'payment_received', 'feedback_submitted'
 ]);
 
 // ============================================================================
@@ -2243,6 +2283,519 @@ export const oauthClientPermission = securitySchema.table('oauth_client_permissi
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// ============================================================================
+// PATIENT ENGAGEMENT TABLES
+// ============================================================================
+
+// Patient engagement preferences
+export const patientPreferences = engagementSchema.table('patient_preferences', {
+  preferenceId: uuid('preference_id').primaryKey().defaultRandom(),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Communication preferences
+  preferredLanguage: varchar('preferred_language', { length: 10 }).default('en'),
+  preferredChannel: communicationTypeEnum('preferred_channel').default('whatsapp'),
+  communicationFrequency: varchar('communication_frequency', { length: 20 }).default('weekly'),
+  quietHoursStart: time('quiet_hours_start'),
+  quietHoursEnd: time('quiet_hours_end'),
+
+  // Engagement preferences
+  interestedPrograms: text('interested_programs').array(),
+  healthGoals: text('health_goals').array(),
+  preferredDoctorId: uuid('preferred_doctor_id').references(() => users.userId),
+  allowFamilyAccess: boolean('allow_family_access').default(false),
+
+  // Consent management
+  marketingConsent: boolean('marketing_consent').default(false),
+  researchConsent: boolean('research_consent').default(false),
+  dataSharingConsent: boolean('data_sharing_consent').default(false),
+  consentUpdatedAt: timestamp('consent_updated_at', { mode: 'date' }),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  patientIdIdx: index('patient_preferences_patient_id_idx').on(table.patientId),
+  clinicIdIdx: index('patient_preferences_clinic_id_idx').on(table.clinicId),
+}));
+
+// Patient journey tracking
+export const patientJourney = crmSchema.table('patient_journey', {
+  journeyId: uuid('journey_id').primaryKey().defaultRandom(),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Journey details
+  stage: journeyStageEnum('stage').notNull(),
+  subStage: varchar('sub_stage', { length: 100 }),
+  entryDate: timestamp('entry_date', { mode: 'date' }).defaultNow().notNull(),
+  expectedTransitionDate: date('expected_transition_date'),
+
+  // Engagement metrics
+  engagementScore: integer('engagement_score').default(0), // 0-100
+  lastInteractionDate: timestamp('last_interaction_date', { mode: 'date' }),
+  interactionCount: integer('interaction_count').default(0),
+  responseRate: decimal('response_rate', { precision: 5, scale: 2 }),
+
+  // Predictive analytics
+  churnRiskScore: decimal('churn_risk_score', { precision: 5, scale: 2 }), // 0-100
+  lifetimeValue: decimal('lifetime_value', { precision: 12, scale: 2 }),
+  nextBestAction: varchar('next_best_action', { length: 200 }),
+
+  // Segmentation
+  segments: text('segments').array(),
+  personas: text('personas').array(),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  patientIdIdx: index('patient_journey_patient_id_idx').on(table.patientId),
+  stageIdx: index('patient_journey_stage_idx').on(table.stage),
+  engagementScoreIdx: index('patient_journey_engagement_score_idx').on(table.engagementScore),
+}));
+
+// Health goals and tracking
+export const healthGoals = engagementSchema.table('health_goals', {
+  goalId: uuid('goal_id').primaryKey().defaultRandom(),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Goal definition
+  goalType: goalTypeEnum('goal_type').notNull(),
+  goalName: varchar('goal_name', { length: 200 }).notNull(),
+  targetValue: jsonb('target_value'), // {metric: value, unit: string}
+  currentValue: jsonb('current_value'),
+
+  // Timeline
+  startDate: date('start_date').notNull(),
+  targetDate: date('target_date').notNull(),
+  achievedDate: date('achieved_date'),
+
+  // Progress tracking
+  progressPercentage: integer('progress_percentage').default(0),
+  milestones: jsonb('milestones').array(), // [{date, value, note}]
+
+  // Support system
+  assignedCoachId: uuid('assigned_coach_id').references(() => users.userId),
+  supportGroupId: uuid('support_group_id'),
+
+  // Status
+  status: goalStatusEnum('status').default('active'),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+}, table => ({
+  patientIdIdx: index('health_goals_patient_id_idx').on(table.patientId),
+  goalTypeIdx: index('health_goals_goal_type_idx').on(table.goalType),
+  statusIdx: index('health_goals_status_idx').on(table.status),
+}));
+
+// Patient feedback and satisfaction
+export const patientFeedback = engagementSchema.table('patient_feedback', {
+  feedbackId: uuid('feedback_id').primaryKey().defaultRandom(),
+  patientId: uuid('patient_id').notNull().references(() => patients.patientId),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Context
+  feedbackType: feedbackTypeEnum('feedback_type').notNull(),
+  referenceId: uuid('reference_id'), // consultation_id, appointment_id, etc.
+  departmentId: uuid('department_id').references(() => departments.departmentId),
+
+  // Ratings
+  overallRating: integer('overall_rating'), // 1-5
+  waitTimeRating: integer('wait_time_rating'), // 1-5
+  staffRating: integer('staff_rating'), // 1-5
+  facilityRating: integer('facility_rating'), // 1-5
+  treatmentRating: integer('treatment_rating'), // 1-5
+
+  // Feedback
+  feedbackText: text('feedback_text'),
+  improvementSuggestions: text('improvement_suggestions'),
+
+  // NPS score
+  npsScore: integer('nps_score'), // 0-10
+  wouldRecommend: boolean('would_recommend'),
+
+  // Follow-up
+  requiresFollowup: boolean('requires_followup').default(false),
+  followupCompleted: boolean('followup_completed').default(false),
+  followupNotes: text('followup_notes'),
+
+  submittedAt: timestamp('submitted_at', { mode: 'date' }).defaultNow().notNull(),
+  platform: varchar('platform', { length: 20 }), // web, mobile, kiosk, sms
+  anonymous: boolean('anonymous').default(false),
+}, table => ({
+  patientIdIdx: index('patient_feedback_patient_id_idx').on(table.patientId),
+  feedbackTypeIdx: index('patient_feedback_feedback_type_idx').on(table.feedbackType),
+  overallRatingIdx: index('patient_feedback_overall_rating_idx').on(table.overallRating),
+  submittedAtIdx: index('patient_feedback_submitted_at_idx').on(table.submittedAt),
+}));
+
+// ============================================================================
+// CSR EVENT MANAGEMENT TABLES
+// ============================================================================
+
+// CSR programs and events
+export const csrPrograms = csrSchema.table('programs', {
+  programId: uuid('program_id').primaryKey().defaultRandom(),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Program details
+  programName: varchar('program_name', { length: 200 }).notNull(),
+  programType: programTypeEnum('program_type').notNull(),
+  description: text('description'),
+  objectives: text('objectives').array(),
+
+  // Target audience
+  targetDemographic: varchar('target_demographic', { length: 100 }),
+  targetCount: integer('target_count'),
+  eligibilityCriteria: jsonb('eligibility_criteria'),
+
+  // Timeline
+  startDate: date('start_date').notNull(),
+  endDate: date('end_date'),
+  registrationDeadline: date('registration_deadline'),
+
+  // Location
+  venueType: venueTypeEnum('venue_type'),
+  venueName: varchar('venue_name', { length: 200 }),
+  venueAddress: text('venue_address'),
+
+  // Resources
+  budget: decimal('budget', { precision: 12, scale: 2 }),
+  requiredStaff: integer('required_staff'),
+  requiredVolunteers: integer('required_volunteers'),
+  equipmentNeeded: text('equipment_needed').array(),
+
+  // Partners
+  partnerOrganizations: text('partner_organizations').array(),
+  sponsors: text('sponsors').array(),
+  governmentSchemeId: uuid('government_scheme_id').references(() => governmentSchemes.schemeId),
+
+  // Status
+  status: programStatusEnum('status').default('planned'),
+  approvalStatus: varchar('approval_status', { length: 20 }).default('pending'),
+  approvedBy: uuid('approved_by').references(() => users.userId),
+
+  // Impact metrics
+  actualBeneficiaries: integer('actual_beneficiaries').default(0),
+  servicesProvided: jsonb('services_provided'), // {service_type: count}
+  feedbackScore: decimal('feedback_score', { precision: 3, scale: 2 }),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+}, table => ({
+  clinicIdIdx: index('csr_programs_clinic_id_idx').on(table.clinicId),
+  programTypeIdx: index('csr_programs_program_type_idx').on(table.programType),
+  statusIdx: index('csr_programs_status_idx').on(table.status),
+  startDateIdx: index('csr_programs_start_date_idx').on(table.startDate),
+}));
+
+// CSR event schedule
+export const csrEvents = csrSchema.table('events', {
+  eventId: uuid('event_id').primaryKey().defaultRandom(),
+  programId: uuid('program_id').notNull().references(() => csrPrograms.programId),
+
+  // Event details
+  eventName: varchar('event_name', { length: 200 }).notNull(),
+  eventDate: date('event_date').notNull(),
+  startTime: time('start_time').notNull(),
+  endTime: time('end_time').notNull(),
+
+  // Capacity
+  maxParticipants: integer('max_participants'),
+  registeredCount: integer('registered_count').default(0),
+  attendedCount: integer('attended_count').default(0),
+
+  // Activities
+  activities: jsonb('activities').array(), // [{name, duration, facilitator, materials}]
+
+  // Team assignment
+  coordinatorId: uuid('coordinator_id').references(() => users.userId),
+  teamMembers: uuid('team_members').array(),
+  volunteers: uuid('volunteers').array(),
+
+  // Status
+  status: eventStatusEnum('status').default('scheduled'),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  programIdIdx: index('csr_events_program_id_idx').on(table.programId),
+  eventDateIdx: index('csr_events_event_date_idx').on(table.eventDate),
+  statusIdx: index('csr_events_status_idx').on(table.status),
+}));
+
+// CSR event registrations
+export const csrEventRegistrations = csrSchema.table('event_registrations', {
+  registrationId: uuid('registration_id').primaryKey().defaultRandom(),
+  eventId: uuid('event_id').notNull().references(() => csrEvents.eventId),
+
+  // Participant details
+  participantName: varchar('participant_name', { length: 200 }).notNull(),
+  age: integer('age'),
+  gender: genderEnum('gender'),
+  phone: varchar('phone', { length: 20 }),
+  email: varchar('email', { length: 100 }),
+  address: text('address'),
+
+  // Medical info (for health camps)
+  bloodGroup: bloodGroupEnum('blood_group'),
+  knownConditions: text('known_conditions').array(),
+  currentMedications: text('current_medications').array(),
+
+  // Registration details
+  registrationDate: timestamp('registration_date', { mode: 'date' }).defaultNow().notNull(),
+  registrationNumber: varchar('registration_number', { length: 50 }).unique(),
+  qrCode: varchar('qr_code', { length: 200 }),
+
+  // Attendance
+  checkedIn: boolean('checked_in').default(false),
+  checkInTime: timestamp('check_in_time', { mode: 'date' }),
+  servicesAvailed: jsonb('services_availed').array(), // [{service, provider, time, notes}]
+
+  // Follow-up
+  requiresFollowup: boolean('requires_followup').default(false),
+  followupDate: date('followup_date'),
+  followupNotes: text('followup_notes'),
+  convertedToPatient: boolean('converted_to_patient').default(false),
+  patientId: uuid('patient_id').references(() => patients.patientId),
+
+  // Source
+  source: varchar('source', { length: 50 }), // walk-in, online, phone, referral
+  referredBy: varchar('referred_by', { length: 200 }),
+}, table => ({
+  eventIdIdx: index('csr_event_registrations_event_id_idx').on(table.eventId),
+  registrationNumberIdx: uniqueIndex('csr_event_registrations_registration_number_idx').on(table.registrationNumber),
+  phoneIdx: index('csr_event_registrations_phone_idx').on(table.phone),
+}));
+
+// Volunteer management
+export const volunteers = csrSchema.table('volunteers', {
+  volunteerId: uuid('volunteer_id').primaryKey().defaultRandom(),
+
+  // Personal information
+  firstName: varchar('first_name', { length: 100 }).notNull(),
+  lastName: varchar('last_name', { length: 100 }).notNull(),
+  email: varchar('email', { length: 100 }).unique().notNull(),
+  phone: varchar('phone', { length: 20 }).notNull(),
+
+  // Professional background
+  occupation: varchar('occupation', { length: 100 }),
+  organization: varchar('organization', { length: 200 }),
+  skills: text('skills').array(),
+  languages: text('languages').array(),
+
+  // Availability
+  availableDays: integer('available_days').array(), // 0=Sunday, 6=Saturday
+  availableHours: jsonb('available_hours'), // {day: {start, end}}
+
+  // Verification
+  idVerified: boolean('id_verified').default(false),
+  backgroundCheckCompleted: boolean('background_check_completed').default(false),
+  trainingCompleted: boolean('training_completed').default(false),
+
+  // Activity tracking
+  totalHours: integer('total_hours').default(0),
+  eventsParticipated: integer('events_participated').default(0),
+  rating: decimal('rating', { precision: 3, scale: 2 }),
+  badges: text('badges').array(),
+
+  // Status
+  status: volunteerStatusEnum('status').default('active'),
+
+  joinedDate: date('joined_date').defaultNow().notNull(),
+  lastActiveDate: date('last_active_date'),
+}, table => ({
+  emailIdx: uniqueIndex('volunteers_email_idx').on(table.email),
+  phoneIdx: index('volunteers_phone_idx').on(table.phone),
+  statusIdx: index('volunteers_status_idx').on(table.status),
+}));
+
+// ============================================================================
+// CRM & MARKETING AUTOMATION TABLES
+// ============================================================================
+
+// CRM campaigns
+export const crmCampaigns = crmSchema.table('campaigns', {
+  campaignId: uuid('campaign_id').primaryKey().defaultRandom(),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Campaign details
+  campaignName: varchar('campaign_name', { length: 200 }).notNull(),
+  campaignType: campaignTypeEnum('campaign_type').notNull(),
+  objective: text('objective'),
+
+  // Target audience
+  targetSegments: text('target_segments').array(),
+  targetCriteria: jsonb('target_criteria'), // SQL-like conditions
+  estimatedReach: integer('estimated_reach'),
+
+  // Content
+  messageTemplates: jsonb('message_templates').array(), // [{channel, template_id, content}]
+  creativeAssets: text('creative_assets').array(), // URLs to images/videos
+
+  // Schedule
+  startDate: timestamp('start_date', { mode: 'date' }).notNull(),
+  endDate: timestamp('end_date', { mode: 'date' }),
+  scheduleType: varchar('schedule_type', { length: 20 }), // immediate, scheduled, recurring
+  recurrencePattern: jsonb('recurrence_pattern'),
+
+  // Budget
+  budgetAllocated: decimal('budget_allocated', { precision: 12, scale: 2 }),
+  budgetSpent: decimal('budget_spent', { precision: 12, scale: 2 }).default('0'),
+  costPerAcquisition: decimal('cost_per_acquisition', { precision: 10, scale: 2 }),
+
+  // Performance
+  sentCount: integer('sent_count').default(0),
+  deliveredCount: integer('delivered_count').default(0),
+  openedCount: integer('opened_count').default(0),
+  clickedCount: integer('clicked_count').default(0),
+  convertedCount: integer('converted_count').default(0),
+
+  // Status
+  status: campaignStatusEnum('status').default('draft'),
+  approvalStatus: varchar('approval_status', { length: 20 }),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+}, table => ({
+  clinicIdIdx: index('crm_campaigns_clinic_id_idx').on(table.clinicId),
+  campaignTypeIdx: index('crm_campaigns_campaign_type_idx').on(table.campaignType),
+  statusIdx: index('crm_campaigns_status_idx').on(table.status),
+  startDateIdx: index('crm_campaigns_start_date_idx').on(table.startDate),
+}));
+
+// Lead management
+export const leads = crmSchema.table('leads', {
+  leadId: uuid('lead_id').primaryKey().defaultRandom(),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Lead information
+  firstName: varchar('first_name', { length: 100 }),
+  lastName: varchar('last_name', { length: 100 }),
+  phone: varchar('phone', { length: 20 }).notNull(),
+  email: varchar('email', { length: 100 }),
+
+  // Demographics
+  ageRange: varchar('age_range', { length: 20 }),
+  gender: genderEnum('gender'),
+  location: varchar('location', { length: 200 }),
+
+  // Lead source
+  source: leadSourceEnum('source').notNull(),
+  sourceDetails: jsonb('source_details'),
+  referringPatientId: uuid('referring_patient_id').references(() => patients.patientId),
+  campaignId: uuid('campaign_id').references(() => crmCampaigns.campaignId),
+
+  // Interest
+  interestedServices: text('interested_services').array(),
+  healthConcerns: text('health_concerns').array(),
+  preferredContactMethod: varchar('preferred_contact_method', { length: 20 }),
+
+  // Lead scoring
+  leadScore: integer('lead_score').default(0), // 0-100
+  scoreFactors: jsonb('score_factors'), // {factor: score}
+  qualificationStatus: varchar('qualification_status', { length: 20 }), // unqualified, qualified, nurturing, converted
+
+  // Engagement
+  lastContactDate: timestamp('last_contact_date', { mode: 'date' }),
+  contactAttempts: integer('contact_attempts').default(0),
+  engagementLevel: engagementLevelEnum('engagement_level'),
+
+  // Conversion
+  converted: boolean('converted').default(false),
+  conversionDate: timestamp('conversion_date', { mode: 'date' }),
+  patientId: uuid('patient_id').references(() => patients.patientId),
+  firstAppointmentId: uuid('first_appointment_id').references(() => appointments.appointmentId),
+
+  // Assignment
+  assignedTo: uuid('assigned_to').references(() => users.userId),
+
+  // Status
+  status: leadStatusEnum('status').default('new'),
+  lostReason: varchar('lost_reason', { length: 100 }),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+}, table => ({
+  clinicIdIdx: index('leads_clinic_id_idx').on(table.clinicId),
+  phoneIdx: index('leads_phone_idx').on(table.phone),
+  sourceIdx: index('leads_source_idx').on(table.source),
+  statusIdx: index('leads_status_idx').on(table.status),
+  leadScoreIdx: index('leads_lead_score_idx').on(table.leadScore),
+  assignedToIdx: index('leads_assigned_to_idx').on(table.assignedTo),
+}));
+
+// Marketing automation rules
+export const automationRules = crmSchema.table('automation_rules', {
+  ruleId: uuid('rule_id').primaryKey().defaultRandom(),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Rule definition
+  ruleName: varchar('rule_name', { length: 200 }).notNull(),
+  ruleType: varchar('rule_type', { length: 50 }), // trigger, condition, action
+  description: text('description'),
+
+  // Trigger configuration
+  triggerEvent: automationTriggerEnum('trigger_event'),
+  triggerConditions: jsonb('trigger_conditions'),
+
+  // Action configuration
+  actionType: varchar('action_type', { length: 50 }), // send_message, update_field, create_task
+  actionConfig: jsonb('action_config'),
+  delayMinutes: integer('delay_minutes').default(0),
+
+  // Execution
+  isActive: boolean('is_active').default(true),
+  priority: integer('priority').default(0),
+  maxExecutionsPerPatient: integer('max_executions_per_patient'),
+
+  // Performance
+  totalExecutions: integer('total_executions').default(0),
+  successCount: integer('success_count').default(0),
+  lastExecutedAt: timestamp('last_executed_at', { mode: 'date' }),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+}, table => ({
+  clinicIdIdx: index('automation_rules_clinic_id_idx').on(table.clinicId),
+  triggerEventIdx: index('automation_rules_trigger_event_idx').on(table.triggerEvent),
+  isActiveIdx: index('automation_rules_is_active_idx').on(table.isActive),
+}));
+
+// Patient segmentation
+export const patientSegments = crmSchema.table('segments', {
+  segmentId: uuid('segment_id').primaryKey().defaultRandom(),
+  clinicId: uuid('clinic_id').notNull().references(() => clinics.clinicId),
+
+  // Segment definition
+  segmentName: varchar('segment_name', { length: 200 }).notNull(),
+  description: text('description'),
+
+  // Criteria
+  criteriaType: segmentTypeEnum('criteria_type'),
+  criteriaDefinition: jsonb('criteria_definition'), // SQL-like conditions
+
+  // Members
+  memberCount: integer('member_count').default(0),
+  lastCalculatedAt: timestamp('last_calculated_at', { mode: 'date' }),
+
+  // Usage
+  usedInCampaigns: integer('used_in_campaigns').default(0),
+
+  // Status
+  isActive: boolean('is_active').default(true),
+
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  createdBy: uuid('created_by').references(() => users.userId),
+}, table => ({
+  clinicIdIdx: index('patient_segments_clinic_id_idx').on(table.clinicId),
+  criteriaTypeIdx: index('patient_segments_criteria_type_idx').on(table.criteriaType),
+  isActiveIdx: index('patient_segments_is_active_idx').on(table.isActive),
+}));
+
 export {
   // Clinical workflow
   appointments as appointmentsTable,
@@ -2291,6 +2844,21 @@ export {
   whatsappMessages as whatsappMessagesTable,
   // Communication
   whatsappTemplates as whatsappTemplatesTable,
+  // Patient engagement
+  patientPreferences as patientPreferencesTable,
+  patientJourney as patientJourneyTable,
+  healthGoals as healthGoalsTable,
+  patientFeedback as patientFeedbackTable,
+  // CSR and community health
+  csrPrograms as csrProgramsTable,
+  csrEvents as csrEventsTable,
+  csrEventRegistrations as csrEventRegistrationsTable,
+  volunteers as volunteersTable,
+  // CRM and marketing
+  crmCampaigns as crmCampaignsTable,
+  leads as leadsTable,
+  automationRules as automationRulesTable,
+  patientSegments as patientSegmentsTable,
 };
 
 // ============================================================================

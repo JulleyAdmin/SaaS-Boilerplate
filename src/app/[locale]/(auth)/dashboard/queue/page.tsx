@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarInitials } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Clock, Users, Search, RefreshCw, Play, Pause, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 
@@ -204,7 +204,7 @@ export default function QueueManagementPage() {
                     <div className="flex items-center space-x-4">
                       <Avatar className="size-10">
                         <AvatarFallback>
-                          <AvatarInitials name={patient.name} />
+                          {patient.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
@@ -244,7 +244,7 @@ export default function QueueManagementPage() {
                     <div className="flex items-center space-x-4">
                       <Avatar className="size-10">
                         <AvatarFallback>
-                          <AvatarInitials name={patient.name} />
+                          {patient.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>

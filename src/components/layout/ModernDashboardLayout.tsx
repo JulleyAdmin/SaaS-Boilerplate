@@ -17,6 +17,7 @@ import {
   Hospital,
   Key,
   LayoutDashboard,
+  Megaphone,
   Menu,
   MessageSquare,
   Monitor,
@@ -26,19 +27,35 @@ import {
   Settings,
   Shield,
   Stethoscope,
+  Target,
   TestTube,
+  TrendingUp,
   UserCog,
+  UserPlus,
   Users,
   Webhook,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { DashboardHeader } from '@/features/dashboard/DashboardHeader';
 import { cn } from '@/lib/utils';
 import type { UserRole } from '@/types/hms';
@@ -66,89 +83,117 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
   const isICUStaff = userRole === 'ICU-Specialist' || userRole === 'ICU-Nurse';
 
   const allItems: NavItem[] = [
+    // 1. Home - Starting point
     {
-      title: t('Navigation.dashboard'),
+      title: 'Home',
       href: '/dashboard',
       icon: Home,
     },
-    // Doctor Dashboard - visible to all users for development
+    
+    // 2. Reception & Registration - First patient touchpoint
     {
-      title: 'Doctor Dashboard',
-      href: '/dashboard/doctor',
-      icon: Stethoscope,
-      badge: isDoctor ? 'primary' : undefined,
-    },
-    {
-      title: t('Navigation.patient_management'),
+      title: t('Navigation.reception'),
       icon: Users,
       children: [
         {
-          title: t('Navigation.patients'),
-          href: '/dashboard/patients',
+          title: t('Navigation.patient_registration'),
+          href: '/dashboard/registration',
+          icon: UserPlus,
+        },
+        {
+          title: t('Navigation.queue_management'),
+          href: '/dashboard/queue',
           icon: Users,
         },
         {
-          title: t('Navigation.appointments'),
-          href: '/dashboard/appointments',
-          icon: Calendar,
-        },
-        {
-          title: t('Navigation.medical_records'),
-          href: '/dashboard/medical-records',
+          title: t('Navigation.token_generation'),
+          href: '/dashboard/tokens',
           icon: FileText,
-          roles: ['Doctor', 'Nurse', 'Admin'],
-        },
-        {
-          title: t('Navigation.family_management'),
-          href: '/dashboard/families',
-          icon: Heart,
         },
       ],
     },
+    
+    // 3. Emergency Services - Critical care path
     {
-      title: t('Navigation.clinical_operations'),
-      icon: Stethoscope,
+      title: 'Emergency Services',
+      icon: AlertCircle,
       children: [
         {
-          title: t('Navigation.consultations'),
-          href: '/dashboard/consultations',
-          icon: Stethoscope,
-          roles: ['Doctor'],
-        },
-        {
-          title: t('Navigation.prescriptions'),
-          href: '/dashboard/prescriptions',
-          icon: Pill,
-        },
-        {
-          title: t('Navigation.lab_results'),
-          href: '/dashboard/lab-results',
-          icon: TestTube,
-        },
-        {
-          title: t('Navigation.vital_signs'),
-          href: '/dashboard/vitals',
-          icon: Activity,
-          roles: ['Doctor', 'Nurse'],
-        },
-        {
-          title: t('Navigation.emergency_care'),
+          title: 'Emergency Care',
           href: '/dashboard/emergency',
           icon: AlertCircle,
           badge: 'urgent',
         },
         {
-          title: 'ICU Monitoring',
+          title: 'ICU Live Monitoring',
           href: '/dashboard/icu',
           icon: Monitor,
           badge: 'live',
         },
       ],
     },
+    
+    // 4. Patient Management - Core patient data
+    {
+      title: 'Patient Management',
+      icon: Users,
+      children: [
+        {
+          title: 'Patients',
+          href: '/dashboard/patients',
+          icon: Users,
+        },
+        {
+          title: 'Appointments',
+          href: '/dashboard/appointments',
+          icon: Calendar,
+        },
+        {
+          title: 'Medical Records',
+          href: '/dashboard/medical-records',
+          icon: FileText,
+        },
+        {
+          title: 'Families',
+          href: '/dashboard/families',
+          icon: Heart,
+        },
+      ],
+    },
+    
+    // 5. Clinical Services - Doctor/consultation workflow
+    {
+      title: 'Clinical Services',
+      icon: Stethoscope,
+      children: [
+        {
+          title: 'Doctor Dashboard',
+          href: '/dashboard/doctor',
+          icon: Stethoscope,
+          badge: isDoctor ? 'primary' : undefined,
+        },
+        {
+          title: 'Consultations',
+          href: '/dashboard/consultations',
+          icon: Stethoscope,
+        },
+        {
+          title: 'Prescriptions',
+          href: '/dashboard/prescriptions',
+          icon: Pill,
+        },
+        {
+          title: 'Vital Signs',
+          href: '/dashboard/vitals',
+          icon: Activity,
+        },
+      ],
+    },
+    
+    // 6. Ward & Nursing - Inpatient care
     {
       title: t('Navigation.ward_management'),
       icon: Bed,
-      roles: ['Nurse', 'Ward-Sister', 'Nursing-Supervisor'],
       children: [
         {
           title: t('Navigation.bed_management'),
@@ -167,66 +212,11 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
         },
       ],
     },
-    {
-      title: t('Navigation.icu_management'),
-      icon: Hospital,
-      roles: ['ICU-Specialist', 'ICU-Nurse', 'Doctor', 'Admin'],
-      children: [
-        {
-          title: t('Navigation.icu_dashboard'),
-          href: '/dashboard/icu',
-          icon: LayoutDashboard,
-        },
-        {
-          title: t('Navigation.critical_care'),
-          href: '/dashboard/icu/critical-care',
-          icon: Heart,
-        },
-        {
-          title: t('Navigation.ventilator_mgmt'),
-          href: '/dashboard/icu/ventilators',
-          icon: Activity,
-        },
-      ],
-    },
-    // Pharmacy - temporarily visible to all for development
-    {
-      title: t('Navigation.pharmacy'),
-      icon: Package,
-      // roles: ['Pharmacist', 'Chief-Pharmacist', 'Pharmacy-Assistant'], // Disabled for development
-      children: [
-        {
-          title: 'Pharmacy Dashboard',
-          href: '/dashboard/pharmacy',
-          icon: LayoutDashboard,
-        },
-        {
-          title: t('Navigation.prescription_queue'),
-          href: '/dashboard/pharmacy/prescriptions',
-          icon: Pill,
-        },
-        {
-          title: 'Medication Dispensing',
-          href: '/dashboard/pharmacy/dispense',
-          icon: Package,
-        },
-        {
-          title: t('Navigation.inventory'),
-          href: '/dashboard/pharmacy/inventory',
-          icon: Package,
-        },
-        {
-          title: t('Navigation.purchase_orders'),
-          href: '/dashboard/pharmacy/orders',
-          icon: FileText,
-        },
-      ],
-    },
-    // Laboratory - temporarily visible to all for development
+    
+    // 7. Diagnostics - Lab and imaging
     {
       title: t('Navigation.laboratory'),
       icon: FlaskConical,
-      // roles: ['Lab-Technician', 'Pathologist', 'Microbiologist'], // Disabled for development
       children: [
         {
           title: 'Lab Dashboard',
@@ -250,28 +240,41 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
         },
       ],
     },
+    
+    // 8. Pharmacy - Medication management
     {
-      title: t('Navigation.reception'),
-      icon: Users,
-      roles: ['Receptionist', 'Front-Desk-Executive'],
+      title: t('Navigation.pharmacy'),
+      icon: Package,
       children: [
         {
-          title: t('Navigation.queue_management'),
-          href: '/dashboard/queue',
-          icon: Users,
+          title: 'Pharmacy Dashboard',
+          href: '/dashboard/pharmacy',
+          icon: LayoutDashboard,
         },
         {
-          title: t('Navigation.patient_registration'),
-          href: '/dashboard/registration',
-          icon: UserCog,
+          title: 'Prescription Queue',
+          href: '/dashboard/pharmacy/prescriptions',
+          icon: Pill,
         },
         {
-          title: t('Navigation.token_generation'),
-          href: '/dashboard/tokens',
+          title: 'Medication Dispensing',
+          href: '/dashboard/pharmacy/dispense',
+          icon: Package,
+        },
+        {
+          title: t('Navigation.inventory'),
+          href: '/dashboard/pharmacy/inventory',
+          icon: Package,
+        },
+        {
+          title: t('Navigation.purchase_orders'),
+          href: '/dashboard/pharmacy/orders',
           icon: FileText,
         },
       ],
     },
+    
+    // 9. Billing & Finance - Payment and insurance
     {
       title: t('Navigation.billing_finance'),
       icon: CreditCard,
@@ -282,24 +285,9 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           icon: CreditCard,
         },
         {
-          title: 'Create Hospital Bill',
-          href: '/dashboard/billing/create-hospital',
-          icon: FileText,
-        },
-        {
-          title: t('Navigation.patient_billing'),
+          title: 'Patient Billing',
           href: '/dashboard/billing/patients',
           icon: CreditCard,
-        },
-        {
-          title: 'Invoice Management',
-          href: '/dashboard/billing/invoices',
-          icon: FileText,
-        },
-        {
-          title: 'Billing Analytics',
-          href: '/dashboard/billing/analytics',
-          icon: BarChart3,
         },
         {
           title: t('Navigation.insurance_claims'),
@@ -312,6 +300,21 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           icon: Building,
         },
         {
+          title: 'Invoice Management',
+          href: '/dashboard/billing/invoices',
+          icon: FileText,
+        },
+        {
+          title: 'Hospital Invoice',
+          href: '/dashboard/billing/create-hospital',
+          icon: FileText,
+        },
+        {
+          title: 'Billing Analytics',
+          href: '/dashboard/billing/analytics',
+          icon: BarChart3,
+        },
+        {
           title: t('Navigation.financial_reports'),
           href: '/dashboard/reports/financial',
           icon: BarChart3,
@@ -319,10 +322,39 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
         },
       ],
     },
+    
+    // 10. Reports & Analytics - Business intelligence
     {
-      title: t('Navigation.staff_management'),
+      title: t('Navigation.reports_analytics'),
+      icon: BarChart3,
+      children: [
+        {
+          title: t('Navigation.analytics_dashboard'),
+          href: '/dashboard/analytics',
+          icon: Activity,
+        },
+        {
+          title: t('Navigation.financial_reports'),
+          href: '/dashboard/reports/financial',
+          icon: BarChart3,
+        },
+        {
+          title: 'Clinical Reports',
+          href: '/dashboard/reports/clinical',
+          icon: FileText,
+        },
+        {
+          title: 'Operational Reports',
+          href: '/dashboard/reports/operational',
+          icon: TrendingUp,
+        },
+      ],
+    },
+    
+    // 11. HR & Administration - Staff management
+    {
+      title: 'HR & Administration',
       icon: UserCog,
-      adminOnly: true,
       children: [
         {
           title: t('Navigation.team_members'),
@@ -335,63 +367,125 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           icon: Building,
         },
         {
-          title: t('Navigation.schedules'),
-          href: '/dashboard/schedules',
+          title: 'Staff Scheduling',
+          href: '/dashboard/staff/scheduling',
           icon: Calendar,
         },
         {
-          title: t('Navigation.attendance'),
-          href: '/dashboard/attendance',
-          icon: ClipboardList,
+          title: 'Leave Management',
+          href: '/dashboard/staff/leave',
+          icon: FileText,
         },
       ],
     },
+    
+    // 12. CRM & Marketing - Patient acquisition
     {
-      title: t('Navigation.reports_analytics'),
-      icon: BarChart3,
+      title: 'CRM & Marketing',
+      icon: Megaphone,
       children: [
         {
-          title: t('Navigation.clinical_reports'),
-          href: '/dashboard/reports/clinical',
-          icon: FileText,
+          title: 'Lead Management',
+          href: '/dashboard/crm/leads',
+          icon: Users,
         },
         {
-          title: t('Navigation.operational_reports'),
-          href: '/dashboard/reports/operational',
+          title: 'Campaigns',
+          href: '/dashboard/crm/campaigns',
+          icon: Megaphone,
+        },
+        {
+          title: 'Patient Segments',
+          href: '/dashboard/crm/segments',
+          icon: Users,
+        },
+        {
+          title: 'CRM Analytics',
+          href: '/dashboard/crm/analytics',
           icon: BarChart3,
         },
-        {
-          title: t('Navigation.analytics_dashboard'),
-          href: '/dashboard/analytics',
-          icon: Activity,
-        },
       ],
     },
+    
+    // 13. Community & CSR - Social responsibility
     {
-      title: t('Navigation.communication'),
-      icon: MessageSquare,
+      title: 'Community & CSR',
+      icon: Heart,
       children: [
         {
-          title: t('Navigation.notifications'),
-          href: '/dashboard/notifications',
-          icon: MessageSquare,
+          title: 'CSR Programs',
+          href: '/dashboard/csr/programs',
+          icon: Heart,
         },
         {
-          title: t('Navigation.whatsapp_templates'),
-          href: '/dashboard/communication/whatsapp',
-          icon: MessageSquare,
+          title: 'Community Events',
+          href: '/dashboard/csr/events',
+          icon: Calendar,
         },
         {
-          title: t('Navigation.announcements'),
-          href: '/dashboard/announcements',
-          icon: FileText,
+          title: 'Volunteers',
+          href: '/dashboard/csr/volunteers',
+          icon: Users,
+        },
+        {
+          title: 'Impact Reports',
+          href: '/dashboard/csr/impact',
+          icon: TrendingUp,
         },
       ],
     },
+    
+    // 14. Patient Portal - Self-service
+    {
+      title: 'Patient Portal',
+      icon: Target,
+      children: [
+        {
+          title: 'Health Goals',
+          href: '/dashboard/health-goals',
+          icon: Target,
+        },
+        {
+          title: 'Give Feedback',
+          href: '/dashboard/feedback',
+          icon: MessageSquare,
+        },
+        {
+          title: 'My Preferences',
+          href: '/dashboard/preferences',
+          icon: Settings,
+        },
+      ],
+    },
+    
+    // 15. User & Profile - Account management
+    {
+      title: 'Account',
+      icon: UserCog,
+      children: [
+        {
+          title: 'User Profile',
+          href: '/dashboard/user-profile',
+          icon: Users,
+        },
+        {
+          title: 'Organization Profile',
+          href: '/dashboard/organization-profile',
+          icon: Building,
+        },
+      ],
+    },
+    
+    // 16. System & Settings - Technical configuration
     {
       title: t('Navigation.system'),
       icon: Settings,
       children: [
+        {
+          title: t('Navigation.settings'),
+          href: '/dashboard/settings',
+          icon: Settings,
+        },
         {
           title: t('Navigation.security'),
           href: '/dashboard/security',
@@ -401,6 +495,7 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           title: 'SSO Management',
           href: '/dashboard/sso-management',
           icon: Shield,
+          adminOnly: true,
         },
         {
           title: t('Navigation.audit_logs'),
@@ -420,52 +515,8 @@ function getNavigationItems(t: any, userRole: UserRole): NavItem[] {
           icon: Webhook,
           adminOnly: true,
         },
-        {
-          title: t('Navigation.settings'),
-          href: '/dashboard/settings',
-          icon: Settings,
-        },
       ],
     },
-    {
-      title: 'User Management',
-      icon: UserCog,
-      children: [
-        {
-          title: 'User Profile',
-          href: '/dashboard/user-profile',
-          icon: Users,
-        },
-        {
-          title: 'Organization Profile',
-          href: '/dashboard/organization-profile',
-          icon: Building,
-        },
-      ],
-    },
-    // Development & Testing - Only show in development environment
-    ...(process.env.NODE_ENV === 'development' ? [{
-      title: 'Development & Testing',
-      icon: TestTube,
-      adminOnly: true,
-      children: [
-        {
-          title: 'Demo Features',
-          href: '/dashboard/demo',
-          icon: TestTube,
-        },
-        {
-          title: 'Test Features',
-          href: '/dashboard/test-features',
-          icon: FlaskConical,
-        },
-        {
-          title: 'Dev Info',
-          href: '/dashboard/dev-info',
-          icon: FileText,
-        },
-      ],
-    }] : []),
   ];
 
   // Filter items based on role
@@ -548,13 +599,30 @@ export function ModernDashboardLayout({ children }: { children: React.ReactNode 
   const t = useTranslations();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Load collapsed state from localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sidebarCollapsed');
+      return saved === 'true';
+    }
+    return false;
+  });
+
+  // Save collapsed state to localStorage
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
 
   // Get user role from metadata
   const userRole = (user?.publicMetadata?.role as UserRole) || 'Support-Staff';
 
+  // Debug logging for user role
+  console.log('🔍 Debug - User Role:', userRole);
+  console.log('🔍 Debug - User Metadata:', user?.publicMetadata);
+
   // Get navigation items based on role
   const navigationItems = getNavigationItems(t, userRole);
+  console.log('🔍 Debug - Navigation Items Count:', navigationItems.length);
 
   // Hospital-specific header info for Indian healthcare context
   const hospitalInfo = {
@@ -576,46 +644,77 @@ export function ModernDashboardLayout({ children }: { children: React.ReactNode 
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 transform bg-background border-r transition-all duration-200 ease-in-out lg:static lg:translate-x-0',
-          sidebarCollapsed ? 'w-16' : 'w-64',
+          'fixed inset-y-0 left-0 z-40 transform bg-background border-r transition-all duration-300 ease-in-out lg:static lg:translate-x-0',
+          sidebarCollapsed ? 'w-20' : 'w-64',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+          'shadow-xl'
         )}
       >
         <div className="flex h-full flex-col">
-          {/* Sidebar header */}
-          <div className="flex h-16 items-center justify-between border-b px-4">
-            <Link href="/dashboard" className={cn("flex items-center space-x-2", sidebarCollapsed && "justify-center")}>
-              <Hospital className="size-6" />
-              {!sidebarCollapsed && <span className="font-bold">HospitalOS</span>}
-            </Link>
-            <div className="flex items-center space-x-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden lg:flex"
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              >
-                <Menu className="size-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <X className="size-5" />
-              </Button>
+          <TooltipProvider delayDuration={0}>
+            {/* Sidebar header */}
+            <div className="flex h-16 items-center justify-between border-b px-4 bg-gradient-to-r from-cyan-50 to-blue-50">
+              <Link href="/dashboard" className={cn(
+                "flex items-center",
+                sidebarCollapsed ? "justify-center" : "space-x-2"
+              )}>
+                <div className="relative">
+                  <Hospital className={cn(
+                    "text-cyan-600 transition-all",
+                    sidebarCollapsed ? "size-8" : "size-6"
+                  )} />
+                  {sidebarCollapsed && (
+                    <span className="absolute -bottom-1 -right-1 h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  )}
+                </div>
+                {!sidebarCollapsed && (
+                  <div className="flex flex-col">
+                    <span className="font-bold text-sm">HospitalOS</span>
+                    <span className="text-xs text-muted-foreground">Healthcare Suite</span>
+                  </div>
+                )}
+              </Link>
+              <div className="flex items-center space-x-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hidden lg:flex hover:bg-white/50"
+                      onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    >
+                      {sidebarCollapsed ? (
+                        <ChevronRight className="size-4" />
+                      ) : (
+                        <ChevronLeft className="size-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    {sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                  </TooltipContent>
+                </Tooltip>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <X className="size-5" />
+                </Button>
+              </div>
             </div>
-          </div>
+          </TooltipProvider>
 
           {/* Navigation */}
           <ScrollArea className="flex-1 py-2">
-            <nav className="space-y-1 px-2">
-              {navigationItems.map((item, index) => (
-                <NavItem key={index} item={item} pathname={pathname} collapsed={sidebarCollapsed} />
-              ))}
-            </nav>
+            <TooltipProvider delayDuration={0}>
+              <nav className="space-y-1 px-2">
+                {navigationItems.map((item, index) => (
+                  <NavItem key={index} item={item} pathname={pathname} collapsed={sidebarCollapsed} />
+                ))}
+              </nav>
+            </TooltipProvider>
           </ScrollArea>
         </div>
       </aside>
@@ -668,51 +767,123 @@ export function ModernDashboardLayout({ children }: { children: React.ReactNode 
 }
 
 /**
- * Navigation item component
+ * Navigation item component with enhanced collapsed state support
  */
 function NavItem({ item, pathname, collapsed = false }: { item: NavItem; pathname: string; collapsed?: boolean }) {
   const [expanded, setExpanded] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const isActive = item.href === pathname;
   const hasActiveChild = item.children?.some(child => child.href === pathname);
 
+  // Handle simple navigation items
   if (item.href && !item.children) {
+    if (collapsed) {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href={item.href}
+              className={cn(
+                'flex items-center justify-center rounded-lg px-2 py-2 text-sm font-medium transition-all hover:bg-accent',
+                isActive && 'bg-accent text-accent-foreground',
+                'relative group'
+              )}
+            >
+              <item.icon className="size-4" />
+              {item.badge && (
+                <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
+              )}
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="flex items-center gap-2">
+            <span>{item.title}</span>
+            {item.badge && (
+              <span className="rounded-full bg-destructive px-2 py-0.5 text-xs text-destructive-foreground">
+                {item.badge}
+              </span>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
     return (
       <Link
         href={item.href}
         className={cn(
           'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
-          isActive && 'bg-accent text-accent-foreground',
-          collapsed && 'justify-center px-2'
+          isActive && 'bg-accent text-accent-foreground'
         )}
-        title={collapsed ? item.title : undefined}
       >
         <item.icon className="size-4 flex-shrink-0" />
-        {!collapsed && (
-          <>
-            <span className="truncate">{item.title}</span>
-            {item.badge && (
-              <span className="ml-auto rounded-full bg-destructive px-2 py-0.5 text-xs text-destructive-foreground">
-                {item.badge}
-              </span>
-            )}
-          </>
+        <span className="truncate">{item.title}</span>
+        {item.badge && (
+          <span className="ml-auto rounded-full bg-destructive px-2 py-0.5 text-xs text-destructive-foreground">
+            {item.badge}
+          </span>
         )}
       </Link>
     );
   }
 
-  if (collapsed) {
-    // In collapsed mode, show only the icon with tooltip
+  // Handle items with children in collapsed mode
+  if (collapsed && item.children) {
     return (
-      <div
-        className={cn(
-          'flex items-center justify-center rounded-lg px-2 py-2 text-sm font-medium transition-colors hover:bg-accent cursor-pointer',
-          hasActiveChild && 'bg-accent/50',
-        )}
-        title={item.title}
-      >
-        <item.icon className="size-4" />
-      </div>
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <button
+                className={cn(
+                  'flex items-center justify-center rounded-lg px-2 py-2 text-sm font-medium transition-all hover:bg-accent w-full',
+                  hasActiveChild && 'bg-accent/50',
+                  popoverOpen && 'bg-accent',
+                  'relative group'
+                )}
+              >
+                <item.icon className="size-4" />
+                {hasActiveChild && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-1 rounded-r bg-primary" />
+                )}
+              </button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            {item.title}
+          </TooltipContent>
+        </Tooltip>
+        <PopoverContent 
+          side="right" 
+          align="start"
+          className="w-56 p-2"
+          sideOffset={8}
+        >
+          <div className="space-y-1">
+            <div className="px-2 py-1.5 text-sm font-semibold">
+              {item.title}
+            </div>
+            {item.children.map((child, index) => (
+              <Link
+                key={index}
+                href={child.href || '#'}
+                className={cn(
+                  'flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent',
+                  child.href === pathname && 'bg-accent text-accent-foreground'
+                )}
+                onClick={() => setPopoverOpen(false)}
+              >
+                <child.icon className="size-3.5" />
+                <span>{child.title}</span>
+                {child.badge && (
+                  <span className="ml-auto rounded-full bg-destructive px-1.5 py-0.5 text-xs text-destructive-foreground">
+                    {child.badge}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
     );
   }
 

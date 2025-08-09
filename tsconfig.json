@@ -63,7 +63,9 @@
     "**/*.e2e.ts",
     "./docs/**/*",
     "./template-references/**/*",
-    "./scripts/api-templates/**/*"
+    "./scripts/api-templates/**/*",
+    "./demo-ready/**/*",
+    "./sample-implementation/**/*"
   ],
   "include": [
     "next-env.d.ts",

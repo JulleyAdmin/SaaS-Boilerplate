@@ -104,23 +104,32 @@ interface ICUPatient {
   };
 }
 
-// Generate mock vital signs data
-const generateVitalsTrend = (): VitalSign[] => {
+// Generate mock vital signs data with deterministic values for SSR
+const generateVitalsTrend = (useRandom: boolean = false): VitalSign[] => {
   const data: VitalSign[] = [];
   const now = new Date();
   
   for (let i = 23; i >= 0; i--) {
     const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000);
+    // Use deterministic values for initial render, random for updates
+    const randomValue = (base: number, range: number, index: number) => {
+      if (!useRandom) {
+        // Deterministic value based on index for SSR
+        return base + (range * ((index % 10) / 10));
+      }
+      return base + Math.random() * range;
+    };
+    
     data.push({
       timestamp: timestamp.toISOString(),
-      heartRate: 70 + Math.random() * 30 + (i < 6 ? Math.random() * 10 : 0),
-      bloodPressureSystolic: 110 + Math.random() * 30,
-      bloodPressureDiastolic: 70 + Math.random() * 20,
-      respiratoryRate: 14 + Math.random() * 8,
-      oxygenSaturation: 94 + Math.random() * 5,
-      temperature: 36.5 + Math.random() * 1.5,
-      cvp: 8 + Math.random() * 4,
-      map: 80 + Math.random() * 20
+      heartRate: randomValue(70, 30, i) + (i < 6 ? randomValue(0, 10, i + 100) : 0),
+      bloodPressureSystolic: randomValue(110, 30, i + 1),
+      bloodPressureDiastolic: randomValue(70, 20, i + 2),
+      respiratoryRate: randomValue(14, 8, i + 3),
+      oxygenSaturation: randomValue(94, 5, i + 4),
+      temperature: randomValue(36.5, 1.5, i + 5),
+      cvp: randomValue(8, 4, i + 6),
+      map: randomValue(80, 20, i + 7)
     });
   }
   
@@ -128,13 +137,14 @@ const generateVitalsTrend = (): VitalSign[] => {
 };
 
 export default function ICUMonitoringDashboard() {
-  const [selectedBed, setSelectedBed] = useState<string>('all');
+  const [selectedBed] = useState<string>('all');
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState(30); // seconds
   const [selectedPatient, setSelectedPatient] = useState<ICUPatient | null>(null);
   const [showAlarmSettings, setShowAlarmSettings] = useState(false);
   const [alarmMuted, setAlarmMuted] = useState(false);
-  const [expandedView, setExpandedView] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  // const [expandedView, setExpandedView] = useState<string | null>(null);
 
   // Mock ICU patients data
   const [icuPatients, setIcuPatients] = useState<ICUPatient[]>([
@@ -164,7 +174,7 @@ export default function ICUMonitoringDashboard() {
         cvp: 10,
         map: 94
       },
-      vitalsTrend: generateVitalsTrend(),
+      vitalsTrend: generateVitalsTrend(false),
       medications: [
         { name: 'Propofol', dose: '50mg/hr', route: 'IV', frequency: 'Continuous', startTime: '08:00' },
         { name: 'Fentanyl', dose: '25mcg/hr', route: 'IV', frequency: 'Continuous', startTime: '08:00' },
@@ -216,7 +226,7 @@ export default function ICUMonitoringDashboard() {
         cvp: 8,
         map: 87
       },
-      vitalsTrend: generateVitalsTrend(),
+      vitalsTrend: generateVitalsTrend(false),
       medications: [
         { name: 'Metoprolol', dose: '25mg', route: 'PO', frequency: 'BID', startTime: '08:00' },
         { name: 'Aspirin', dose: '75mg', route: 'PO', frequency: 'OD', startTime: '08:00' },
@@ -259,7 +269,7 @@ export default function ICUMonitoringDashboard() {
         cvp: 12,
         map: 105
       },
-      vitalsTrend: generateVitalsTrend(),
+      vitalsTrend: generateVitalsTrend(false),
       medications: [
         { name: 'Propofol', dose: '100mg/hr', route: 'IV', frequency: 'Continuous', startTime: '08:00' },
         { name: 'Mannitol', dose: '50g', route: 'IV', frequency: 'Q6H', startTime: '06:00' },
@@ -285,9 +295,19 @@ export default function ICUMonitoringDashboard() {
     }
   ]);
 
+  // Set mounted flag and regenerate data with random values after mount
+  useEffect(() => {
+    setMounted(true);
+    // Regenerate vitals with true random values after mount
+    setIcuPatients(prev => prev.map(patient => ({
+      ...patient,
+      vitalsTrend: generateVitalsTrend(true)
+    })));
+  }, []);
+
   // Auto-refresh functionality
   useEffect(() => {
-    if (autoRefresh) {
+    if (autoRefresh && mounted) {
       const interval = setInterval(() => {
         // Update vitals with slight variations to simulate live data
         setIcuPatients(prev => prev.map(patient => ({
@@ -304,7 +324,7 @@ export default function ICUMonitoringDashboard() {
       
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, refreshInterval]);
+  }, [autoRefresh, refreshInterval, mounted]);
 
   const getVitalStatus = (vital: string, value: number): 'normal' | 'warning' | 'critical' => {
     switch (vital) {

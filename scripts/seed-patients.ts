@@ -148,16 +148,16 @@ async function seedPatients() {
       .returning();
 
     console.log(`✅ Successfully inserted ${insertedPatients.length} patients:`);
-    insertedPatients.forEach(patient => {
+    insertedPatients.forEach((patient: any) => {
       console.log(`   - ${patient.patientCode}: ${patient.firstName} ${patient.lastName} (${patient.status})`);
     });
 
     console.log('\n📊 Patient summary:');
     console.log(`   Total patients: ${insertedPatients.length}`);
-    console.log(`   Outpatients: ${insertedPatients.filter(p => p.status === 'outpatient').length}`);
-    console.log(`   Admitted: ${insertedPatients.filter(p => p.status === 'admitted').length}`);
-    console.log(`   Emergency: ${insertedPatients.filter(p => p.status === 'emergency').length}`);
-    console.log(`   Discharged: ${insertedPatients.filter(p => p.status === 'discharged').length}`);
+    console.log(`   Outpatients: ${insertedPatients.filter((p: any) => p.status === 'outpatient').length}`);
+    console.log(`   Admitted: ${insertedPatients.filter((p: any) => p.status === 'admitted').length}`);
+    console.log(`   Emergency: ${insertedPatients.filter((p: any) => p.status === 'emergency').length}`);
+    console.log(`   Discharged: ${insertedPatients.filter((p: any) => p.status === 'discharged').length}`);
 
   } catch (error) {
     console.error('❌ Error seeding patients:', error);

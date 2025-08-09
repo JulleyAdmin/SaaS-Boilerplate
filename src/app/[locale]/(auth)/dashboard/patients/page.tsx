@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { PatientManagement } from '@/components/patients/patient-management';
+import PatientManagementRedesigned from '@/components/patients/PatientManagementRedesigned';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Navigation');
@@ -13,5 +13,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function PatientsPage() {
-  return <PatientManagement />;
+  return <PatientManagementRedesigned />;
 }

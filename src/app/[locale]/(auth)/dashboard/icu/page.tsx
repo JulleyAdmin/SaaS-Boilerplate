@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import ICUMonitoringDashboard from '@/components/icu/ICUMonitoringDashboard';
+import ICUMonitoringRedesigned from '@/components/icu/ICUMonitoringRedesigned';
 
 export default function ICUPage() {
-  return <ICUMonitoringDashboard />;
+  return <ICUMonitoringRedesigned />;
 }

@@ -4,10 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarInitials } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Pill, 
@@ -20,9 +21,12 @@ import {
   Syringe,
   Shield,
   FileText,
-  Timer
+  Timer,
+  Printer
 } from 'lucide-react';
 import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // Mock medication administration data
 const medicationSchedule = [
@@ -122,11 +126,16 @@ const administrationStats = {
 };
 
 export default function MedicationAdministrationPage() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [selectedMedication, setSelectedMedication] = useState<any>(null);
   const [administrationNotes, setAdministrationNotes] = useState('');
+  const [medications, setMedications] = useState(medicationSchedule);
+  const [showHoldDialog, setShowHoldDialog] = useState(false);
+  const [holdReason, setHoldReason] = useState('');
+  const [showMARDialog, setShowMARDialog] = useState(false);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -158,16 +167,77 @@ export default function MedicationAdministrationPage() {
       minute: '2-digit' 
     });
     
-    // Here you would update the medication status in your database
-    console.log(`Administering medication ${medicationId} at ${currentTime}`);
-    console.log(`Administration notes: ${administrationNotes}`);
+    setMedications(prev => prev.map(med => 
+      med.id === medicationId 
+        ? { ...med, status: 'administered', lastAdministered: currentTime }
+        : med
+    ));
+    
+    toast({
+      title: "Medication Administered",
+      description: `${selectedMedication.medication} administered successfully at ${currentTime}`,
+    });
     
     // Reset form
     setSelectedMedication(null);
     setAdministrationNotes('');
   };
 
-  const filteredMedications = medicationSchedule.filter(med => {
+  const holdMedication = () => {
+    if (!selectedMedication || !holdReason) {
+      toast({
+        title: "Error",
+        description: "Please provide a reason for holding the medication",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setMedications(prev => prev.map(med => 
+      med.id === selectedMedication.id 
+        ? { ...med, status: 'held', holdReason }
+        : med
+    ));
+
+    toast({
+      title: "Medication Held",
+      description: `${selectedMedication.medication} held with reason: ${holdReason}`,
+      variant: "default"
+    });
+
+    setShowHoldDialog(false);
+    setSelectedMedication(null);
+    setHoldReason('');
+  };
+
+  const generateMARReport = () => {
+    toast({
+      title: "MAR Report Generated",
+      description: "Medication Administration Record has been generated for today",
+    });
+    setShowMARDialog(true);
+  };
+
+  const markOverdueAsAdministered = (med: any) => {
+    const currentTime = new Date().toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    
+    setMedications(prev => prev.map(m => 
+      m.id === med.id 
+        ? { ...m, status: 'administered', lastAdministered: currentTime }
+        : m
+    ));
+    
+    toast({
+      title: "Late Administration Recorded",
+      description: `${med.medication} marked as administered (late) at ${currentTime}`,
+      variant: "default"
+    });
+  };
+
+  const filteredMedications = medications.filter(med => {
     const matchesSearch = 
       med.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       med.medication.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -192,7 +262,7 @@ export default function MedicationAdministrationPage() {
             <Calendar className="mr-2 size-4" />
             Schedule View
           </Button>
-          <Button>
+          <Button onClick={generateMARReport}>
             <FileText className="mr-2 size-4" />
             MAR Report
           </Button>
@@ -327,7 +397,7 @@ export default function MedicationAdministrationPage() {
                     <div className="flex items-center space-x-3">
                       <Avatar>
                         <AvatarFallback>
-                          <AvatarInitials name={med.patientName} />
+                          {med.patientName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
@@ -399,7 +469,14 @@ export default function MedicationAdministrationPage() {
                             <Syringe className="size-4 mr-1" />
                             Administer
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedMedication(med);
+                              setShowHoldDialog(true);
+                            }}
+                          >
                             <Shield className="size-4 mr-1" />
                             Hold
                           </Button>
@@ -493,7 +570,7 @@ export default function MedicationAdministrationPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {medicationSchedule
+                {medications
                   .filter(med => med.status === 'administered')
                   .map(med => (
                     <div key={med.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -517,6 +594,128 @@ export default function MedicationAdministrationPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Hold Medication Dialog */}
+      <Dialog open={showHoldDialog} onOpenChange={setShowHoldDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hold Medication</DialogTitle>
+            <DialogDescription>
+              {selectedMedication && `Provide reason for holding ${selectedMedication.medication} for ${selectedMedication.patientName}`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="holdReason">Reason for Holding *</Label>
+              <Select value={holdReason} onValueChange={setHoldReason}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select or specify reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Patient refused">Patient refused</SelectItem>
+                  <SelectItem value="NPO status">NPO (Nothing by mouth)</SelectItem>
+                  <SelectItem value="Vital signs abnormal">Vital signs abnormal</SelectItem>
+                  <SelectItem value="Doctor's order">Doctor's order</SelectItem>
+                  <SelectItem value="Medication unavailable">Medication unavailable</SelectItem>
+                  <SelectItem value="Adverse reaction">Adverse reaction concern</SelectItem>
+                  <SelectItem value="Other">Other reason</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {holdReason === 'Other' && (
+              <div>
+                <Label htmlFor="customReason">Specify Reason</Label>
+                <Textarea
+                  id="customReason"
+                  placeholder="Enter specific reason for holding medication..."
+                  rows={3}
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowHoldDialog(false);
+              setHoldReason('');
+            }}>Cancel</Button>
+            <Button onClick={holdMedication} variant="destructive">Hold Medication</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* MAR Report Dialog */}
+      <Dialog open={showMARDialog} onOpenChange={setShowMARDialog}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Medication Administration Record (MAR)</DialogTitle>
+            <DialogDescription>
+              Today's medication administration summary - {new Date().toLocaleDateString()}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+            <div className="grid grid-cols-4 gap-4 text-sm">
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold">{administrationStats.totalScheduled}</div>
+                  <p className="text-xs text-muted-foreground">Total Scheduled</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold text-green-600">{administrationStats.administered}</div>
+                  <p className="text-xs text-muted-foreground">Administered</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold text-red-600">{administrationStats.overdue}</div>
+                  <p className="text-xs text-muted-foreground">Overdue</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4">
+                  <div className="text-2xl font-bold text-green-600">{administrationStats.onTimeRate}%</div>
+                  <p className="text-xs text-muted-foreground">On-Time Rate</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="border rounded-lg p-4">
+              <h4 className="font-semibold mb-3">Administration Log</h4>
+              <div className="space-y-2">
+                {medications.map(med => (
+                  <div key={med.id} className="flex items-center justify-between p-2 border-b last:border-0">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{med.patientName} - {med.wardBed}</p>
+                      <p className="text-xs text-muted-foreground">{med.medication} • {med.dosage}</p>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant={
+                        med.status === 'administered' ? 'default' :
+                        med.status === 'overdue' ? 'destructive' :
+                        med.status === 'held' ? 'secondary' :
+                        'outline'
+                      }>
+                        {med.status}
+                      </Badge>
+                      {med.lastAdministered && (
+                        <p className="text-xs text-muted-foreground mt-1">at {med.lastAdministered}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowMARDialog(false)}>Close</Button>
+            <Button>
+              <Printer className="size-4 mr-2" />
+              Print Report
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarInitials } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Stethoscope, 
   Clock, 
@@ -335,7 +335,7 @@ export default function ConsultationsPage() {
                     <div className="flex items-center space-x-3">
                       <Avatar>
                         <AvatarFallback>
-                          <AvatarInitials name={consultation.patientName} />
+                          {consultation.patientName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>

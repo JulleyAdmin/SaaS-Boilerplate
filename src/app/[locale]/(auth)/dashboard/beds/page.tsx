@@ -6,9 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarInitials } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bed, User, Clock, Search, Filter, AlertCircle, CheckCircle, UserPlus, Activity } from 'lucide-react';
 import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 // Mock bed data
 const bedData = [
@@ -107,9 +111,24 @@ const wardSummary = {
 };
 
 export default function BedManagementPage() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [wardFilter, setWardFilter] = useState('all');
+  const [beds, setBeds] = useState(bedData);
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
+  const [showAddBedDialog, setShowAddBedDialog] = useState(false);
+  const [showPatientDetailsDialog, setShowPatientDetailsDialog] = useState(false);
+  const [selectedBed, setSelectedBed] = useState<any>(null);
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [patientDetails, setPatientDetails] = useState({
+    name: '',
+    age: '',
+    gender: '',
+    condition: 'Stable',
+    admissionReason: ''
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -137,7 +156,7 @@ export default function BedManagementPage() {
     }
   };
 
-  const filteredBeds = bedData.filter(bed => {
+  const filteredBeds = beds.filter(bed => {
     const matchesSearch = 
       bed.bedNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bed.wardName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -149,7 +168,136 @@ export default function BedManagementPage() {
     return matchesSearch && matchesStatus && matchesWard;
   });
 
-  const wardNames = Array.from(new Set(bedData.map(bed => bed.wardName)));
+  const wardNames = Array.from(new Set(beds.map(bed => bed.wardName)));
+
+  const handleAssignPatient = (bedId: string) => {
+    const bed = beds.find(b => b.id === bedId);
+    setSelectedBed(bed);
+    setShowAssignDialog(true);
+  };
+
+  const handleTransferPatient = (bedId: string) => {
+    const bed = beds.find(b => b.id === bedId);
+    setSelectedBed(bed);
+    setShowTransferDialog(true);
+  };
+
+  const confirmAssignment = () => {
+    if (!patientDetails.name || !patientDetails.age) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setBeds(prevBeds => prevBeds.map(bed => 
+      bed.id === selectedBed.id 
+        ? {
+            ...bed,
+            status: 'occupied',
+            patientName: patientDetails.name,
+            patientId: `P${Date.now().toString().slice(-6)}`,
+            admissionDate: new Date().toISOString().split('T')[0],
+            condition: patientDetails.condition,
+            lastCheckup: 'Just now'
+          }
+        : bed
+    ));
+
+    toast({
+      title: "Success",
+      description: `Patient ${patientDetails.name} assigned to Bed ${selectedBed.bedNumber}`,
+    });
+
+    setShowAssignDialog(false);
+    setSelectedBed(null);
+    setPatientDetails({
+      name: '',
+      age: '',
+      gender: '',
+      condition: 'Stable',
+      admissionReason: ''
+    });
+  };
+
+  const confirmTransfer = (targetBedId: string) => {
+    const targetBed = beds.find(b => b.id === targetBedId);
+    
+    setBeds(prevBeds => prevBeds.map(bed => {
+      if (bed.id === selectedBed.id) {
+        return { ...bed, status: 'available', patientName: null, patientId: null, admissionDate: null, condition: null, lastCheckup: null };
+      }
+      if (bed.id === targetBedId) {
+        return {
+          ...bed,
+          status: 'occupied',
+          patientName: selectedBed.patientName,
+          patientId: selectedBed.patientId,
+          admissionDate: selectedBed.admissionDate,
+          condition: selectedBed.condition,
+          lastCheckup: 'Just transferred'
+        };
+      }
+      return bed;
+    }));
+
+    toast({
+      title: "Transfer Complete",
+      description: `Patient ${selectedBed.patientName} transferred to Bed ${targetBed?.bedNumber}`,
+    });
+
+    setShowTransferDialog(false);
+    setSelectedBed(null);
+  };
+
+  const handleAddBed = (bedDetails: any) => {
+    const newBed = {
+      id: `B${Date.now().toString().slice(-6)}`,
+      wardName: bedDetails.ward,
+      bedNumber: bedDetails.number,
+      status: 'available',
+      patientName: null,
+      patientId: null,
+      admissionDate: null,
+      condition: null,
+      nurseAssigned: bedDetails.nurse,
+      lastCheckup: null,
+      roomType: bedDetails.roomType,
+      floor: bedDetails.floor
+    };
+
+    setBeds(prevBeds => [...prevBeds, newBed]);
+    
+    toast({
+      title: "Bed Added",
+      description: `Bed ${bedDetails.number} added to ${bedDetails.ward}`,
+    });
+
+    setShowAddBedDialog(false);
+  };
+
+  const handleViewPatient = (bedId: string) => {
+    const bed = beds.find(b => b.id === bedId);
+    if (bed) {
+      setSelectedPatient(bed);
+      setShowPatientDetailsDialog(true);
+    }
+  };
+
+  const handleScheduleMaintenance = (bedId: string) => {
+    setBeds(prevBeds => prevBeds.map(bed => 
+      bed.id === bedId 
+        ? { ...bed, status: 'maintenance' }
+        : bed
+    ));
+    
+    toast({
+      title: "Maintenance Scheduled",
+      description: "Bed marked for maintenance",
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -160,11 +308,11 @@ export default function BedManagementPage() {
           <p className="text-muted-foreground">Monitor and manage hospital bed occupancy and patient assignments</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setShowAssignDialog(true)}>
             <UserPlus className="mr-2 size-4" />
             Assign Patient
           </Button>
-          <Button>
+          <Button onClick={() => setShowAddBedDialog(true)}>
             <Bed className="mr-2 size-4" />
             Add New Bed
           </Button>
@@ -299,7 +447,7 @@ export default function BedManagementPage() {
                       <div className="flex items-center space-x-3">
                         <Avatar>
                           <AvatarFallback>
-                            <AvatarInitials name={bed.patientName} />
+                            {bed.patientName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
@@ -328,11 +476,11 @@ export default function BedManagementPage() {
                       </div>
 
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="flex-1">
+                        <Button size="sm" variant="outline" className="flex-1" onClick={() => handleViewPatient(bed.id)}>
                           <User className="size-4 mr-1" />
                           View Patient
                         </Button>
-                        <Button size="sm" variant="outline" className="flex-1">
+                        <Button size="sm" variant="outline" className="flex-1" onClick={() => handleTransferPatient(bed.id)}>
                           <Clock className="size-4 mr-1" />
                           Transfer
                         </Button>
@@ -350,7 +498,7 @@ export default function BedManagementPage() {
                         </p>
                       </div>
                       {bed.status === 'available' && (
-                        <Button size="sm" className="mt-3">
+                        <Button size="sm" className="mt-3" onClick={() => handleAssignPatient(bed.id)}>
                           <UserPlus className="size-4 mr-1" />
                           Assign Patient
                         </Button>
@@ -394,13 +542,13 @@ export default function BedManagementPage() {
                     <div className="flex gap-2">
                       {bed.patientName ? (
                         <>
-                          <Button size="sm" variant="outline">View Patient</Button>
-                          <Button size="sm" variant="outline">Transfer</Button>
+                          <Button size="sm" variant="outline" onClick={() => handleViewPatient(bed.id)}>View Patient</Button>
+                          <Button size="sm" variant="outline" onClick={() => handleTransferPatient(bed.id)}>Transfer</Button>
                         </>
                       ) : bed.status === 'available' ? (
-                        <Button size="sm">Assign Patient</Button>
+                        <Button size="sm" onClick={() => handleAssignPatient(bed.id)}>Assign Patient</Button>
                       ) : (
-                        <Button size="sm" variant="outline">Schedule Maintenance</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleScheduleMaintenance(bed.id)}>Schedule Maintenance</Button>
                       )}
                     </div>
                   </div>
@@ -410,6 +558,296 @@ export default function BedManagementPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Assign Patient Dialog */}
+      <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Patient to Bed</DialogTitle>
+            <DialogDescription>
+              {selectedBed && `Assigning patient to ${selectedBed.wardName} - Bed ${selectedBed.bedNumber}`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="patientName">Patient Name *</Label>
+              <Input
+                id="patientName"
+                value={patientDetails.name}
+                onChange={(e) => setPatientDetails({...patientDetails, name: e.target.value})}
+                placeholder="Enter patient name"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="age">Age *</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  value={patientDetails.age}
+                  onChange={(e) => setPatientDetails({...patientDetails, age: e.target.value})}
+                  placeholder="Age"
+                />
+              </div>
+              <div>
+                <Label htmlFor="gender">Gender</Label>
+                <Select 
+                  value={patientDetails.gender} 
+                  onValueChange={(value) => setPatientDetails({...patientDetails, gender: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="condition">Patient Condition</Label>
+              <Select 
+                value={patientDetails.condition} 
+                onValueChange={(value) => setPatientDetails({...patientDetails, condition: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Stable">Stable</SelectItem>
+                  <SelectItem value="Improving">Improving</SelectItem>
+                  <SelectItem value="Critical">Critical</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="reason">Admission Reason</Label>
+              <Textarea
+                id="reason"
+                value={patientDetails.admissionReason}
+                onChange={(e) => setPatientDetails({...patientDetails, admissionReason: e.target.value})}
+                placeholder="Brief description of admission reason..."
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAssignDialog(false)}>Cancel</Button>
+            <Button onClick={confirmAssignment}>Assign Patient</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Transfer Patient Dialog */}
+      <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Transfer Patient</DialogTitle>
+            <DialogDescription>
+              {selectedBed && `Transfer ${selectedBed.patientName} from Bed ${selectedBed.bedNumber}`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Select Target Bed</Label>
+              <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
+                {beds.filter(b => b.status === 'available' && b.id !== selectedBed?.id).map(bed => (
+                  <Button
+                    key={bed.id}
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => confirmTransfer(bed.id)}
+                  >
+                    <Bed className="size-4 mr-2" />
+                    {bed.wardName} - Bed {bed.bedNumber} ({bed.roomType})
+                  </Button>
+                ))}
+              </div>
+              {beds.filter(b => b.status === 'available').length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No available beds for transfer</p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTransferDialog(false)}>Cancel</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add New Bed Dialog */}
+      <Dialog open={showAddBedDialog} onOpenChange={setShowAddBedDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Bed</DialogTitle>
+            <DialogDescription>Add a new bed to the hospital inventory</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="bedNumber">Bed Number *</Label>
+              <Input id="bedNumber" placeholder="e.g., 501" />
+            </div>
+            <div>
+              <Label htmlFor="ward">Ward *</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select ward" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="General Ward A">General Ward A</SelectItem>
+                  <SelectItem value="General Ward B">General Ward B</SelectItem>
+                  <SelectItem value="ICU">ICU</SelectItem>
+                  <SelectItem value="Pediatric Ward">Pediatric Ward</SelectItem>
+                  <SelectItem value="Private Room">Private Room</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="roomType">Room Type</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select room type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="General">General</SelectItem>
+                  <SelectItem value="Private">Private</SelectItem>
+                  <SelectItem value="ICU">ICU</SelectItem>
+                  <SelectItem value="Pediatric">Pediatric</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="floor">Floor</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select floor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1st Floor">1st Floor</SelectItem>
+                  <SelectItem value="2nd Floor">2nd Floor</SelectItem>
+                  <SelectItem value="3rd Floor">3rd Floor</SelectItem>
+                  <SelectItem value="4th Floor">4th Floor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="nurse">Assigned Nurse</Label>
+              <Input id="nurse" placeholder="e.g., Sister Mary" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddBedDialog(false)}>Cancel</Button>
+            <Button onClick={() => {
+              // In production, this would collect form data properly
+              handleAddBed({
+                number: '501',
+                ward: 'General Ward A',
+                roomType: 'General',
+                floor: '1st Floor',
+                nurse: 'Sister Mary'
+              });
+            }}>Add Bed</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Patient Details Dialog */}
+      <Dialog open={showPatientDetailsDialog} onOpenChange={setShowPatientDetailsDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>Patient Details</DialogTitle>
+            <DialogDescription>
+              Complete information for {selectedPatient?.patientName}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPatient && (
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold">Patient Name</Label>
+                  <p className="text-sm">{selectedPatient.patientName}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Patient ID</Label>
+                  <p className="text-sm">{selectedPatient.patientId}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Ward & Bed</Label>
+                  <p className="text-sm">{selectedPatient.wardName} - Bed {selectedPatient.bedNumber}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Room Type</Label>
+                  <p className="text-sm">{selectedPatient.roomType} • {selectedPatient.floor}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Admission Date</Label>
+                  <p className="text-sm">{selectedPatient.admissionDate}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Current Condition</Label>
+                  <p className={`text-sm font-medium ${getConditionColor(selectedPatient.condition)}`}>
+                    {selectedPatient.condition}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Assigned Nurse</Label>
+                  <p className="text-sm">{selectedPatient.nurseAssigned}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Last Checkup</Label>
+                  <p className="text-sm">{selectedPatient.lastCheckup}</p>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <Label className="text-sm font-semibold">Medical History</Label>
+                <div className="mt-2 space-y-2">
+                  <p className="text-sm text-muted-foreground">Previous Admissions: 2 times in last year</p>
+                  <p className="text-sm text-muted-foreground">Allergies: None reported</p>
+                  <p className="text-sm text-muted-foreground">Chronic Conditions: Hypertension, Type 2 Diabetes</p>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <Label className="text-sm font-semibold">Current Medications</Label>
+                <ul className="mt-2 space-y-1">
+                  <li className="text-sm">• Metformin 500mg - Twice daily</li>
+                  <li className="text-sm">• Amlodipine 5mg - Once daily</li>
+                  <li className="text-sm">• Paracetamol 650mg - As needed for pain</li>
+                </ul>
+              </div>
+
+              <div className="border-t pt-4">
+                <Label className="text-sm font-semibold">Emergency Contact</Label>
+                <p className="text-sm mt-1">
+                  Contact Name: Family Member<br />
+                  Phone: +91 98765 43210<br />
+                  Relationship: Spouse
+                </p>
+              </div>
+
+              <div className="border-t pt-4">
+                <Label className="text-sm font-semibold">Treatment Notes</Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Patient responding well to treatment. Vital signs stable. 
+                  Continue current medication regimen. Monitor blood sugar levels regularly.
+                  Plan for discharge review in 2 days if condition remains stable.
+                </p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPatientDetailsDialog(false)}>Close</Button>
+            <Button onClick={() => {
+              handleTransferPatient(selectedPatient.id);
+              setShowPatientDetailsDialog(false);
+            }}>
+              Transfer Patient
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

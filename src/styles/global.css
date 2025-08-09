@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import the comprehensive design system */
+@import './design-system.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -13,26 +16,26 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 199 89% 95%;
+    --secondary-foreground: 199 89% 20%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 199 89% 48%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     /* Healthcare color palette */
     --healthcare-primary: 207 89% 54%;
@@ -262,6 +265,38 @@
     @apply rounded-md border border-purple-200 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950;
   }
 
+  /* Glassmorphism effects */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-card {
+    @apply glass rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  /* Modern shadows */
+  .shadow-soft {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(31, 178, 241, 0.2);
+  }
+
+  .shadow-glow-primary {
+    box-shadow: 0 0 30px rgba(31, 178, 241, 0.3);
+  }
+
   /* Animation classes for medical UI */
   .pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -269,6 +304,14 @@
 
   .heartbeat {
     animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
   }
 
   @keyframes heartbeat {
@@ -365,6 +408,37 @@
     }
   }
 
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes countUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -372,5 +446,47 @@
   .animate-float-delayed {
     animation: float-delayed 8s ease-in-out infinite;
     animation-delay: 1s;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-count {
+    animation: countUp 0.5s ease-out;
+  }
+
+  /* Interactive hover states */
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-glow;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  /* Modern gradients */
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(199 89% 58%) 100%);
+  }
+
+  .gradient-mesh {
+    background-image: radial-gradient(at 40% 20%, hsla(199, 89%, 48%, 0.3) 0px, transparent 50%),
+                      radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.2) 0px, transparent 50%),
+                      radial-gradient(at 0% 50%, hsla(199, 89%, 70%, 0.2) 0px, transparent 50%);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600;
   }
 }

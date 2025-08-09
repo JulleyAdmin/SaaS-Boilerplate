@@ -1,0 +1,603 @@
+// Mock data for CRM features
+
+export const mockLeads = [
+  {
+    leadId: 'lead-001',
+    clinicId: 'clinic-001',
+    firstName: 'Rahul',
+    lastName: 'Sharma',
+    phone: '+91 98765 43210',
+    email: 'rahul.sharma@email.com',
+    ageRange: '35-44',
+    gender: 'Male' as const,
+    location: 'Mumbai, Maharashtra',
+    source: 'website' as const,
+    sourceDetails: { page: 'cardiology-services', campaign: 'heart-health' },
+    interestedServices: ['Cardiology Consultation', 'ECG', 'Stress Test', '2D Echo'],
+    healthConcerns: ['Chest pain', 'High blood pressure', 'Family history of heart disease'],
+    preferredContactMethod: 'whatsapp',
+    leadScore: 85,
+    scoreFactors: {
+      urgency: 30,     // High due to chest pain
+      intent: 25,      // Multiple services requested
+      demographic: 15, // Age and location match
+      insurance: 15    // Has corporate insurance
+    },
+    insuranceType: 'Corporate - TCS Health Plan',
+    preferredTimeSlot: 'Morning (9-12 PM)',
+    lastContactDate: new Date('2024-10-12'),
+    contactAttempts: 2,
+    engagementLevel: 'hot' as const,
+    appointmentPreference: 'In-person',
+    estimatedRevenue: 25000,
+    status: 'appointment_scheduled' as const,
+    appointmentDate: new Date('2024-10-18'),
+    assignedTo: 'user-001',
+    assignedUser: {
+      userId: 'user-001',
+      firstName: 'Dr. Priya',
+      lastName: 'Patel',
+      email: 'priya.patel@hospital.com',
+      role: 'Patient Coordinator'
+    },
+    createdAt: new Date('2024-10-10'),
+    updatedAt: new Date('2024-10-12'),
+  },
+  {
+    leadId: 'lead-002',
+    clinicId: 'clinic-001',
+    firstName: 'Anjali',
+    lastName: 'Kumar',
+    phone: '+91 87654 32109',
+    email: 'anjali.kumar@email.com',
+    ageRange: '25-34',
+    gender: 'Female' as const,
+    location: 'Delhi, NCR',
+    source: 'referral' as const,
+    referringPatientId: 'patient-001',
+    interestedServices: ['Gynecology Consultation', 'Prenatal Care'],
+    healthConcerns: ['Pregnancy planning', 'General health checkup'],
+    preferredContactMethod: 'phone',
+    leadScore: 92,
+    scoreFactors: {
+      demographic: 18,
+      behavioral: 30,
+      intent: 35,
+      urgency: 9
+    },
+    insuranceType: 'Self-pay',
+    preferredTimeSlot: 'Afternoon (2-5 PM)',
+    lastContactDate: new Date('2024-10-14'),
+    contactAttempts: 1,
+    engagementLevel: 'warm' as const,
+    appointmentPreference: 'In-person',
+    estimatedRevenue: 35000,
+    status: 'consultation_done' as const,
+    consultationDate: new Date('2024-10-14'),
+    treatmentPlanAccepted: true,
+    patientId: 'patient-004',
+    firstAppointmentId: 'apt-001',
+    assignedTo: 'user-002',
+    assignedUser: {
+      userId: 'user-002',
+      firstName: 'Dr. Meera',
+      lastName: 'Singh',
+      email: 'meera.singh@hospital.com'
+    },
+    status: 'admitted' as const,
+    createdAt: new Date('2024-10-08'),
+    updatedAt: new Date('2024-10-14'),
+  },
+  {
+    leadId: 'lead-003',
+    clinicId: 'clinic-001',
+    firstName: 'Vikram',
+    lastName: 'Gupta',
+    phone: '+91 76543 21098',
+    ageRange: '45-54',
+    gender: 'Male' as const,
+    location: 'Bangalore, Karnataka',
+    source: 'social_media' as const,
+    sourceDetails: { platform: 'facebook', post_id: 'fb_123' },
+    interestedServices: ['Orthopedic Consultation', 'Physiotherapy'],
+    healthConcerns: ['Knee pain', 'Joint stiffness'],
+    leadScore: 65,
+    scoreFactors: {
+      demographic: 12,
+      behavioral: 18,
+      intent: 25,
+      urgency: 10
+    },
+    insuranceType: 'CGHS',
+    preferredTimeSlot: 'Evening (5-8 PM)',
+    contactAttempts: 0,
+    engagementLevel: 'cold' as const,
+    converted: false,
+    status: 'inquiry' as const,
+    createdAt: new Date('2024-10-15'),
+    updatedAt: new Date('2024-10-15'),
+  },
+  {
+    leadId: 'lead-004',
+    clinicId: 'clinic-001',
+    firstName: 'Sunita',
+    lastName: 'Reddy',
+    phone: '+91 65432 10987',
+    email: 'sunita.reddy@email.com',
+    ageRange: '55-64',
+    gender: 'Female' as const,
+    location: 'Chennai, Tamil Nadu',
+    source: 'phone_inquiry' as const,
+    interestedServices: ['Diabetes Management', 'Endocrinology Consultation'],
+    healthConcerns: ['High blood sugar', 'Weight management'],
+    preferredContactMethod: 'email',
+    leadScore: 78,
+    scoreFactors: {
+      demographic: 16,
+      behavioral: 20,
+      intent: 30,
+      urgency: 12
+    },
+    qualificationStatus: 'qualified',
+    lastContactDate: new Date('2024-10-11'),
+    contactAttempts: 3,
+    engagementLevel: 'warm' as const,
+    converted: false,
+    assignedTo: 'user-003',
+    assignedUser: {
+      userId: 'user-003',
+      firstName: 'Amit',
+      lastName: 'Verma',
+      email: 'amit.verma@hospital.com'
+    },
+    status: 'contacted' as const,
+    createdAt: new Date('2024-10-05'),
+    updatedAt: new Date('2024-10-11'),
+  },
+];
+
+export const mockCampaigns = [
+  {
+    campaignId: 'camp-001',
+    clinicId: 'clinic-001',
+    campaignName: 'Heart Health Awareness Month',
+    campaignType: 'awareness' as const,
+    objective: 'Increase awareness about cardiovascular health and drive cardiology consultations',
+    targetSegments: ['men-35-55', 'high-risk-patients'],
+    targetCriteria: { age: '35-55', gender: 'male', conditions: ['hypertension', 'diabetes'] },
+    estimatedReach: 5000,
+    messageTemplates: [
+      {
+        channel: 'whatsapp',
+        content: '💓 Take care of your heart! Book a cardiology consultation this month and get 20% off. Your heart health matters.'
+      },
+      {
+        channel: 'email',
+        content: 'Heart Health Check-up Special: Comprehensive cardiology screening at discounted rates this month only.'
+      }
+    ],
+    creativeAssets: ['/assets/heart-health-banner.jpg', '/assets/cardiology-promo.png'],
+    startDate: new Date('2024-10-01'),
+    endDate: new Date('2024-10-31'),
+    scheduleType: 'immediate',
+    budgetAllocated: 50000,
+    budgetSpent: 28500,
+    sentCount: 4250,
+    deliveredCount: 4180,
+    openedCount: 1890,
+    clickedCount: 380,
+    convertedCount: 45,
+    status: 'active' as const,
+    createdAt: new Date('2024-09-25'),
+    createdBy: 'user-marketing-001',
+    createdByUser: {
+      userId: 'user-marketing-001',
+      firstName: 'Sarah',
+      lastName: 'Johnson'
+    },
+    deliveryRate: 98.4,
+    openRate: 45.2,
+    clickRate: 20.1,
+    conversionRate: 1.1,
+    roi: 168.5,
+  },
+  {
+    campaignId: 'camp-002',
+    clinicId: 'clinic-001', 
+    campaignName: 'Women\'s Health Checkup Drive',
+    campaignType: 'acquisition' as const,
+    objective: 'Acquire new female patients for gynecology and general health services',
+    targetSegments: ['women-25-45', 'new-mothers'],
+    estimatedReach: 3200,
+    messageTemplates: [
+      {
+        channel: 'whatsapp',
+        content: '🌸 Ladies, your health matters! Comprehensive women\'s health checkup packages now available. Book today!'
+      }
+    ],
+    creativeAssets: ['/assets/womens-health-banner.jpg'],
+    startDate: new Date('2024-09-15'),
+    endDate: new Date('2024-10-15'),
+    scheduleType: 'scheduled',
+    budgetAllocated: 35000,
+    budgetSpent: 32800,
+    sentCount: 3180,
+    deliveredCount: 3095,
+    openedCount: 1420,
+    clickedCount: 285,
+    convertedCount: 38,
+    status: 'completed' as const,
+    createdAt: new Date('2024-09-01'),
+    createdByUser: {
+      userId: 'user-marketing-001',
+      firstName: 'Sarah',
+      lastName: 'Johnson'
+    },
+    deliveryRate: 97.3,
+    openRate: 45.9,
+    clickRate: 20.1,
+    conversionRate: 1.2,
+    roi: 142.8,
+  },
+  {
+    campaignId: 'camp-003',
+    clinicId: 'clinic-001',
+    campaignName: 'Senior Citizens Health Package',
+    campaignType: 'retention' as const,
+    objective: 'Retain existing senior patients and encourage regular health checkups',
+    targetSegments: ['seniors-60+', 'existing-patients'],
+    estimatedReach: 1500,
+    messageTemplates: [
+      {
+        channel: 'email',
+        content: 'Special health package for senior citizens: Comprehensive checkup including cardiology, orthopedics, and general medicine consultations.'
+      }
+    ],
+    startDate: new Date('2024-10-10'),
+    endDate: new Date('2024-11-10'),
+    budgetAllocated: 25000,
+    budgetSpent: 8500,
+    sentCount: 1450,
+    deliveredCount: 1425,
+    openedCount: 712,
+    clickedCount: 142,
+    convertedCount: 18,
+    status: 'active' as const,
+    createdAt: new Date('2024-10-05'),
+    createdByUser: {
+      userId: 'user-marketing-001',
+      firstName: 'Sarah',
+      lastName: 'Johnson'
+    },
+    deliveryRate: 98.3,
+    openRate: 49.9,
+    clickRate: 19.9,
+    conversionRate: 1.24,
+  },
+];
+
+export const mockPatientSegments = [
+  // Tier 1 City Segments (Mumbai, Delhi, Bangalore, Chennai, Kolkata, Hyderabad, Pune, Ahmedabad)
+  {
+    segmentId: 'seg-001',
+    clinicId: 'clinic-001',
+    segmentName: 'Metro Premium Health Package',
+    segmentType: 'demographic',
+    description: 'High-income families in tier 1 cities seeking comprehensive healthcare',
+    criteria: {
+      ageRange: { min: 30, max: 60 },
+      location: ['Mumbai', 'Delhi NCR', 'Bangalore', 'Chennai'],
+      incomeLevel: 'High',
+      visitFrequency: '>4 visits/year'
+    },
+    segmentSize: 3420,
+    engagementScore: 85,
+    growthRate: 12.5,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-08-01'),
+  },
+  {
+    segmentId: 'seg-002',
+    clinicId: 'clinic-001',
+    segmentName: 'IT Professional Wellness',
+    segmentType: 'behavioral',
+    description: 'Tech workers with sedentary lifestyle seeking preventive care',
+    criteria: {
+      ageRange: { min: 25, max: 45 },
+      occupation: 'IT/Software',
+      conditions: ['back pain', 'eye strain', 'stress'],
+      location: ['Bangalore', 'Hyderabad', 'Pune', 'Chennai']
+    },
+    segmentSize: 4850,
+    engagementScore: 78,
+    growthRate: 18.2,
+    isActive: true,
+    lastCalculated: new Date('2024-10-14'),
+    createdAt: new Date('2024-07-15'),
+  },
+  
+  // Tier 2 City Segments (Jaipur, Lucknow, Kanpur, Nagpur, Indore, Bhopal, Patna, etc.)
+  {
+    segmentId: 'seg-003',
+    clinicId: 'clinic-001',
+    segmentName: 'Tier 2 Family Health Plans',
+    segmentType: 'demographic',
+    description: 'Middle-class families in tier 2 cities seeking affordable quality care',
+    criteria: {
+      ageRange: { min: 25, max: 55 },
+      location: ['Jaipur', 'Lucknow', 'Indore', 'Bhopal', 'Patna'],
+      familySize: '>3 members',
+      insuranceType: 'Basic/Government'
+    },
+    segmentSize: 5670,
+    engagementScore: 72,
+    growthRate: 22.8,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-09-01'),
+  },
+  {
+    segmentId: 'seg-004',
+    clinicId: 'clinic-001',
+    segmentName: 'Small Business Owners',
+    segmentType: 'behavioral',
+    description: 'Entrepreneurs and shop owners seeking corporate health packages',
+    criteria: {
+      ageRange: { min: 30, max: 50 },
+      occupation: 'Business Owner',
+      location: ['Tier 2 Cities'],
+      employeeCount: '5-50'
+    },
+    segmentSize: 2340,
+    engagementScore: 68,
+    growthRate: 15.6,
+    isActive: true,
+    lastCalculated: new Date('2024-10-13'),
+    createdAt: new Date('2024-08-20'),
+  },
+  
+  // Tier 3 City & Rural Segments
+  {
+    segmentId: 'seg-005',
+    clinicId: 'clinic-001',
+    segmentName: 'Rural Primary Healthcare',
+    segmentType: 'demographic',
+    description: 'Rural population seeking basic healthcare and government schemes',
+    criteria: {
+      location: ['Rural Areas', 'Tier 3 Cities'],
+      schemes: ['Ayushman Bharat', 'PM-JAY'],
+      visitPurpose: 'Primary care'
+    },
+    segmentSize: 8920,
+    engagementScore: 62,
+    growthRate: 35.4,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-09-15'),
+  },
+  {
+    segmentId: 'seg-006',
+    clinicId: 'clinic-001',
+    segmentName: 'Agricultural Community',
+    segmentType: 'demographic',
+    description: 'Farmers and agricultural workers seeking seasonal healthcare',
+    criteria: {
+      occupation: 'Agriculture',
+      ageRange: { min: 20, max: 60 },
+      conditions: ['joint pain', 'seasonal allergies', 'skin conditions'],
+      paymentPreference: 'Cash/EMI'
+    },
+    segmentSize: 6230,
+    engagementScore: 58,
+    growthRate: 28.9,
+    isActive: true,
+    lastCalculated: new Date('2024-10-14'),
+    createdAt: new Date('2024-09-10'),
+  },
+  
+  // Clinical Segments (All Tiers)
+  {
+    segmentId: 'seg-007',
+    clinicId: 'clinic-001',
+    segmentName: 'Diabetes Management',
+    segmentType: 'clinical',
+    description: 'Diabetic patients requiring regular monitoring and care',
+    criteria: {
+      conditions: ['diabetes', 'pre-diabetes'],
+      ageRange: { min: 35, max: 75 },
+      visitFrequency: 'Monthly',
+      labTests: ['HbA1c', 'FBS', 'PPBS']
+    },
+    segmentSize: 4580,
+    engagementScore: 82,
+    growthRate: 8.7,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-07-01'),
+  },
+  {
+    segmentId: 'seg-008',
+    clinicId: 'clinic-001',
+    segmentName: 'Maternal & Child Health',
+    segmentType: 'clinical',
+    description: 'Pregnant women and children under 5 years',
+    criteria: {
+      gender: 'female',
+      conditions: ['pregnancy', 'postpartum'],
+      ageRange: { min: 18, max: 40 },
+      childrenAge: '<5 years'
+    },
+    segmentSize: 3210,
+    engagementScore: 88,
+    growthRate: 12.3,
+    isActive: true,
+    lastCalculated: new Date('2024-10-14'),
+    createdAt: new Date('2024-08-15'),
+  },
+  {
+    segmentId: 'seg-009',
+    clinicId: 'clinic-001',
+    segmentName: 'Senior Citizens Care',
+    segmentType: 'clinical',
+    description: 'Elderly patients requiring geriatric care',
+    criteria: {
+      ageRange: { min: 60, max: 90 },
+      conditions: ['hypertension', 'arthritis', 'diabetes'],
+      visitFrequency: 'Bi-monthly',
+      homeVisitRequired: true
+    },
+    segmentSize: 2890,
+    engagementScore: 75,
+    growthRate: 10.5,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-07-20'),
+  },
+  
+  // Engagement-based Segments
+  {
+    segmentId: 'seg-010',
+    clinicId: 'clinic-001',
+    segmentName: 'Health App Active Users',
+    segmentType: 'engagement',
+    description: 'Patients actively using hospital mobile app',
+    criteria: {
+      appUsage: 'Daily',
+      features: ['appointment booking', 'lab reports', 'telemedicine'],
+      engagementLevel: 'High'
+    },
+    segmentSize: 1850,
+    engagementScore: 92,
+    growthRate: 45.6,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-09-25'),
+  },
+  {
+    segmentId: 'seg-011',
+    clinicId: 'clinic-001',
+    segmentName: 'Telemedicine Preferred',
+    segmentType: 'engagement',
+    description: 'Patients preferring online consultations',
+    criteria: {
+      consultationType: 'Online',
+      location: ['Remote areas', 'Tier 2-3 cities'],
+      frequency: '>2 teleconsults/month'
+    },
+    segmentSize: 2120,
+    engagementScore: 79,
+    growthRate: 52.3,
+    isActive: true,
+    lastCalculated: new Date('2024-10-14'),
+    createdAt: new Date('2024-09-01'),
+  },
+  
+  // Insurance & Government Scheme Segments
+  {
+    segmentId: 'seg-012',
+    clinicId: 'clinic-001',
+    segmentName: 'Ayushman Bharat Beneficiaries',
+    segmentType: 'demographic',
+    description: 'Patients covered under PM-JAY scheme',
+    criteria: {
+      insuranceType: 'PM-JAY',
+      incomeLevel: 'BPL',
+      eligibilityCard: true
+    },
+    segmentSize: 12450,
+    engagementScore: 65,
+    growthRate: 38.7,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-08-01'),
+  },
+  {
+    segmentId: 'seg-013',
+    clinicId: 'clinic-001',
+    segmentName: 'Corporate Insurance',
+    segmentType: 'demographic',
+    description: 'Employees with corporate health insurance',
+    criteria: {
+      insuranceType: 'Corporate',
+      employmentType: 'Full-time',
+      coverageAmount: '>5 lakhs'
+    },
+    segmentSize: 3780,
+    engagementScore: 81,
+    growthRate: 14.2,
+    isActive: true,
+    lastCalculated: new Date('2024-10-15'),
+    createdAt: new Date('2024-08-10'),
+  },
+  
+  // Special Interest Segments
+  {
+    segmentId: 'seg-014',
+    clinicId: 'clinic-001',
+    segmentName: 'Wellness & Preventive Care',
+    segmentType: 'behavioral',
+    description: 'Health-conscious individuals seeking preventive checkups',
+    criteria: {
+      ageRange: { min: 25, max: 50 },
+      services: ['Annual checkup', 'Health screening', 'Vaccination'],
+      lifestyle: 'Health-conscious'
+    },
+    segmentSize: 2950,
+    engagementScore: 86,
+    growthRate: 24.8,
+    isActive: true,
+    lastCalculated: new Date('2024-10-14'),
+    createdAt: new Date('2024-09-05'),
+  },
+  {
+    segmentId: 'seg-015',
+    clinicId: 'clinic-001',
+    segmentName: 'Emergency Care Frequent',
+    segmentType: 'behavioral',
+    description: 'Patients with frequent emergency visits',
+    criteria: {
+      visitType: 'Emergency',
+      frequency: '>3 visits/year',
+      triageLevel: ['2', '3']
+    },
+    segmentSize: 1240,
+    engagementScore: 71,
+    growthRate: 6.5,
+    isActive: false,
+    lastCalculated: new Date('2024-10-10'),
+    createdAt: new Date('2024-08-25'),
+  },
+];
+
+export const mockCRMAnalytics = {
+  overview: {
+    totalLeads: 124,
+    qualifiedLeads: 89,
+    convertedLeads: 23,
+    conversionRate: 18.5,
+    averageLeadScore: 73.2,
+    totalCampaigns: 8,
+    activeCampaigns: 3,
+    totalROI: 156.8,
+  },
+  leadsBySource: [
+    { source: 'website', count: 45, conversionRate: 22.2, averageScore: 78 },
+    { source: 'referral', count: 32, conversionRate: 31.3, averageScore: 85 },
+    { source: 'social_media', count: 28, conversionRate: 14.3, averageScore: 65 },
+    { source: 'phone_inquiry', count: 19, conversionRate: 21.1, averageScore: 76 },
+  ],
+  leadsByStatus: [
+    { status: 'new', count: 35, percentage: 28.2 },
+    { status: 'contacted', count: 42, percentage: 33.9 },
+    { status: 'qualified', count: 24, percentage: 19.4 },
+    { status: 'converted', count: 23, percentage: 18.5 },
+  ],
+  monthlyTrend: [
+    { month: 'Jun 2024', leadsGenerated: 18, leadsConverted: 3, campaignsLaunched: 1, totalSpent: 15000, totalRevenue: 45000 },
+    { month: 'Jul 2024', leadsGenerated: 22, leadsConverted: 4, campaignsLaunched: 2, totalSpent: 28000, totalRevenue: 72000 },
+    { month: 'Aug 2024', leadsGenerated: 26, leadsConverted: 6, campaignsLaunched: 1, totalSpent: 22000, totalRevenue: 96000 },
+    { month: 'Sep 2024', leadsGenerated: 31, leadsConverted: 5, campaignsLaunched: 2, totalSpent: 35000, totalRevenue: 85000 },
+    { month: 'Oct 2024', leadsGenerated: 27, leadsConverted: 5, campaignsLaunched: 2, totalSpent: 32000, totalRevenue: 78000 },
+  ],
+};

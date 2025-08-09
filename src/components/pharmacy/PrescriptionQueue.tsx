@@ -248,7 +248,7 @@ export default function PrescriptionQueue() {
     if (autoRefresh) {
       const interval = setInterval(() => {
         // In production, this would fetch fresh data from API
-        console.log('Auto-refreshing prescription queue...');
+        // Auto-refresh prescription queue data
       }, 30000);
       return () => clearInterval(interval);
     }
@@ -275,14 +275,7 @@ export default function PrescriptionQueue() {
     }
   };
 
-  const getPaymentStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'secondary';
-      case 'partial': return 'default';
-      case 'paid': return 'default';
-      default: return 'secondary';
-    }
-  };
+  // Removed unused getPaymentStatusColor function
 
   const filteredPrescriptions = prescriptions.filter(rx => {
     const matchesSearch = rx.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
